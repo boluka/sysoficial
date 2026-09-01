@@ -31,7 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col justify-center items-center bg-linear-to-b from-cinza-escuro  to-cinza-maisescuro">{children}</body>
+      <body className="min-h-full flex flex-col justify-center items-center ">{children}</body>
     </html>
   );
 }
