@@ -20,7 +20,8 @@ export default function Home() {
     if(userActive.text === usuarioValido && passActive.text === senhaValida){
       document.cookie = "sys_session=token_secreto_agepen; path=/; max-age=3600; SameSite=Strict;"
        console.log("Usuario validado")
-       router.push('/menus')
+       router.push(`/relatorio?nome=${usuarioValido}`)
+       
     } else {
       console.log("Usuário errado!");
     }
@@ -45,11 +46,11 @@ export default function Home() {
       <section className="w-[85%]">
         <div className="flex items-center gap-2 ">
           <UserRound className={`w-7 h-7 md:w-9 md:h-9 transition-colors duration-500 ${userActive.isActive ? 'text-amarelo-claro' : 'text-[#4e4e4e]'}`}  />
-          <InputDeDados label="Usuário:" placeholder=" " change={setUserActive} />
+          <InputDeDados label="Usuário:" placeholder=" " name="username" autoComplete="name" change={setUserActive} />
         </div>
         <div className="flex items-center gap-2">
           <LockKeyholeOpen className={`w-7 h-7 md:w-9 md:h-9  transition-colors duration-500 ${passActive.isActive ? 'text-amarelo-claro' : 'text-[#4e4e4e]'}`}/>
-          <InputDeDados label="Senha:" placeholder=" " type="password" change={setPassActive} />
+          <InputDeDados label="Senha:" placeholder=" " name="password" autoComplete="current-password" type="password" change={setPassActive} />
         </div>
         <button type="submit" className="bg-amarelo-claro p-2 w-full cursor-pointer rounded-[5px] mt-2 md:p-3 md:my-3  font-bold hover:bg-cinza-escuro hover:text-amarelo-claro hover:border hover:border-[#636363]">Login</button>
       </section>

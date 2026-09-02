@@ -10,11 +10,11 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (token && pathname === '/') {
-    return NextResponse.redirect(new URL('/menus', request.url));
+    return NextResponse.redirect(new URL('/relatorio', request.url));
   }
   // 3. CENÁRIO A: O usuário NÃO está logado e tenta acessar páginas internas protegidas
   // Ele é barrado antes mesmo de conectar no PostgreSQL e redirecionado para o Login (Home)
-  if (!token && pathname.startsWith('/menus')) {
+  if (!token && pathname.startsWith('/relatorio')) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
@@ -27,6 +27,6 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     '/',               // Monitora a tela de Login
-    '/menus/:path*' // Monitora a página de produtos e qualquer subpasta dela
+    '/relatorio/:path*' // Monitora a página de produtos e qualquer subpasta dela
   ],
 };
