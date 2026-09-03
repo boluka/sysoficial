@@ -7,6 +7,7 @@
 }
 
 @theme inline {
+  --color-cinza-maisclaro: #919191;
   --color-amarelo-escuro: #be9500;
   --color-amarelo-claro: #f8c301;
   --color-cinza-maisescuro: var(--color-cinza-maisescuro);

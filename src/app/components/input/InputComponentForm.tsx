@@ -4,6 +4,7 @@ interface Props {
     [border?:string , background?:string, text?:string]
     width?: string;
     height?: string
+    
 }
 
 export default function InputComponentForm({type, colors = [], ...props}:Props) {

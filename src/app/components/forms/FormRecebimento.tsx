@@ -1,16 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DateComponent from "../date/date";
 import styles from "./styles-forms.module.css";
 import SelectComponent from "../select/Select";
 import InputComponentForm from "../input/InputComponentForm";
+import TextAreaComponent from "../textarea/TextAreaComponent";
 
 export default function Forms({ children }: { children: string }) {
-  {
-    console.log(styles);
-  }
   const [date, setDate] = useState("00-00-0000");
+  const [situation, setSituation] = useState('Completo e sem alterações');
+  const textArea = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    if(textArea.current){
+      if(situation != "Completo e sem alterações")
+        textArea.current.value = "";
+    }
+  }, [situation])
   return (
     <form
       action=""
@@ -33,12 +39,12 @@ export default function Forms({ children }: { children: string }) {
       </div>
       <div className={`${styles["style-div"]} p-4! leading-7 text-sm `}>
         Eu,
-        <SelectComponent />
+        <SelectComponent width='30'/>
         recebi os serviços do plantão do Instituto Penal de Campo Grande/MS, do
         chefe de equipe
-        <SelectComponent />
+        <SelectComponent width='30'/>
         ,
-        <SelectComponent />
+        <SelectComponent width='30'/>
         com o efetivo carcerário de:
       </div>
       <div className={`${styles["style-div"]} flex justify-center  items-center text-sm   gap-3! `}>
@@ -50,6 +56,19 @@ export default function Forms({ children }: { children: string }) {
             <p>Trânsito: </p>
             <InputComponentForm type="number" width='auto'/>
        
+      </div>
+      <div className={`${styles['style-div']} text-sm`}>
+            <div className="flex items-center justify-center gap-3">
+              <p className="w-1/2">Com o Material Carga:</p>
+              <SelectComponent width="full" situation={setSituation}>
+                  <option value="Completo e sem alterações">Completo e sem alterações</option>
+                  <option value="Incompleto">Incompleto</option>
+              </SelectComponent>
+            </div>
+            <div className="flex flex-col justify-left items-left gap-1">
+              <p className="text-[13px] text-cinza-maisclaro">Incompleto ou com alterações: </p>
+              <TextAreaComponent width="full" height="15" value={situation} setSituacao={setSituation} ref={textArea}/>
+            </div>
       </div>
     </form>
   );
