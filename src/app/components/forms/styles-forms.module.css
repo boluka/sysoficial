@@ -1,0 +1,6 @@
+.style-div {
+    background-color: var(--color-cinza-escuro);
+    padding: 8px;
+    border-radius: 5px;
+    gap: 10px;
+}

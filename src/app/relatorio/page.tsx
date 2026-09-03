@@ -2,7 +2,7 @@
 import { ChevronLeft, ChevronRight, MoveLeft, MoveRight } from 'lucide-react'
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import Forms from '@/app/components/forms/forms'
+import Forms from '@/app/components/forms/FormRecebimento'
 
 
 export default function Report() {

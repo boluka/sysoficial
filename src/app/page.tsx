@@ -28,8 +28,7 @@ export default function Home() {
   }
 
   return (<main className="grid grid-rows-[1fr_auto] min-h-screen min-w-screen items-center bg-linear-to-b from-cinza-escuro  to-cinza-maisescuro">
-    <form className=" bg-cinza-maisescuro w-100 h-auto py-7 flex flex-col  items-center gap-2 border border-[#494949da] rounded-[5px]
-    transition-all duration-300 shadow-2xl md:w-120 justify-self-center" onSubmit={(e) => {login(e)}}>
+    <form className=" bg-cinza-maisescuro w-100 h-auto py-7 flex flex-col  items-center gap-2 border border-[#494949da] rounded-[5px] transition-all duration-300 shadow-2xl md:w-120 justify-self-center" onSubmit={(e) => {login(e)}}>
       <section className="flex flex-col items-center w-[85%] ">
     
           <Image

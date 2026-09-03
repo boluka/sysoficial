@@ -11,7 +11,7 @@ interface Props {
     
 }
 
-export default function InputData(props: Props) {
+export default function InputComponent(props: Props) {
 
     function manageDataInput(text: string) {
         props.change({ text: text, isActive: text.length > 0 })
