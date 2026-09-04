@@ -13,9 +13,9 @@ export default function InputComponentForm({type, colors = [], ...props}:Props) 
         background = 'cinza-escuro',
         text = 'white',
      ] = colors;
-    // const {width = 'auto', height = 'auto'} = props
+     const {width = 'auto', height = 'auto'} = props
      
     return (
-        <input type={type} className={`outline-0 border rounded-[5px] indent-2 border-${border} bg-${background} text-${text} min-w-0` } min='0'/>
+        <input type={type} className={`outline-0 ${width} ${height} border p-0.5 rounded-[5px] indent-2 border-${border} bg-${background} text-${text} min-w-0` } min='0' />
     )
 }
