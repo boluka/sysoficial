@@ -6,8 +6,9 @@ import styles from "./styles-forms.module.css";
 import SelectComponent from "../select/Select";
 import InputComponentForm from "../input/InputComponentForm";
 import TextAreaComponent from "../textarea/TextAreaComponent";
+import { SavePlus } from "lucide-react";
 
-export default function Forms({ children }: { children: string }) {
+export default function Forms({ children }: { children?: string }) {
   const [date, setDate] = useState("");
   const optionsSituation = ["Completo e sem alterações", "Incompleto"];
   const [situation, setSituation] = useState("Completo e sem alterações");
@@ -31,20 +32,28 @@ export default function Forms({ children }: { children: string }) {
   return (
     <form
       action=""
-      className="flex flex-col gap-3 text-white bg-[#b9b9b9] min-w-120 w-1/2 max-w-180 mb-10 rounded-2xl self-center shadow-[0_0_40px_#00000081] p-5"
+      className="flex flex-col gap-3 text-white bg-[#b9b9b9] min-w-120 w-1/2 max-w-160 mb-10 rounded-2xl self-center shadow-[0_0_40px_#00000081] p-5"
     >
-      <h2 className="text-center text-black font-bold mb-2">{children}</h2>
-      <div className={`${styles["style-div"]} flex justify-center`}>
-        <p>Relatório das ocorrências no dia: </p>
-        <DateComponent setDate={setDate} />
+      <h1 className="text-center bg-cinza-escuro text-amarelo-claro text-lg font-bold rounded-[5px]">
+        Recebimento
+      </h1>
+      <div
+        className={`${styles["style-div"]} flex justify-center items-center`}
+      >
+        <p className="text-sm">Relatório das ocorrências no dia: </p>
+        <SelectComponent width="w-30">
+          {["Plantão A", "Plantão B", "Plantão C", "Plantão D"].map(((e) => {
+            return <option key={e} value={e} className={styles['style-opt']}>{e}</option>
+          }))}
+        </SelectComponent>
       </div>
       <div className="flex justify-around gap-2 bg-cinza-escuro p-2 rounded-[5px]">
-        <div className="flex gap-2">
-          <p>Do dia:</p>
+        <div className="flex gap-2 items-center">
+          <p className="text-sm">Do dia:</p>
           <DateComponent setDate={setDate} />
         </div>
-        <div className="flex gap-2">
-          <p>Para o dia:</p>
+        <div className="flex gap-2 items-center">
+          <p className="text-sm">Para o dia:</p>
           <DateComponent setDate={setDate} />
         </div>
       </div>
@@ -56,16 +65,10 @@ export default function Forms({ children }: { children: string }) {
         <SelectComponent width="w-30" />
         ,
         <SelectComponent width="w-30" />
-        com o efetivo carcerário de:
-      </div>
-      <div
-        className={`${styles["style-div"]} flex justify-center  items-center text-sm   gap-3! `}
-      >
-        <p>Efetivo carcerário: </p>
-        <InputComponentForm type="number" width="auto" />
-
-        <p>Trânsito: </p>
-        <InputComponentForm type="number" width="autendo" />
+        com o efetivo carcerário de
+        <InputComponentForm type="number" width="w-30" height="h-5"/>
+        e em trânsito de
+        <InputComponentForm type="number" width="w-30" height="h-5" />
       </div>
       <div className={`${styles["style-div"]} text-sm`}>
         <div className="flex items-center justify-center gap-3">
@@ -85,8 +88,8 @@ export default function Forms({ children }: { children: string }) {
             Incompleto ou com alterações:{" "}
           </p>
           <TextAreaComponent
-            width="full"
-            height="15"
+            width="w-full"
+            height="h-25"
             value={situation}
             setSituacao={setSituation}
             ref={textArea}
@@ -111,58 +114,17 @@ export default function Forms({ children }: { children: string }) {
             Incompleto ou com alterações:{" "}
           </p>
           <TextAreaComponent
-            width="full"
-            height="15"
+            width="w-full"
+            height="h-25"
             value={situationTwo}
             setSituacao={setSituationTwo}
             ref={textAreaTwo}
           />
         </div>
       </div>
-      <div
-        className={`${styles["style-div"]} flex p-4! rounded-b-2xl!  justify-between flex-row-reverse`}
-      >
-        <div className="flex flex-col text-sm">
-          <p className="text-amarelo-claro text-base">Munição: </p>
-          <InputComponentForm width="w-30" type="number" />
-          <p className="text-amarelo-claro text-base mt-2">Carregadores: </p>
-          <div className="text-[13px] flex flex-col gap-1">
-            <p>De 15 para Pistola: </p>
-            <InputComponentForm width="w-30" type="number" />
-            <p>De 15 para Carabina: </p>
-            <InputComponentForm width="w-30" type="number" />
-            <p>De 30 para Carabina: </p>
-            <InputComponentForm width="w-30" type="number" />
-          </div>
-        </div>
-        <div
-          className={`${styles["style-div"]} p-3! flex flex-col w-[75%] items-start border roudend-[5px] border-amarelo-escuro`}
-        >
-          <div className="flex w-full">
-            <p>Armamento: </p>
-            <SelectComponent width="min-w-40 w-1/2"></SelectComponent>
-            <button className="bg-amarelo-claro py-1 px-3 rounded-[5px] text-sm text-black font-bold cursor-pointer" onClick={e => e.preventDefault()}>Inserir</button>
-          </div>
-          <div className="flex w-full">
-            <p>Numeração: </p>
-            <SelectComponent width="min-w-40 w-1/2"></SelectComponent>
-          </div>
-          <table>
-              <thead>
-                <tr>
-                  <th>Arma</th>
-                  <th>Numeração</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Valor1</td>
-                  <td>Valor2</td>
-                </tr>
-              </tbody>
-          </table>
-        </div>
-      </div>
+     <button>
+       <SavePlus className="p-2 w-13 h-13 fixed right-5 bottom-5 rounded-lg text-cinza-escuro bg-amarelo-claro cursor-pointer hover:w-14 hover:h-14 transition-all"/>
+     </button>
     </form>
   );
 }

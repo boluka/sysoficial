@@ -4,3 +4,8 @@
     border-radius: 5px;
     gap: 10px;
 }
+.style-opt {
+    font-size: 0.9em;
+    background-color: var(--color-cinza-escuro);
+
+}

@@ -1,8 +1,9 @@
 'use client'
-import { ChevronLeft, ChevronRight, MoveLeft, MoveRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import Forms from '@/app/components/forms/FormRecebimento'
+import FormRecebimento from '@/app/components/forms/FormRecebimento'
+import FormArmamento from '../components/forms/FormArmamento';
 
 
 export default function Report() {
@@ -27,6 +28,17 @@ export default function Report() {
         }
     }, [])
 
+    function renderForm() {
+       switch(itemActive) {
+        case '1- Recebimento':
+            return <FormRecebimento/>
+        case '1.1- Armamento':
+            return <FormArmamento/>
+        default:
+            return <FormRecebimento/>
+       }
+    }
+
     const [itemActive, setItemActive] = useState('1- Recebimento')
     function moveLeft() {
         if (containerRef.current) {
@@ -36,11 +48,10 @@ export default function Report() {
     function moveRight() {
         if (containerRef.current) {
             containerRef.current.scrollLeft += 300;
-            console.log(containerRef.current.scrollLeft)
         }
     }
 
-    const elementLi = ["1- Recebimento", "2- Equipe", "3- Trocas", "4- Hora extra", "05- 11 Expediente", "12- Revezamento", "13-14 Rotina Diária", "15- Entrada de Presos", "16- Saída de Presos", "17- Mudança de cela"
+    const elementLi = ["1- Recebimento", "1.1- Armamento", "2- Equipe", "3- Trocas", "4- Hora extra", "05- 11 Expediente", "12- Revezamento", "13-14 Rotina Diária", "15- Entrada de Presos", "16- Saída de Presos", "17- Mudança de cela"
     ]
     return (<main className="flex flex-col gap-10 bg-linear-to-b from-cinza-maisescuro  to-cinza-escuro min-h-screen w-full">
 
@@ -63,7 +74,8 @@ export default function Report() {
             </div>
             <div className="text-amarelo-claro shrink-0">Bem-vindo {nickname} !</div>
         </nav>
-        <dialog ref={dialogTop} className=' w-75 h-75 bg-amarelo-claro'>Teste </dialog>
-        <Forms>{itemActive}</Forms>
+        {renderForm()}
+    <dialog ref={dialogTop} className=' w-75 h-75 bg-amarelo-claro'>Teste </dialog>
+    
     </main>)
 }
