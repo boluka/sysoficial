@@ -3,7 +3,7 @@ import SelectComponent from "../select/Select";
 import styles from "./styles-forms.module.css";
 
 export default function FormArmamento() {
-    return ( <form>
+    return ( <form className="flex flex-col gap-3 text-white bg-[#b9b9b9] min-w-120 w-1/2 max-w-160 mb-10 rounded-2xl self-center shadow-[0_0_40px_#00000081] p-5">
 
         <div
         className={`${styles["style-div"]} flex p-4! rounded-b-2xl!  justify-between flex-row-reverse`}
@@ -38,17 +38,21 @@ export default function FormArmamento() {
             <p>Numeração: </p>
             <SelectComponent width="min-w-40 w-1/2"></SelectComponent>
           </div>
-          <table>
+          <table className={`${styles['style-table']} w-full text-center  border p-2 border-collapse border-spacing-3`}>
             <thead>
-              <tr>
-                <th>Arma</th>
-                <th>Numeração</th>
+              <tr className="bg-cinza-maisescuro text-cinza-maisclaro ">
+                <th className="border border-black text-amarelo-claro p-2">Arma</th>
+                <th className="border border-black text-amarelo-claro p-2">Numeração</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Valor1</td>
-                <td>Valor2</td>
+                <td className="bg-cinza-maisclaro border border-black text-cinza-escuro">Valor1</td>
+                <td className="bg-cinza-maisclaro border border-black text-cinza-escuro">Valor2</td>
+              </tr>
+              <tr>
+                <td className="bg-white text-black border border-black">Valor 3</td>
+                <td className="bg-white text-black border border-black">Valor 4</td>
               </tr>
             </tbody>
           </table>

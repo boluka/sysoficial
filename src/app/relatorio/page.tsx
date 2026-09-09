@@ -1,5 +1,5 @@
 'use client'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, SavePlus } from 'lucide-react'
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import FormRecebimento from '@/app/components/forms/FormRecebimento'
@@ -11,7 +11,6 @@ export default function Report() {
      * Não esquecer de corrigir o uso de tokens com a biblioteca correta
      */
     const containerRef = useRef<HTMLDivElement>(null);
-    const dialogTop = useRef<HTMLDialogElement>(null);
     const [nickname, setNickname] = useState('');
     const searchParams = useSearchParams();
     useEffect(() => {
@@ -32,8 +31,9 @@ export default function Report() {
        switch(itemActive) {
         case '1- Recebimento':
             return <FormRecebimento/>
-        case '1.1- Armamento':
-            return <FormArmamento/>
+        case '1.1- Armamento':  
+        return <FormRecebimento>{'true'}</FormRecebimento>
+
         default:
             return <FormRecebimento/>
        }
@@ -75,7 +75,9 @@ export default function Report() {
             <div className="text-amarelo-claro shrink-0">Bem-vindo {nickname} !</div>
         </nav>
         {renderForm()}
-    <dialog ref={dialogTop} className=' w-75 h-75 bg-amarelo-claro'>Teste </dialog>
+        <button>
+       <SavePlus className="p-3 w-16 h-16 fixed right-5 bottom-5 rounded-lg text-cinza-escuro bg-amarelo-claro cursor-pointer hover:w-14 hover:h-14 transition-all"/>
+     </button>
     
     </main>)
 }

@@ -9,3 +9,11 @@
     background-color: var(--color-cinza-escuro);
 
 }
+.style-dialog {
+    transition: all;
+    transition-duration: 1s;
+}
+.style-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(1px);
+}
