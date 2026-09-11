@@ -6,6 +6,7 @@ import FormRecebimento from "@/app/components/forms/FormRecebimento";
 import FormArmamento from "../components/forms/FormArmamento";
 import FormEquipe from "../components/forms/FormEquipe";
 import FormTrocasHe from "../components/forms/FormTrocasHe";
+import FormExpediente from "../components/forms/FormExpediente";
 
 export default function Report() {
   /**
@@ -55,7 +56,7 @@ export default function Report() {
         return <FormTrocasHe/>;
       
         default:
-        return <FormRecebimento />;
+        return <FormExpediente/>
     }
   }
 
