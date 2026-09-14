@@ -16,11 +16,11 @@ export default function FormEquipe() {
             <legend className="text-amarelo-claro text-center">
               Oficial do Dia:{" "}
             </legend>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Chefe de Equipe: </p>
               <SelectComponent width="w-[50%]" />
             </div>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Aux. Chefe-Equipe: </p>
               <SelectComponent width="w-[50%]" />
             </div>
@@ -29,15 +29,15 @@ export default function FormEquipe() {
             <legend className="text-amarelo-claro text-center">
               Portaria:{" "}
             </legend>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Portaria Principal: </p>
               <SelectComponent width="w-[50%]" />
             </div>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Auxiliar Portaria 1:</p>
               <SelectComponent width="w-[50%]" />
             </div>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Auxiliar Portaria 2:</p>
               <SelectComponent width="w-[50%]" />
             </div>
@@ -46,15 +46,18 @@ export default function FormEquipe() {
             <legend className="text-amarelo-claro text-center">
               Trabalhos:
             </legend>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Passarela Principal:</p>
-              <SelectComponent width="w-[50%]" />
+              <SelectComponent width="w-[50%]">
+                <option value="Alguma">Alguma coisa</option>
+                 <option value="Alguma">Alguma coisa de dsd</option>
+              </SelectComponent>
             </div>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Escola Padaria:</p>
               <SelectComponent width="w-[50%]" />
             </div>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Trabalho/Crina</p>
               <SelectComponent width="w-[50%]" />
             </div>
@@ -65,23 +68,23 @@ export default function FormEquipe() {
             <legend className="text-amarelo-claro text-center">
               Pavilhão 1:
             </legend>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Responsável PV1:</p>
               <SelectComponent width="w-[50%]" />
             </div>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV1:</p>
               <SelectComponent width="w-[50%]" />
             </div>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV1:</p>
               <SelectComponent width="w-[50%]" />
             </div>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV1:</p>
               <SelectComponent width="w-[50%]" />
             </div>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV1:</p>
               <SelectComponent width="w-[50%]" />
             </div>
@@ -90,19 +93,19 @@ export default function FormEquipe() {
             <legend className="text-amarelo-claro text-center">
               Pavilhão 2:
             </legend>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Responsável PV2:</p>
               <SelectComponent width="w-[50%]" />
             </div>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV2:</p>
               <SelectComponent width="w-[50%]" />
             </div>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV2:</p>
               <SelectComponent width="w-[50%]" />
             </div>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV2:</p>
               <SelectComponent width="w-[50%]" />
             </div>
