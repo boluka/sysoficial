@@ -1,5 +1,11 @@
 "use client";
-import { Calendar, ChevronLeft, ChevronRight, SavePlus, SquarePen } from "lucide-react";
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  SavePlus,
+  SquarePen,
+} from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import FormRecebimento from "@/app/components/forms/FormRecebimento";
@@ -7,6 +13,10 @@ import FormArmamento from "../components/forms/FormArmamento";
 import FormEquipe from "../components/forms/FormEquipe";
 import FormTrocasHe from "../components/forms/FormTrocasHe";
 import FormExpediente from "../components/forms/FormExpediente";
+import FormRevezamento from "../components/forms/FormRevezamento";
+import FormRotinaDiaria from "../components/forms/FormRotinaDiaria";
+import FormEntradaPresos from "../components/forms/FormEntradaSaidaPresos";
+import FormMudancaCela from "../components/forms/FormMudancaCela";
 
 export default function Report() {
   /**
@@ -17,11 +27,11 @@ export default function Report() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [nickname, setNickname] = useState("");
   const searchParams = useSearchParams();
-  const [itemActive, setItemActive] = useState("1- Recebimento");
+  const [itemActive, setItemActive] = useState("16- Mudança de cela operacional");
 
   useEffect(() => {
     if (!dialogArmamentoActive) {
-      setItemActive("1- Recebimento");
+      setItemActive("16- Mudança de cela operacional");
     }
   }, [dialogArmamentoActive]);
 
@@ -51,12 +61,23 @@ export default function Report() {
         );
       case "2- Equipe":
         return <FormEquipe />;
-     
+
       case "3- Trocas / HE":
-        return <FormTrocasHe/>;
-      
-        default:
-        return <FormExpediente/>
+        return <FormTrocasHe />;
+
+      case "05- 11 Expediente":
+        return <FormExpediente />;
+
+      case "12- Revezamento":
+        return <FormRevezamento />;
+      case "13-14 Rotina Diária":
+        return <FormRotinaDiaria />;
+      case "15- Entrada/Saída de Presos":
+        return <FormEntradaPresos />;
+      case "16- Mudança de cela operacional":
+        return <FormMudancaCela />;
+      default:
+        return null;
     }
   }
 
@@ -79,9 +100,8 @@ export default function Report() {
     "05- 11 Expediente",
     "12- Revezamento",
     "13-14 Rotina Diária",
-    "15- Entrada de Presos",
-    "16- Saída de Presos",
-    "17- Mudança de cela",
+    "15- Entrada/Saída de Presos",
+    "16- Mudança de cela operacional",
   ];
   return (
     <main className="flex flex-col bg-linear-to-b from-cinza-maisescuro  to-cinza-escuro min-h-screen w-full ">
@@ -116,16 +136,16 @@ export default function Report() {
         </div>
       </nav>
       <div className="flex flex-1 items-center justify-center">
-      {renderForm()}
-      <button>
-        <SavePlus className="p-3 w-16 h-16 fixed right-5 bottom-5 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-amarelo-escuro cursor-pointer hover:w-17 hover:h-17 transition-all" />
-      </button>
-      <button>
+        {renderForm()}
+        <button>
+          <SavePlus className="p-3 w-16 h-16 fixed right-5 bottom-5 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-amarelo-escuro cursor-pointer hover:w-17 hover:h-17 transition-all" />
+        </button>
+        <button>
           <SquarePen className="p-3 w-16 h-16 fixed right-5 bottom-25 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-amarelo-escuro cursor-pointer hover:w-17 hover:h-17 transition-all" />
-      </button>
-       <button>
+        </button>
+        <button>
           <Calendar className="p-3 w-16 h-16 fixed right-5 bottom-45 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-amarelo-escuro cursor-pointer hover:w-17 hover:h-17 transition-all" />
-      </button>
+        </button>
       </div>
     </main>
   );

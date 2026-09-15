@@ -13,18 +13,18 @@ export default function FormExpediente() {
         Expediente:
       </h2>
       <section className={`${styles["style-div"]} flex`}>
-        <TextAreaComponent width="w-auto" height="h-auto flex-1" />
-        <TextAreaComponent width="w-auto" height="h-auto flex-1" />
-        <TextAreaComponent width="w-auto" height="h-auto flex-1" />
+        <TextAreaComponent width="w-auto" height="h-30 flex-1" />
+        <TextAreaComponent width="w-auto" height="h-30 flex-1" />
+        <TextAreaComponent width="w-auto" height="h-30 flex-1" />
       </section>
-      <section className={`${styles["style-div"]} flex flex-col`}>
+      <section className={`${styles["style-div"]}  flex flex-col`}>
         <div className="flex w-full gap-2 items-center justify-end">
-          <p className="text-sm ">Falta:</p>
+          <p className=" text-amarelo-claro">Falta:</p>
           <SelectComponent width="w-[40%]" height="h-full"/>
           <InputComponentForm type="text" width="w-[45%]" height="h-full"   />
         </div>
         <div className="flex w-full items-center gap-2 justify-center" >
-          <p className="text-sm">Atraso:</p>
+          <p className=" text-amarelo-claro">Atraso:</p>
           <SelectComponent width="w-[45%]" height="h-full" />
           <p>De:</p>
           <TimeComponent />
@@ -33,7 +33,7 @@ export default function FormExpediente() {
         </div>
         <div className="flex w-full items-center justify-around " >
           <div className="flex w-[60%] justify-center  gap-2" >
-            <p className="text-sm">Férias:</p>
+            <p className=" text-amarelo-claro">Férias:</p>
             <SelectComponent width="w-full" height="h-full" />
           </div>
           <div className="flex gap-2">
@@ -42,7 +42,18 @@ export default function FormExpediente() {
           </div>
         </div>
         <div className="flex w-full gap-2 items-center justify-end " >
-          <p className="text-sm pl-5">Retorno de férias:</p>
+          <p className=" pl-5 text-amarelo-claro">Retorno de férias:</p>
+          <SelectComponent width="grow" height="h-full" />
+        </div>
+         <div className="flex w-full gap-2 items-center justify-end  " >
+          <p className=" pl-5 text-amarelo-claro">Atestado:</p>
+          <SelectComponent width="grow" height="h-full" />
+          <p>De:</p>
+          <InputComponentForm type="number" width="w-[10%]" height="h-full" />
+          <p>dias.</p>
+        </div>
+         <div className="flex w-full gap-2 items-center justify-end " >
+          <p className=" pl-5 text-amarelo-claro">Retorno de atestado:</p>
           <SelectComponent width="grow" height="h-full" />
         </div>
       </section>
