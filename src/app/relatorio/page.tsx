@@ -17,6 +17,9 @@ import FormRevezamento from "../components/forms/FormRevezamento";
 import FormRotinaDiaria from "../components/forms/FormRotinaDiaria";
 import FormEntradaPresos from "../components/forms/FormEntradaSaidaPresos";
 import FormMudancaCela from "../components/forms/FormMudancaCela";
+import FormEscoltaPreso from "../components/forms/FormEscoltaPreso";
+import FormSigo from "../components/forms/FormSigo";
+import FormInclusaoRetorno from "../components/forms/FormInclusaoRetorno";
 
 export default function Report() {
   /**
@@ -27,11 +30,11 @@ export default function Report() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [nickname, setNickname] = useState("");
   const searchParams = useSearchParams();
-  const [itemActive, setItemActive] = useState("16- Mudança de cela operacional");
+  const [itemActive, setItemActive] = useState("19 - Inclusão/Retorno");
 
   useEffect(() => {
     if (!dialogArmamentoActive) {
-      setItemActive("16- Mudança de cela operacional");
+      setItemActive("19 - Inclusão/Retorno");
     }
   }, [dialogArmamentoActive]);
 
@@ -74,8 +77,14 @@ export default function Report() {
         return <FormRotinaDiaria />;
       case "15- Entrada/Saída de Presos":
         return <FormEntradaPresos />;
-      case "16- Mudança de cela operacional":
+      case "16- Mudança de cela/Pedido Seguro":
         return <FormMudancaCela />;
+      case "17- Escolta de Presos":
+        return <FormEscoltaPreso />
+      case "18 - SIGO":
+        return <FormSigo/>
+      case "19 - Inclusão/Retorno":
+        return <FormInclusaoRetorno/>
       default:
         return null;
     }
@@ -101,7 +110,10 @@ export default function Report() {
     "12- Revezamento",
     "13-14 Rotina Diária",
     "15- Entrada/Saída de Presos",
-    "16- Mudança de cela operacional",
+    "16- Mudança de cela/Pedido Seguro",
+    "17- Escolta de Presos",
+    "18 - SIGO",
+    "19 - Inclusão/Retorno"
   ];
   return (
     <main className="flex flex-col bg-linear-to-b from-cinza-maisescuro  to-cinza-escuro min-h-screen w-full ">

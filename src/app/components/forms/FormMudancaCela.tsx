@@ -12,9 +12,13 @@ interface Setores {
 }
 
 interface FormMudancaState {
-  1: {de: Setores, para: Setores};
-  2: {de: Setores, para: Setores}
+  1: FormMudancaCampos;
+  2: FormMudancaCampos
 }
+interface FormMudancaCampos {
+  de: Setores, para: Setores
+}
+ 
 
 export default function FormMudancaCela() {
   const [data, setData] = useState<FormMudancaState>({
@@ -51,14 +55,18 @@ export default function FormMudancaCela() {
 
     const [numero, bloco , campo] = name.split(".");
 
-    const blocoValido = bloco as keyof FormMudancaState;
+    const numeroValido = numero as keyof FormMudancaState
+    const blocoValido = bloco as keyof FormMudancaCampos;
+    const campoValido = campo as keyof Setores;
+    
 
     setData((prev) => ({
       ...prev,
-      [numero]: {
-        ...prev[blocoValido],
-        [bloco] : {
-          ...prev[blocoValido]
+      [numeroValido]: {
+        ...prev[numeroValido],
+        [blocoValido] : {
+          ...prev[numeroValido][blocoValido],
+          [campo]: value
         } 
       },
     }));
@@ -103,7 +111,7 @@ export default function FormMudancaCela() {
                 type="text"
                 width="w-[80%]"
                 onChange={handleChange}
-                name="de.sol"
+                name="1.de.sol"
               >
                 {["", "1A", "2A", "3A", "1B", "2B", "3B", "DISC", "ALA G"].map(
                   (e) => {
@@ -126,7 +134,7 @@ export default function FormMudancaCela() {
                 type="text"
                 width="w-[80%]"
                 onChange={handleChange}
-                name="de.cela"
+                name="1.de.cela"
               >
                 {["", "1", "2", "3", "4", "5", "6"].map((e) => {
                   return (
@@ -150,7 +158,7 @@ export default function FormMudancaCela() {
                 type="text"
                 width="w-[80%]"
                 onChange={handleChange}
-                name="para.pav"
+                name="1.para.pav"
               >
                 {["", "I", "II"].map((e) => {
                   return (
@@ -171,7 +179,7 @@ export default function FormMudancaCela() {
                 type="text"
                 width="w-[80%]"
                 onChange={handleChange}
-                name="para.sol"
+                name="1.para.sol"
               >
                 {["", "1A", "2A", "3A", "1B", "2B", "3B", "DISC", "ALA G"].map(
                   (e) => {
@@ -194,7 +202,7 @@ export default function FormMudancaCela() {
                 type="text"
                 width="w-[80%]"
                 onChange={handleChange}
-                name="para.cela"
+                name="1.para.cela"
               >
                 {["", "1", "2", "3", "4", "5", "6"].map((e) => {
                   return (
@@ -229,7 +237,7 @@ export default function FormMudancaCela() {
                 type="text"
                 width="w-[80%]"
                 onChange={handleChange}
-                name="de.pav"
+                name="2.de.pav"
               >
                 {["", "I", "II"].map((e) => {
                   return (
@@ -250,7 +258,7 @@ export default function FormMudancaCela() {
                 type="text"
                 width="w-[80%]"
                 onChange={handleChange}
-                name="de.sol"
+                name="2.de.sol"
               >
                 {["", "1A", "2A", "3A", "1B", "2B", "3B", "DISC", "ALA G"].map(
                   (e) => {
@@ -273,7 +281,7 @@ export default function FormMudancaCela() {
                 type="text"
                 width="w-[80%]"
                 onChange={handleChange}
-                name="de.cela"
+                name="2.de.cela"
               >
                 {["", "1", "2", "3", "4", "5", "6"].map((e) => {
                   return (
@@ -297,7 +305,7 @@ export default function FormMudancaCela() {
                 type="text"
                 width="w-[80%]"
                 onChange={handleChange}
-                name="para.pav"
+                name="2.para.pav"
               >
                 {["", "I", "II"].map((e) => {
                   return (
@@ -318,7 +326,7 @@ export default function FormMudancaCela() {
                 type="text"
                 width="w-[80%]"
                 onChange={handleChange}
-                name="para.sol"
+                name="2.para.sol"
               >
                 {["", "1A", "2A", "3A", "1B", "2B", "3B", "DISC", "ALA G"].map(
                   (e) => {
@@ -341,7 +349,7 @@ export default function FormMudancaCela() {
                 type="text"
                 width="w-[80%]"
                 onChange={handleChange}
-                name="para.cela"
+                name="2.para.cela"
               >
                 {["", "1", "2", "3", "4", "5", "6"].map((e) => {
                   return (
