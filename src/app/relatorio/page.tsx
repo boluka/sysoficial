@@ -20,6 +20,7 @@ import FormMudancaCela from "../components/forms/FormMudancaCela";
 import FormEscoltaPreso from "../components/forms/FormEscoltaPreso";
 import FormSigo from "../components/forms/FormSigo";
 import FormInclusaoRetorno from "../components/forms/FormInclusaoRetorno";
+import FormDadosFinanis from "../components/forms/FormDadosFinais";
 
 export default function Report() {
   /**
@@ -30,11 +31,11 @@ export default function Report() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [nickname, setNickname] = useState("");
   const searchParams = useSearchParams();
-  const [itemActive, setItemActive] = useState("19 - Inclusão/Retorno");
+  const [itemActive, setItemActive] = useState("20 - Dados Finais");
 
   useEffect(() => {
     if (!dialogArmamentoActive) {
-      setItemActive("19 - Inclusão/Retorno");
+      setItemActive("20 - Dados Finais");
     }
   }, [dialogArmamentoActive]);
 
@@ -85,6 +86,8 @@ export default function Report() {
         return <FormSigo/>
       case "19 - Inclusão/Retorno":
         return <FormInclusaoRetorno/>
+      case "20 - Dados Finais":
+        return <FormDadosFinanis/>
       default:
         return null;
     }
@@ -113,7 +116,8 @@ export default function Report() {
     "16- Mudança de cela/Pedido Seguro",
     "17- Escolta de Presos",
     "18 - SIGO",
-    "19 - Inclusão/Retorno"
+    "19 - Inclusão/Retorno",
+    "20 - Dados Finais"
   ];
   return (
     <main className="flex flex-col bg-linear-to-b from-cinza-maisescuro  to-cinza-escuro min-h-screen w-full ">
