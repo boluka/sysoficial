@@ -32,9 +32,9 @@ export default function Forms({ children }: { children?: ReactNode }) {
   return (
     
     <FormDefault>
-      <h1 className="text-center bg-cinza-escuro text-amarelo-claro text-[1.3em] font-bold rounded-[5px]">
+      <h2 className="text-center bg-cinza-escuro text-amarelo-claro text-[1.3em] font-bold rounded-[5px]">
         Recebimento
-      </h1>
+      </h2>
       <div
         className={`${styles["style-div"]} flex justify-center items-center`}
       >

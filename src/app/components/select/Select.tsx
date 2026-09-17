@@ -1,7 +1,7 @@
 
-export default function SelectComponent({children, width, height, name, value, onChange}: any) {
+export default function SelectComponent({children, width, height, name, value, onChange, styles}: any) {
 
-    return (<select name={name} value={value} id="" className={`${width} ${height} text-sm cursor-pointer border border-amarelo-escuro rounded-[5px] outline-none `} onChange={onChange} >
+    return (<select name={name} value={value} id="" className={`${width} ${height} text-sm cursor-pointer border border-amarelo-escuro rounded-[5px] outline-none ${styles} `}  onChange={onChange} >
                 {children}
             </select>)
 }
