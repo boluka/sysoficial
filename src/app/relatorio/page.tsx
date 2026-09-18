@@ -22,6 +22,7 @@ import FormSigo from "../components/forms/FormSigo";
 import FormInclusaoRetorno from "../components/forms/FormInclusaoRetorno";
 import FormDadosFinanis from "../components/forms/FormDadosFinais";
 import FormEncerramento from "../components/forms/FormEncerramento";
+import FormAssinatura from "../components/forms/FormAssinatura";
 
 export default function Report() {
   /**
@@ -32,11 +33,11 @@ export default function Report() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [nickname, setNickname] = useState("");
   const searchParams = useSearchParams();
-  const [itemActive, setItemActive] = useState("21 - Encerramento");
+  const [itemActive, setItemActive] = useState("22 - Encerramento");
 
   useEffect(() => {
     if (!dialogArmamentoActive) {
-      setItemActive("21 - Encerramento");
+      setItemActive("22 - Encerramento");
     }
   }, [dialogArmamentoActive]);
 
@@ -89,7 +90,9 @@ export default function Report() {
         return <FormInclusaoRetorno/>
       case "20 - Dados Finais":
         return <FormDadosFinanis/>
-      case "21 - Encerramento":
+      case "21 - Assinatura":
+        return <FormAssinatura/>
+      case "22 - Encerramento":
         return <FormEncerramento/>
       default:
         return null;
@@ -121,7 +124,8 @@ export default function Report() {
     "18 - SIGO",
     "19 - Inclusão/Retorno",
     "20 - Dados Finais",
-    "21 - Encerramento"
+    "21 - Assinatura",
+    "22 - Encerramento"
   ];
   return (
     <main className="flex flex-col bg-linear-to-b from-cinza-maisescuro  to-cinza-escuro min-h-screen w-full ">

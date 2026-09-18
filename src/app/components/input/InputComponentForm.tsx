@@ -4,7 +4,7 @@ interface Props {
     [border?:string , background?:string, text?:string]
     width?: string;
     height?: string
-    
+    styles?: string
 }
 
 export default function InputComponentForm({type, colors = [], ...props}:Props) {
@@ -13,9 +13,9 @@ export default function InputComponentForm({type, colors = [], ...props}:Props) 
         background = 'cinza-escuro',
         text = 'white',
      ] = colors;
-     const {width = 'auto', height = 'auto'} = props
+     const {width = 'auto', height = 'auto', styles = null} = props
      
     return (
-        <input type={type} className={`outline-0 ${width} ${height} border p-0.5 rounded-[5px] border-${border} bg-${background} text-${text} min-w-0 text-sm indent-1` } min='0' />
+        <input type={type} className={`outline-0 ${width} ${height} border p-0.5 rounded-[5px] border-${border} bg-${background} text-${text} min-w-0 text-sm indent-1 ${styles}` } min='0' />
     )
 }
