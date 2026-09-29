@@ -11,20 +11,36 @@ export default function Home() {
   const [passActive, setPassActive] = useState({text: "", isActive: false});
   const router = useRouter();
 
-  function login (e: React.SubmitEvent) {
+  async function login (e: React.SubmitEvent) {
     e.preventDefault();
-    
-    const usuarioValido = "admin";
-    const senhaValida = "12345";
 
-    if(userActive.text === usuarioValido && passActive.text === senhaValida){
-      document.cookie = "sys_session=token_secreto_agepen; path=/; max-age=3600; SameSite=Strict;"
-       console.log("Usuario validado")
-       router.push(`/relatorio?nome=${usuarioValido}`)
-       
-    } else {
-      console.log("Usuário errado!");
+    const data = {
+      user: userActive.text,
+      password: passActive.text
     }
+    const result = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+     const dados = await result.json();
+
+      if (result.ok) {
+        console.log('Login efetuado com sucesso:', dados);
+        // Aqui você salva o token/cookie ou redireciona o usuário
+      } else {
+        alert(dados.erro || 'Erro ao fazer login');
+      }
+    // if(userActive.text === usuarioValido && passActive.text === senhaValida){
+    //   document.cookie = "sys_session=token_secreto_agepen; path=/; max-age=3600; SameSite=Strict;"
+    //    console.log("Usuario validado")
+    //    router.push(`/relatorio?nome=${usuarioValido}`)
+       
+    // } else {
+    //   console.log("Usuário errado!");
+    // }
   }
 
   return (<main className="grid grid-rows-[1fr_auto] min-h-screen min-w-screen items-center bg-linear-to-b from-cinza-escuro  to-cinza-maisescuro">
