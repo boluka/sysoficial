@@ -1,32 +1,33 @@
 // src/middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { jwtVerify } from 'jose';
 
-export function proxy(request: NextRequest) {
-  // 1. Buscamos o token de login guardado nos Cookies do navegador
-  const token = request.cookies.get('sys_session')?.value;
-
-  // 2. Pegamos o caminho (URL) que o usuário está tentando acessar
+export async function proxy(request: NextRequest) {
+  const secret = new TextEncoder().encode(process.env.JWT_SECRET)
+  const token = request.cookies.get('auth_token')?.value;
   const { pathname } = request.nextUrl;
+  let isTokenValid = false;
+  if(token){
+    try {
+      await jwtVerify(token, secret);
+      isTokenValid = true;
+    }catch(error){
+      isTokenValid = false
+    }
+  }
 
-  if (token && pathname === '/') {
+  if (isTokenValid && pathname === '/') {
     return NextResponse.redirect(new URL('/relatorio', request.url));
   }
-  // 3. CENÁRIO A: O usuário NÃO está logado e tenta acessar páginas internas protegidas
-  // Ele é barrado antes mesmo de conectar no PostgreSQL e redirecionado para o Login (Home)
-  if (!token && pathname.startsWith('/relatorio')) {
+  if (!isTokenValid && pathname.startsWith('/relatorio')) {
     return NextResponse.redirect(new URL('/', request.url));
   }
-
-  // Se passou nas checagens, permite que a navegação continue normalmente
   return NextResponse.next();
 }
-
-// 5. O CONFIG: Define EXATAMENTE o que o Middleware deve vigiar
-// Isso impede que ele rode em arquivos de imagem (como a logo da AGEPEN) ou estilos, economizando processamento!
 export const config = {
   matcher: [
-    '/',               // Monitora a tela de Login
-    '/relatorio/:path*' // Monitora a página de produtos e qualquer subpasta dela
+    '/', 
+    '/relatorio/:path*' 
   ],
 };
