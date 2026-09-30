@@ -23,6 +23,8 @@ import FormInclusaoRetorno from "../components/forms/FormInclusaoRetorno";
 import FormDadosFinanis from "../components/forms/FormDadosFinais";
 import FormEncerramento from "../components/forms/FormEncerramento";
 import FormAssinatura from "../components/forms/FormAssinatura";
+import { useRouter } from "next/navigation";
+import { SucessAuth } from "../types/auth";
 
 export default function Report() {
   /**
@@ -34,6 +36,7 @@ export default function Report() {
   const [nickname, setNickname] = useState("");
   const searchParams = useSearchParams();
   const [itemActive, setItemActive] = useState("22 - Encerramento");
+  const router = useRouter();
 
   useEffect(() => {
     if (!dialogArmamentoActive) {
@@ -127,6 +130,15 @@ export default function Report() {
     "21 - Assinatura",
     "22 - Encerramento"
   ];
+  const logout = async () => {
+      const result = await fetch('/api/auth/logout', {
+        method: "POST"
+      })
+      const data = await result.json() as SucessAuth
+      if(data.sucess){
+        router.push('/');
+      }
+  }
   return (
     <main className="flex flex-col bg-linear-to-b from-cinza-maisescuro  to-cinza-escuro min-h-screen w-full ">
       <nav className="flex  justify-between items-center bg-cinza-escuro p-1 gap-4">
@@ -155,8 +167,9 @@ export default function Report() {
             <ChevronRight className="text-amarelo-claro w-8 h-8" />
           </button>
         </div>
-        <div className="text-amarelo-claro shrink-0">
-          Bem-vindo {nickname} !
+        <div className="flex gap-5 items-center text-amarelo-claro shrink-0 mr-1">
+          <p>Bem-vindo {nickname} !</p>
+          <button className="text-cinza-escuro text-sm font-bold w-15 rounded-[5px] bg-amarelo-claro p-1 shadow-black shadow-[1px_1px_4px] cursor-pointer hover:text-amarelo-claro hover:bg-cinza-maisescuro" onClick={logout}>Sair</button>
         </div>
       </nav>
       <div className="flex flex-1 items-center justify-center">
