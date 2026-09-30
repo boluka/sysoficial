@@ -3,6 +3,7 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  RefreshCcw,
   SavePlus,
   SquarePen,
 } from "lucide-react";
@@ -30,17 +31,19 @@ export default function Report() {
   /**
    * Não esquecer de corrigir o uso de tokens com a biblioteca correta
    */
+  
   const refDialogArmamento = useRef<HTMLDialogElement>(null);
   const [dialogArmamentoActive, setDialogArmamentoActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [nickname, setNickname] = useState("");
   const searchParams = useSearchParams();
-  const [itemActive, setItemActive] = useState("22 - Encerramento");
+  const [itemActive, setItemActive] = useState("1- Recebimento");
+  const [progress, setProgress] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     if (!dialogArmamentoActive) {
-      setItemActive("22 - Encerramento");
+      setItemActive("1- Recebimento");
     }
   }, [dialogArmamentoActive]);
 
@@ -86,17 +89,17 @@ export default function Report() {
       case "16- Mudança de cela/Pedido Seguro":
         return <FormMudancaCela />;
       case "17- Escolta de Presos":
-        return <FormEscoltaPreso />
+        return <FormEscoltaPreso />;
       case "18 - SIGO":
-        return <FormSigo/>
+        return <FormSigo />;
       case "19 - Inclusão/Retorno":
-        return <FormInclusaoRetorno/>
+        return <FormInclusaoRetorno />;
       case "20 - Dados Finais":
-        return <FormDadosFinanis/>
+        return <FormDadosFinanis />;
       case "21 - Assinatura":
-        return <FormAssinatura/>
+        return <FormAssinatura />;
       case "22 - Encerramento":
-        return <FormEncerramento/>
+        return <FormEncerramento />;
       default:
         return null;
     }
@@ -128,17 +131,18 @@ export default function Report() {
     "19 - Inclusão/Retorno",
     "20 - Dados Finais",
     "21 - Assinatura",
-    "22 - Encerramento"
+    "22 - Encerramento",
   ];
   const logout = async () => {
-      const result = await fetch('/api/auth/logout', {
-        method: "POST"
-      })
-      const data = await result.json() as SucessAuth
-      if(data.sucess){
-        router.push('/');
-      }
-  }
+    setProgress(true);
+    const result = await fetch("/api/auth/logout", {
+      method: "POST",
+    });
+    const data = (await result.json()) as SucessAuth;
+    if (data.sucess) {
+      router.push("/");
+    }
+  };
   return (
     <main className="flex flex-col bg-linear-to-b from-cinza-maisescuro  to-cinza-escuro min-h-screen w-full ">
       <nav className="flex  justify-between items-center bg-cinza-escuro p-1 gap-4">
@@ -169,7 +173,13 @@ export default function Report() {
         </div>
         <div className="flex gap-5 items-center text-amarelo-claro shrink-0 mr-1">
           <p>Bem-vindo {nickname} !</p>
-          <button className="text-cinza-escuro text-sm font-bold w-15 rounded-[5px] bg-amarelo-claro p-1 shadow-black shadow-[1px_1px_4px] cursor-pointer hover:text-amarelo-claro hover:bg-cinza-maisescuro" onClick={logout}>Sair</button>
+          <div
+            className="flex items-center justify-center gap-1 text-cinza-escuro text-sm font-bold w-15 rounded-[5px] bg-amarelo-claro p-1 shadow-black shadow-[1px_1px_4px] cursor-pointer hover:text-amarelo-claro hover:bg-cinza-maisescuro"
+            onClick={logout}
+          >
+            <p>Sair</p>
+            <RefreshCcw className={`w-4 animate-spin ${!progress && 'hidden'}`}/>
+          </div>
         </div>
       </nav>
       <div className="flex flex-1 items-center justify-center">

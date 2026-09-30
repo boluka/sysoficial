@@ -2,12 +2,13 @@
 import Image from "next/image";
 import logoAgepen from "../../public/logoagepen.png";
 import InputDeDados from "./components/inputs";
-import { UserRound, LockKeyholeOpen } from "lucide-react";
+import { UserRound, LockKeyholeOpen, RefreshCw, RotateCcw, DatabaseArrowDown, RefreshCcw, Loader2, RotateCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [userActive, setUserActive] = useState({ text: "", isActive: false });
+  const [progress, setProgress] = useState(false);
   const [passActive, setPassActive] = useState({ text: "", isActive: false });
   const [showError, setShowError] = useState({ msg: "", show: false });
   const refErrorDiv = useRef<HTMLDivElement>(null);
@@ -22,7 +23,7 @@ export default function Home() {
 
   async function login(e: React.SubmitEvent) {
     e.preventDefault();
-
+    setProgress(true);
     const result = await fetch("/api/auth/login", {
       method: "POST",
       headers: {
@@ -35,11 +36,12 @@ export default function Home() {
     });
 
     const dados = await result.json();
-    console.log(dados)
+    console.log(dados);
     if (dados.sucess) {
       router.push(`/relatorio?nome=${userActive.text}`);
     } else {
       if (dados.erro) {
+        setProgress(false);
         setShowError({ msg: dados.erro, show: true });
       }
     }
@@ -95,12 +97,11 @@ export default function Home() {
               change={setPassActive}
             />
           </div>
-          <button
-            type="submit"
-            className="bg-amarelo-claro p-2 w-full cursor-pointer rounded-[5px] mt-2 md:p-3 md:my-3  font-bold hover:bg-cinza-escuro hover:text-amarelo-claro hover:border hover:border-[#636363]"
-          >
-            Login
-          </button>
+          <div className="flex gap-2 justify-center bg-amarelo-claro p-2 w-full cursor-pointer rounded-[5px] mt-2 md:p-3 md:my-3  font-bold hover:bg-cinza-escuro hover:text-amarelo-claro hover:border hover:border-[#636363] ">
+            <button type="submit" className={`${!progress && 'w-full'} cursor-pointer`}>Login</button>
+            <RefreshCcw className={`animate-spin ${!progress && 'hidden'}`}/>
+            <input type="submit" value="" />
+          </div>
           <div
             ref={refErrorDiv}
             className={`text-white text-center bg-red-900 border border-red-500 rounded-[5px] p-1.5 duration-500 starting:opacity-0  ${showError.show ? " opacity-100 max-h-25" : "opacity-0 max-h-0 overflow-hidden"}`}
