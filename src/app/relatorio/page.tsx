@@ -26,29 +26,41 @@ import FormEncerramento from "../components/forms/FormEncerramento";
 import FormAssinatura from "../components/forms/FormAssinatura";
 import { useRouter } from "next/navigation";
 import { SucessAuth } from "../types/auth";
+import DialogInfo, { dialogMsg } from "../components/dialog/DialogInfo";
 
 export default function Report() {
-  /**
-   * Não esquecer de corrigir o uso de tokens com a biblioteca correta
-   */
-  
-  const refDialogArmamento = useRef<HTMLDialogElement>(null);
+  const dialogInfo = useRef<HTMLDialogElement>(null);
   const [dialogArmamentoActive, setDialogArmamentoActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [nickname, setNickname] = useState("");
   const searchParams = useSearchParams();
-  const [itemActive, setItemActive] = useState("1- Recebimento");
+  const [itemActive, setItemActive] = useState({
+    aba: "1- Recebimento",
+    API: "/api/auth/form-recebimento",
+  });
   const [progress, setProgress] = useState(false);
+
+  const [showDialog, setShowDialog] = useState(false);
+
   const router = useRouter();
 
-  useEffect(() => {
-    if (!dialogArmamentoActive) {
-      setItemActive("1- Recebimento");
-    }
-  }, [dialogArmamentoActive]);
+  const [dialogInfoMsg, setDialogInfoMsg] = useState<dialogMsg>("Buscando dados de hoje...");
+
+
+  const [cacheFormRecebimento, setCacheFormRecebimento] =
+    useState<SucessAuth | null>(null);
+
+  // useEffect(() => {
+  //   if (!dialogArmamentoActive) {
+  //     setItemActive({
+  //       aba: "1- Recebimento",
+  //       API: "/api/auth/form-recebimento",
+  //     });
+  //   }
+  // }, [dialogArmamentoActive]);
 
   useEffect(() => {
-    // dialogTop.current?.showModal();
+    dialogInfo.current?.close()
     const user = searchParams.get("nome");
     if (user) {
       localStorage.setItem("nome", user);
@@ -61,8 +73,55 @@ export default function Report() {
     }
   }, []);
 
+  useEffect(() => {
+    dialogInfo.current?.show();
+    setShowDialog(true);
+    async function fecthData(): Promise<SucessAuth | null> {
+      try {
+        const result = await fetch(itemActive.API);
+        const data = (await result.json()) as SucessAuth;
+        return data;
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        return null;
+      }
+    }
+    switch (itemActive.aba) {
+      
+      case "1- Recebimento":
+        if (!cacheFormRecebimento) {
+          fecthData().then((e) => {
+            if(e?.sucess){
+
+              setDialogInfoMsg("Dados encontrados com sucesso!");
+              setCacheFormRecebimento(e);
+            } else {
+              setDialogInfoMsg("Relatório do dia não encontrado");
+              
+              setTimeout(() => {
+                setShowDialog(false)
+                setTimeout(() => {
+                dialogInfo.current?.close();}, 5000)
+              }, 5000);
+            }
+            
+          });
+        }
+        break;
+      case "1.1- Armamento":
+        if (!cacheFormRecebimento) {
+          dialogInfo.current?.show();
+          fecthData().then((e) => {
+            setCacheFormRecebimento(e);
+          });
+        }
+      default:
+        null;
+    }
+  }, [itemActive]);
+
   function renderForm() {
-    switch (itemActive) {
+    switch (itemActive.aba) {
       case "1- Recebimento":
         return <FormRecebimento />;
       case "1.1- Armamento":
@@ -117,21 +176,27 @@ export default function Report() {
   }
 
   const elementLi = [
-    "1- Recebimento",
-    "1.1- Armamento",
-    "2- Equipe",
-    "3- Trocas / HE",
-    "05- 11 Expediente",
-    "12- Revezamento",
-    "13-14 Rotina Diária",
-    "15- Entrada/Saída de Presos",
-    "16- Mudança de cela/Pedido Seguro",
-    "17- Escolta de Presos",
-    "18 - SIGO",
-    "19 - Inclusão/Retorno",
-    "20 - Dados Finais",
-    "21 - Assinatura",
-    "22 - Encerramento",
+    { aba: "1- Recebimento", API: "/api/auth/form-recebimento" },
+    { aba: "1.1- Armamento", API: "/api/auth/form-armamento" },
+    { aba: "2- Equipe", API: "/api/auth/form-equipe" },
+    { aba: "3- Trocas / HE", API: "/api/auth/form-trocas-he" },
+    { aba: "05- 11 Expediente", API: "/api/auth/form-expediente" },
+    { aba: "12- Revezamento", API: "/api/auth/form-revezamento" },
+    { aba: "13-14 Rotina Diária", API: "/api/auth/form-rotina-diaria" },
+    {
+      aba: "15- Entrada/Saída de Presos",
+      API: "/api/auth/form-entrada-presos",
+    },
+    {
+      aba: "16- Mudança de cela/Pedido Seguro",
+      API: "/api/auth/form-mudanca-cela",
+    },
+    { aba: "17- Escolta de Presos", API: "/api/auth/form-escolta-preso" },
+    { aba: "18 - SIGO", API: "/api/auth/form-sigo" },
+    { aba: "19 - Inclusão/Retorno", API: "/api/auth/form-inclusao-retorno" },
+    { aba: "20 - Dados Finais", API: "/api/auth/form-dados-finais" },
+    { aba: "21 - Assinatura", API: "/api/auth/form-assinatura" },
+    { aba: "22 - Encerramento", API: "/api/auth/form-encerramento" },
   ];
   const logout = async () => {
     setProgress(true);
@@ -155,14 +220,14 @@ export default function Report() {
             className="flex overflow-x-auto scroll-smooth scrollbar-none w-full  px-2  gap-3 items-center "
           >
             {elementLi.map((e) => {
-              const active = itemActive === e;
+              const active = itemActive.aba === e.aba;
               return (
                 <div
-                  key={e}
+                  key={e.aba}
                   className={`${active ? "bg-amarelo-claro text-cinza-escuro font-bold " : "bg-cinza-escuro text-amarelo-claro"} p-3 my-1 rounded-[5px] text-sm cursor-pointer shadow-black shadow-[1px_1px_4px] whitespace-nowrap shrink-0 `}
                   onClick={() => setItemActive(e)}
                 >
-                  {e}
+                  {e.aba}
                 </div>
               );
             })}
@@ -178,7 +243,9 @@ export default function Report() {
             onClick={logout}
           >
             <p>Sair</p>
-            <RefreshCcw className={`w-4 animate-spin ${!progress && 'hidden'}`}/>
+            <RefreshCcw
+              className={`w-4 animate-spin ${!progress && "hidden"}`}
+            />
           </div>
         </div>
       </nav>
@@ -194,6 +261,8 @@ export default function Report() {
           <Calendar className="p-3 w-16 h-16 fixed right-5 bottom-45 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-amarelo-escuro cursor-pointer hover:w-17 hover:h-17 transition-all" />
         </button>
       </div>
+      <DialogInfo mensagem={dialogInfoMsg} ref={dialogInfo} show={showDialog} />
+      
     </main>
   );
 }

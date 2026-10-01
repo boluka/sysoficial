@@ -30,15 +30,7 @@ export default function Forms({ children }: { children?: ReactNode }) {
       }
     }
   }, [situationTwo]);
-  useEffect(() => {
-    async function fecthData() {
-      const result = await fetch("/api/auth/form-recebimento");
-      const data = (await result.json()) as SucessAuth;
-      if(data.sucess) {
-          
-      }
-    }
-  }, []);
+ 
   return (
     <FormDefault>
       <h2 className="text-center bg-cinza-escuro text-amarelo-claro text-[1.3em] font-bold rounded-[5px]">
