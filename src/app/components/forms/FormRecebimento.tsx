@@ -7,6 +7,7 @@ import SelectComponent from "../select/Select";
 import InputComponentForm from "../input/InputComponentForm";
 import TextAreaComponent from "../textarea/TextAreaComponent";
 import FormDefault from "./FormDefault";
+import { SucessAuth } from "@/app/types/auth";
 
 export default function Forms({ children }: { children?: ReactNode }) {
   const [date, setDate] = useState("");
@@ -29,8 +30,16 @@ export default function Forms({ children }: { children?: ReactNode }) {
       }
     }
   }, [situationTwo]);
+  useEffect(() => {
+    async function fecthData() {
+      const result = await fetch("/api/auth/form-recebimento");
+      const data = (await result.json()) as SucessAuth;
+      if(data.sucess) {
+          
+      }
+    }
+  }, []);
   return (
-    
     <FormDefault>
       <h2 className="text-center bg-cinza-escuro text-amarelo-claro text-[1.3em] font-bold rounded-[5px]">
         Recebimento
@@ -70,8 +79,7 @@ export default function Forms({ children }: { children?: ReactNode }) {
         com o efetivo carcerário de
         <InputComponentForm type="number" width="w-[15%]" height="h-5" />
         e em trânsito de
-        <InputComponentForm type="number" width="w-[15%]" height="h-5" />
-        .
+        <InputComponentForm type="number" width="w-[15%]" height="h-5" />.
       </div>
       <div className={`${styles["style-div"]} `}>
         <div className="flex items-center justify-center gap-3">

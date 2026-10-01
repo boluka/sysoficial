@@ -9,12 +9,33 @@ datasource db {
 
 model Usuario {
   id           Int       @id @default(autoincrement())
+  name         String?
   user         String    @unique
   password     String
   phone        String?
   email        String?
   role         Role      @default(USER)
   dateCreation DateTime? @default(now())
+}
+
+model RelatorioDoDia {
+  id              String           @id @default(uuid())
+  data            String           @unique
+  formRecebimento FormRecebimento?
+}
+
+model FormRecebimento {
+  id            String         @id @default(uuid())
+  plantao       String
+  chefeReceb    String
+  chefeEntrega  String
+  chefeAuxiliar String
+  efetivoCarc   Int
+  transitoCarc  Int
+  mat_carga     String
+  mat_belico    String
+  relatorioId   String         @unique
+  relatorio     RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
