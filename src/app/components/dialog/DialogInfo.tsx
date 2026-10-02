@@ -1,12 +1,14 @@
 import { CircleCheck, CircleX, DatabaseArrowDown } from "lucide-react";
 
-export type dialogMsg = 'Buscando dados de hoje...' | 'Relatório do dia não encontrado' | 'Dados encontrados com sucesso!';
+export type dialogMsg = 'Buscando dados de hoje...' | 'Relatório do dia não encontrado' |  'Erro ao buscar o relatório do dia' |'Dados encontrados com sucesso!';
 
 const generateIcon = (msg: dialogMsg) => {
     switch (msg) {
         case 'Buscando dados de hoje...':
             return (<DatabaseArrowDown className="animate-bounce" />);
         case 'Relatório do dia não encontrado':
+            return <CircleX />;
+        case 'Erro ao buscar o relatório do dia':
             return <CircleX />;
         case 'Dados encontrados com sucesso!':
             return <CircleCheck />;

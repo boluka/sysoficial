@@ -1,6 +1,8 @@
 import { prisma } from "@/app/api/prisma-adapter";
 import { SucessAuth } from "@/app/types/auth";
 import { NextResponse } from "next/server";
+import { dialogMsg } from "@/app/components/dialog/DialogInfo";
+import { ObjFormRecebimento } from "@/app/types/form";
 
 export async function GET(request: Request) {
   try {
@@ -15,7 +17,7 @@ export async function GET(request: Request) {
     if (!relatorioDia || !relatorioDia.formRecebimento) {
       return NextResponse.json({
         sucess: false,
-        error: "Relatório do dia não encontrado",
+        error: "Relatório do dia não encontrado" as dialogMsg,
       } as SucessAuth);
     }
     return NextResponse.json(
@@ -26,7 +28,7 @@ export async function GET(request: Request) {
     return NextResponse.json(
       {
         sucess: false,
-        error: "Erro ao buscar o relatório do dia",
+        error: "Erro ao buscar o relatório do dia" as dialogMsg,
       } as SucessAuth,
       { status: 500 },
     );
@@ -34,41 +36,35 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const currentDate = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
+  try {
+    const currentDate = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
 
-  const relatorioDia = await prisma.relatorioDoDia.upsert({
-    where: { data: currentDate },
-    update: {},
-    create: { data: currentDate },
-  });
+    const relatorioDia = await prisma.relatorioDoDia.upsert({
+      where: { data: currentDate },
+      update: {},
+      create: { data: currentDate },
+    });
 
-  const data = await request.json();
-  const {
-    plantao,
-    chefeReceb,
-    chefeEntrega,
-    chefeAuxiliar,
-    efetivoCarc,
-    transitoCarc,
-    mat_carga,
-    mat_belico,
-  } = data;
-
-  const formRecebimento = await prisma.formRecebimento.create({
-    data: {
-      plantao,
-      chefeReceb,
-      chefeEntrega,
-      chefeAuxiliar,
-      efetivoCarc,
-      transitoCarc,
-      mat_carga,
-      mat_belico,
-      relatorioId: relatorioDia.id,
-    },
-  });
-  return NextResponse.json({
-    message: "Formulário de Recebimento criado com sucesso",
-    formRecebimento,
-  });
+    const data = (await request.json()) as ObjFormRecebimento;
+    await prisma.formRecebimento.create({
+      data: {
+        ...data,
+        relatorioId: relatorioDia.id,
+      },
+    });
+    return NextResponse.json(
+      {
+        message: "Formulário de Recebimento criado com sucesso",
+      },
+      { status: 201 },
+    );
+  } catch (error) {
+    return NextResponse.json(
+      {
+        sucess: false,
+        error: "Erro ao submeter o formulário de Recebimento" as dialogMsg,
+      } as SucessAuth,
+      { status: 500 },
+    );
+  }
 }

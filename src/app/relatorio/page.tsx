@@ -27,6 +27,7 @@ import FormAssinatura from "../components/forms/FormAssinatura";
 import { useRouter } from "next/navigation";
 import { SucessAuth } from "../types/auth";
 import DialogInfo, { dialogMsg } from "../components/dialog/DialogInfo";
+import { ObjFormRecebimento } from "@/app/types/form";
 
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
@@ -37,15 +38,19 @@ export default function Report() {
   const [itemActive, setItemActive] = useState({
     aba: "1- Recebimento",
     API: "/api/auth/form-recebimento",
+    obj: {},
   });
   const [progress, setProgress] = useState(false);
 
   const [showDialog, setShowDialog] = useState(false);
 
+  const [dialogInfoMsg, setDialogInfoMsg] = useState<dialogMsg>(
+    "Buscando dados de hoje...",
+  );
+
+  const [lockFecth, setLockFecth] = useState(false);
+
   const router = useRouter();
-
-  const [dialogInfoMsg, setDialogInfoMsg] = useState<dialogMsg>("Buscando dados de hoje...");
-
 
   const [cacheFormRecebimento, setCacheFormRecebimento] =
     useState<SucessAuth | null>(null);
@@ -60,7 +65,7 @@ export default function Report() {
   // }, [dialogArmamentoActive]);
 
   useEffect(() => {
-    dialogInfo.current?.close()
+    dialogInfo.current?.close();
     const user = searchParams.get("nome");
     if (user) {
       localStorage.setItem("nome", user);
@@ -74,8 +79,11 @@ export default function Report() {
   }, []);
 
   useEffect(() => {
+    if (lockFecth) return;
+
     dialogInfo.current?.show();
     setShowDialog(true);
+    setLockFecth(true);
     async function fecthData(): Promise<SucessAuth | null> {
       try {
         const result = await fetch(itemActive.API);
@@ -86,50 +94,57 @@ export default function Report() {
         return null;
       }
     }
+
     switch (itemActive.aba) {
-      
       case "1- Recebimento":
         if (!cacheFormRecebimento) {
           fecthData().then((e) => {
-            if(e?.sucess){
-
+            if (e?.sucess) {
               setDialogInfoMsg("Dados encontrados com sucesso!");
               setCacheFormRecebimento(e);
             } else {
-              setDialogInfoMsg("Relatório do dia não encontrado");
-              
-              setTimeout(() => {
-                setShowDialog(false)
-                setTimeout(() => {
-                dialogInfo.current?.close();}, 5000)
-              }, 5000);
+              setDialogInfoMsg(e?.error as dialogMsg);
             }
-            
+            setTimeout(() => {
+              setShowDialog(false);
+              setTimeout(() => {
+                dialogInfo.current?.close();
+              }, 5000);
+            }, 5000);
           });
         }
         break;
-      case "1.1- Armamento":
-        if (!cacheFormRecebimento) {
-          dialogInfo.current?.show();
-          fecthData().then((e) => {
-            setCacheFormRecebimento(e);
-          });
-        }
+
       default:
         null;
     }
+    setLockFecth(false);
   }, [itemActive]);
+
+  const handleRegister = async () => {
+    const result = await fetch(itemActive.API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(itemActive.obj),
+    });
+    result.json().then((e) => {
+      console.log(e);
+    });
+  };
 
   function renderForm() {
     switch (itemActive.aba) {
       case "1- Recebimento":
-        return <FormRecebimento />;
-      case "1.1- Armamento":
+        function onSave(data: ObjFormRecebimento) {
+          itemActive.obj = data;
+        }
         return (
-          <FormRecebimento>
-            <FormArmamento state={setDialogArmamentoActive}></FormArmamento>
-          </FormRecebimento>
+          <FormRecebimento onSave={onSave} cacheData={cacheFormRecebimento} />
         );
+      case "1.1- Armamento":
+        return;
       case "2- Equipe":
         return <FormEquipe />;
 
@@ -176,27 +191,41 @@ export default function Report() {
   }
 
   const elementLi = [
-    { aba: "1- Recebimento", API: "/api/auth/form-recebimento" },
-    { aba: "1.1- Armamento", API: "/api/auth/form-armamento" },
-    { aba: "2- Equipe", API: "/api/auth/form-equipe" },
-    { aba: "3- Trocas / HE", API: "/api/auth/form-trocas-he" },
-    { aba: "05- 11 Expediente", API: "/api/auth/form-expediente" },
-    { aba: "12- Revezamento", API: "/api/auth/form-revezamento" },
-    { aba: "13-14 Rotina Diária", API: "/api/auth/form-rotina-diaria" },
+    { aba: "1- Recebimento", API: "/api/auth/form-recebimento", obj: {} },
+    { aba: "1.1- Armamento", API: "/api/auth/form-armamento", obj: {} },
+    { aba: "2- Equipe", API: "/api/auth/form-equipe", obj: {} },
+    { aba: "3- Trocas / HE", API: "/api/auth/form-trocas-he", obj: {} },
+    { aba: "05- 11 Expediente", API: "/api/auth/form-expediente", obj: {} },
+    { aba: "12- Revezamento", API: "/api/auth/form-revezamento", obj: {} },
+    {
+      aba: "13-14 Rotina Diária",
+      API: "/api/auth/form-rotina-diaria",
+      obj: {},
+    },
     {
       aba: "15- Entrada/Saída de Presos",
       API: "/api/auth/form-entrada-presos",
+      obj: {},
     },
     {
       aba: "16- Mudança de cela/Pedido Seguro",
       API: "/api/auth/form-mudanca-cela",
+      obj: {},
     },
-    { aba: "17- Escolta de Presos", API: "/api/auth/form-escolta-preso" },
-    { aba: "18 - SIGO", API: "/api/auth/form-sigo" },
-    { aba: "19 - Inclusão/Retorno", API: "/api/auth/form-inclusao-retorno" },
-    { aba: "20 - Dados Finais", API: "/api/auth/form-dados-finais" },
-    { aba: "21 - Assinatura", API: "/api/auth/form-assinatura" },
-    { aba: "22 - Encerramento", API: "/api/auth/form-encerramento" },
+    {
+      aba: "17- Escolta de Presos",
+      API: "/api/auth/form-escolta-preso",
+      obj: {},
+    },
+    { aba: "18 - SIGO", API: "/api/auth/form-sigo", obj: {} },
+    {
+      aba: "19 - Inclusão/Retorno",
+      API: "/api/auth/form-inclusao-retorno",
+      obj: {},
+    },
+    { aba: "20 - Dados Finais", API: "/api/auth/form-dados-finais", obj: {} },
+    { aba: "21 - Assinatura", API: "/api/auth/form-assinatura", obj: {} },
+    { aba: "22 - Encerramento", API: "/api/auth/form-encerramento", obj: {} },
   ];
   const logout = async () => {
     setProgress(true);
@@ -239,7 +268,7 @@ export default function Report() {
         <div className="flex gap-5 items-center text-amarelo-claro shrink-0 mr-1">
           <p>Bem-vindo {nickname} !</p>
           <div
-            className="flex items-center justify-center gap-1 text-cinza-escuro text-sm font-bold w-15 rounded-[5px] bg-amarelo-claro p-1 shadow-black shadow-[1px_1px_4px] cursor-pointer hover:text-amarelo-claro hover:bg-cinza-maisescuro"
+            className="flex items-center justify-center gap-1 text-cinza-escuro text-sm font-bold w-15 rounded-[5px] bg-amarelo-claro p-1 shadow-black shadow-[1px_1px_4px] cursor-pointer hover:text-amarelo-claro hover:bg-cinza-maisescuro transition-all"
             onClick={logout}
           >
             <p>Sair</p>
@@ -249,20 +278,27 @@ export default function Report() {
           </div>
         </div>
       </nav>
-      <div className="flex flex-1 items-center justify-center">
+      
+      <div className="flex flex-col gap-3 flex-1 items-center justify-center">
+        <div className="text-center text-gray-500">
+        <p>Esses dados são relativos a data de: </p>
+      </div>
         {renderForm()}
         <button>
-          <SavePlus className="p-3 w-16 h-16 fixed right-5 bottom-5 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-amarelo-escuro cursor-pointer hover:w-17 hover:h-17 transition-all" />
+          <SavePlus
+            className="p-3 w-16 h-16 fixed right-5 bottom-5 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all"
+            onClick={handleRegister}
+          />
         </button>
         <button>
-          <SquarePen className="p-3 w-16 h-16 fixed right-5 bottom-25 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-amarelo-escuro cursor-pointer hover:w-17 hover:h-17 transition-all" />
+          <SquarePen className="p-3 w-16 h-16 fixed right-5 bottom-25 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all" />
         </button>
         <button>
-          <Calendar className="p-3 w-16 h-16 fixed right-5 bottom-45 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-amarelo-escuro cursor-pointer hover:w-17 hover:h-17 transition-all" />
+          <Calendar className="p-3 w-16 h-16 fixed right-5 bottom-45 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all" />
         </button>
       </div>
-      <DialogInfo mensagem={dialogInfoMsg} ref={dialogInfo} show={showDialog} />
       
+      <DialogInfo mensagem={dialogInfoMsg} ref={dialogInfo} show={showDialog} />
     </main>
   );
 }
