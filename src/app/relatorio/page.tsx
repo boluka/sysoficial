@@ -28,6 +28,7 @@ import { useRouter } from "next/navigation";
 import { SucessAuth } from "../types/auth";
 import DialogInfo, { dialogMsg } from "../components/dialog/DialogInfo";
 import { ObjFormRecebimento } from "@/app/types/form";
+import DialogDate from "../components/dialog/DialogDate";
 
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
@@ -35,6 +36,11 @@ export default function Report() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [nickname, setNickname] = useState("");
   const searchParams = useSearchParams();
+  
+  const [showCalendar, setShowCalendar] = useState(false);
+
+  const [dateCalendar, setDateCalendar] = useState<Date | undefined>(new Date())
+  
   const [itemActive, setItemActive] = useState({
     aba: "1- Recebimento",
     API: "/api/auth/form-recebimento",
@@ -63,6 +69,10 @@ export default function Report() {
   //     });
   //   }
   // }, [dialogArmamentoActive]);
+
+  useEffect(() => {
+    console.log(dateCalendar)
+  }, [dateCalendar])
 
   useEffect(() => {
     dialogInfo.current?.close();
@@ -121,6 +131,7 @@ export default function Report() {
     setLockFecth(false);
   }, [itemActive]);
 
+
   const handleRegister = async () => {
     const result = await fetch(itemActive.API, {
       method: "POST",
@@ -133,6 +144,7 @@ export default function Report() {
       console.log(e);
     });
   };
+
 
   function renderForm() {
     switch (itemActive.aba) {
@@ -278,11 +290,11 @@ export default function Report() {
           </div>
         </div>
       </nav>
-      
+
       <div className="flex flex-col gap-3 flex-1 items-center justify-center">
-        <div className="text-center text-gray-500">
-        <p>Esses dados são relativos a data de: </p>
-      </div>
+       { <div className="text-center text-gray-500">
+          <p>Esses dados são relativos a data de: </p>
+        </div>}
         {renderForm()}
         <button>
           <SavePlus
@@ -293,11 +305,11 @@ export default function Report() {
         <button>
           <SquarePen className="p-3 w-16 h-16 fixed right-5 bottom-25 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all" />
         </button>
-        <button>
+        <button onClick={(e) => {setShowCalendar(true)}}>
           <Calendar className="p-3 w-16 h-16 fixed right-5 bottom-45 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all" />
         </button>
       </div>
-      
+      <DialogDate showCalendar={showCalendar} setShowCalendar={setShowCalendar} setDate={setDateCalendar} date={dateCalendar} />
       <DialogInfo mensagem={dialogInfoMsg} ref={dialogInfo} show={showDialog} />
     </main>
   );

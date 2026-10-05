@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactNode, useEffect, useRef, useState } from "react";
-import DateComponent from "../date/date";
 import styles from "./styles-forms.module.css";
 import SelectComponent from "../select/Select";
 import InputComponentForm from "../input/InputComponentForm";
@@ -13,12 +12,11 @@ import { SucessAuth } from "@/app/types/auth";
 export default function Forms({
   children,
   onSave,
-  cacheData
+  cacheData,
 }: {
   children?: ReactNode;
   onSave: (obj: ObjFormRecebimento) => void;
   cacheData: SucessAuth | null;
-
 }) {
   const [date, setDate] = useState("");
   const optionsSituation = ["Completo e sem alterações", "Incompleto"];
@@ -31,20 +29,39 @@ export default function Forms({
   const [chefeAuxiliar, setChefeAuxiliar] = useState("");
   const [efetivoCarc, setEfetivoCarc] = useState(0);
   const [transitoCarc, setTransitoCarc] = useState(0);
-  const [mat_carga, setMat_carga] = useState<situation>("Completo e sem alterações");
-  const [mat_belico, setMat_belico] = useState<situation>("Completo e sem alterações");
+  const [mat_carga, setMat_carga] = useState<situation>(
+    "Completo e sem alterações",
+  );
+  const [mat_belico, setMat_belico] = useState<situation>(
+    "Completo e sem alterações",
+  );
 
-  const el = useRef<HTMLSelectElement>(null)
+  const el = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
-    if(cacheData){
-      if(cacheData.sucess){
-          const {plantao} = cacheData.payload?.formRecebimento
-          
-          setPlantao(plantao)
+    if (cacheData) {
+      if (cacheData.sucess) {
+        const {
+          plantao,
+          chefeReceb,
+          chefeEntrega,
+          chefeAuxiliar,
+          efetivoCarc,
+          transitoCarc,
+          mat_carga,
+          mat_belico,
+        } = cacheData.payload?.formRecebimento;
+        setPlantao(plantao);
+        setChefeReceb(chefeReceb);
+        setChefeEntrega(chefeEntrega);
+        setChefeAuxiliar(chefeAuxiliar);
+        setEfetivoCarc(efetivoCarc);
+        setTransitoCarc(transitoCarc);
+        setMat_carga(mat_carga);
+        setMat_belico(mat_belico);
       }
     }
-  }, [cacheData])
+  }, [cacheData]);
 
   onSave({
     plantao: plantao,
@@ -53,12 +70,17 @@ export default function Forms({
     chefeAuxiliar: chefeAuxiliar,
     efetivoCarc: efetivoCarc,
     transitoCarc: transitoCarc,
-    mat_carga: mat_carga != 'Completo e sem alterações' ? `Incompleto: ${mat_carga}`: mat_carga ,
-    mat_belico: mat_belico != 'Completo e sem alterações' ? `Incompleto: ${mat_belico}`: mat_belico
+    mat_carga:
+      mat_carga != "Completo e sem alterações"
+        ? `Incompleto: ${mat_carga}`
+        : mat_carga,
+    mat_belico:
+      mat_belico != "Completo e sem alterações"
+        ? `Incompleto: ${mat_belico}`
+        : mat_belico,
   });
 
   const handler = (e: any) => {
-    
     setMat_carga(e.target.value);
   };
   const handlerTwo = (e: any) => {
@@ -119,7 +141,13 @@ export default function Forms({
       </div> */}
       <div className={`${styles["style-div"]} text-justify p-3! leading-7  `}>
         Eu,
-        <SelectComponent width="w-[30%]" onChange={(e:any) => {setChefeReceb(e.target.value)}} styles="mx-1">
+        <SelectComponent
+          width="w-[30%]"
+          onChange={(e: any) => {
+            setChefeReceb(e.target.value);
+          }}
+          styles="mx-1"
+        >
           {["", "Ana", "Hugo", "Sarate", "Saulo"].map((e) => {
             return (
               <option
@@ -134,7 +162,13 @@ export default function Forms({
         </SelectComponent>
         recebi os serviços do plantão do Instituto Penal de Campo Grande/MS, do
         chefe de equipe
-        <SelectComponent width="w-[30%]" onChange={(e:any) => {setChefeEntrega(e.target.value)}} styles="mx-1">
+        <SelectComponent
+          width="w-[30%]"
+          onChange={(e: any) => {
+            setChefeEntrega(e.target.value);
+          }}
+          styles="mx-1"
+        >
           {["", "Ana", "Hugo", "Sarate", "Saulo"].map((e) => {
             return (
               <option
@@ -148,7 +182,13 @@ export default function Forms({
           })}
         </SelectComponent>
         ,
-        <SelectComponent width="w-[30%]" onChange={(e:any) => {setChefeAuxiliar(e.target.value)}} styles="mx-1">
+        <SelectComponent
+          width="w-[30%]"
+          onChange={(e: any) => {
+            setChefeAuxiliar(e.target.value);
+          }}
+          styles="mx-1"
+        >
           {["", "Ana", "Hugo", "Sarate", "Saulo"].map((e) => {
             return (
               <option
@@ -167,7 +207,7 @@ export default function Forms({
           width="w-[15%]"
           height="h-5"
           styles="mx-1"
-          onChange={(e:any) => setEfetivoCarc(parseInt(e.target.value))}
+          onChange={(e: any) => setEfetivoCarc(parseInt(e.target.value))}
         />
         e em trânsito de
         <InputComponentForm
@@ -175,7 +215,7 @@ export default function Forms({
           width="w-[15%]"
           height="h-5"
           styles="mx-1"
-          onChange={(e:any) => setTransitoCarc(parseInt(e.target.value))}
+          onChange={(e: any) => setTransitoCarc(parseInt(e.target.value))}
         />
         .
       </div>
