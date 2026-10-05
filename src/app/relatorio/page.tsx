@@ -29,22 +29,27 @@ import { SucessAuth } from "../types/auth";
 import DialogInfo, { dialogMsg } from "../components/dialog/DialogInfo";
 import { ObjFormRecebimento } from "@/app/types/form";
 import DialogDate from "../components/dialog/DialogDate";
+import fetchData from "./services";
 
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
   const [dialogArmamentoActive, setDialogArmamentoActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [nickname, setNickname] = useState("");
-  const searchParams = useSearchParams();
-  
+   const searchParams = useSearchParams();
+
   const [showCalendar, setShowCalendar] = useState(false);
 
-  const [dateCalendar, setDateCalendar] = useState<Date | undefined>(new Date())
-  
+  const [dateCalendar, setDateCalendar] = useState<Date | undefined>(undefined);
+
+  const [cacheFormRecebimento, setCacheFormRecebimento] =
+    useState<SucessAuth | null>(null);
+
   const [itemActive, setItemActive] = useState({
     aba: "1- Recebimento",
     API: "/api/auth/form-recebimento",
     obj: {},
+    cache: setCacheFormRecebimento,
   });
   const [progress, setProgress] = useState(false);
 
@@ -58,21 +63,53 @@ export default function Report() {
 
   const router = useRouter();
 
-  const [cacheFormRecebimento, setCacheFormRecebimento] =
-    useState<SucessAuth | null>(null);
+  const timeout = useRef<NodeJS.Timeout | null>(null);
+  let dateCurrent = useRef<String | null>(null);
 
-  // useEffect(() => {
-  //   if (!dialogArmamentoActive) {
-  //     setItemActive({
-  //       aba: "1- Recebimento",
-  //       API: "/api/auth/form-recebimento",
-  //     });
-  //   }
-  // }, [dialogArmamentoActive]);
+  async function showMsgFetchData(date: Date) {
+    if (showDialog) {
+      if (timeout.current) {
+        console.log(timeout.current);
+        clearTimeout(timeout.current);
+        setShowDialog(false);
+        dialogInfo.current?.close();
+      }
+    }
 
+    dialogInfo.current?.show();
+    setDialogInfoMsg("Buscando dados de hoje...");
+    setShowDialog(true);
+    let dateStr = date.toLocaleString('pt-BR').split(',')[0];
+    const data = fetchData(date.toISOString().split("T")[0], itemActive.API).then(
+      (e) => {
+        if (e?.sucess) {
+          setDialogInfoMsg("Dados encontrados com sucesso!");
+          dateCurrent.current = dateStr
+          itemActive.cache(e);
+        } else {
+          setDialogInfoMsg(e?.error as dialogMsg);
+           dateCurrent.current = null;
+        }
+        timeout.current = setTimeout(() => {
+          setShowDialog(false);
+        }, 2000);
+      },
+    );
+  }
+
+  //Lógica ao setar uma nova data:
   useEffect(() => {
-    console.log(dateCalendar)
-  }, [dateCalendar])
+    (async () => {
+      if (dateCalendar) showMsgFetchData(dateCalendar);
+    })();
+  }, [dateCalendar]);
+
+  //Lógica ao mudar de aba:
+   useEffect(() => {
+    (async() => {
+        showMsgFetchData(new Date());
+    })();
+  }, [itemActive]);
 
   useEffect(() => {
     dialogInfo.current?.close();
@@ -88,49 +125,7 @@ export default function Report() {
     }
   }, []);
 
-  useEffect(() => {
-    if (lockFecth) return;
-
-    dialogInfo.current?.show();
-    setShowDialog(true);
-    setLockFecth(true);
-    async function fecthData(): Promise<SucessAuth | null> {
-      try {
-        const result = await fetch(itemActive.API);
-        const data = (await result.json()) as SucessAuth;
-        return data;
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        return null;
-      }
-    }
-
-    switch (itemActive.aba) {
-      case "1- Recebimento":
-        if (!cacheFormRecebimento) {
-          fecthData().then((e) => {
-            if (e?.sucess) {
-              setDialogInfoMsg("Dados encontrados com sucesso!");
-              setCacheFormRecebimento(e);
-            } else {
-              setDialogInfoMsg(e?.error as dialogMsg);
-            }
-            setTimeout(() => {
-              setShowDialog(false);
-              setTimeout(() => {
-                dialogInfo.current?.close();
-              }, 5000);
-            }, 5000);
-          });
-        }
-        break;
-
-      default:
-        null;
-    }
-    setLockFecth(false);
-  }, [itemActive]);
-
+ 
 
   const handleRegister = async () => {
     const result = await fetch(itemActive.API, {
@@ -144,7 +139,6 @@ export default function Report() {
       console.log(e);
     });
   };
-
 
   function renderForm() {
     switch (itemActive.aba) {
@@ -203,41 +197,96 @@ export default function Report() {
   }
 
   const elementLi = [
-    { aba: "1- Recebimento", API: "/api/auth/form-recebimento", obj: {} },
-    { aba: "1.1- Armamento", API: "/api/auth/form-armamento", obj: {} },
-    { aba: "2- Equipe", API: "/api/auth/form-equipe", obj: {} },
-    { aba: "3- Trocas / HE", API: "/api/auth/form-trocas-he", obj: {} },
-    { aba: "05- 11 Expediente", API: "/api/auth/form-expediente", obj: {} },
-    { aba: "12- Revezamento", API: "/api/auth/form-revezamento", obj: {} },
+    {
+      aba: "1- Recebimento",
+      API: "/api/auth/form-recebimento",
+      obj: {},
+      cache: setCacheFormRecebimento,
+    },
+    {
+      aba: "1.1- Armamento",
+      API: "/api/auth/form-armamento",
+      obj: {},
+      cache: setCacheFormRecebimento,
+    },
+    {
+      aba: "2- Equipe",
+      API: "/api/auth/form-equipe",
+      obj: {},
+      cache: setCacheFormRecebimento,
+    },
+    {
+      aba: "3- Trocas / HE",
+      API: "/api/auth/form-trocas-he",
+      obj: {},
+      cache: setCacheFormRecebimento,
+    },
+    {
+      aba: "05- 11 Expediente",
+      API: "/api/auth/form-expediente",
+      obj: {},
+      cache: setCacheFormRecebimento,
+    },
+    {
+      aba: "12- Revezamento",
+      API: "/api/auth/form-revezamento",
+      obj: {},
+      cache: setCacheFormRecebimento,
+    },
     {
       aba: "13-14 Rotina Diária",
       API: "/api/auth/form-rotina-diaria",
       obj: {},
+      cache: setCacheFormRecebimento,
     },
     {
       aba: "15- Entrada/Saída de Presos",
       API: "/api/auth/form-entrada-presos",
       obj: {},
+      cache: setCacheFormRecebimento,
     },
     {
       aba: "16- Mudança de cela/Pedido Seguro",
       API: "/api/auth/form-mudanca-cela",
       obj: {},
+      cache: setCacheFormRecebimento,
     },
     {
       aba: "17- Escolta de Presos",
       API: "/api/auth/form-escolta-preso",
       obj: {},
+      cache: setCacheFormRecebimento,
     },
-    { aba: "18 - SIGO", API: "/api/auth/form-sigo", obj: {} },
+    {
+      aba: "18 - SIGO",
+      API: "/api/auth/form-sigo",
+      obj: {},
+      cache: setCacheFormRecebimento,
+    },
     {
       aba: "19 - Inclusão/Retorno",
       API: "/api/auth/form-inclusao-retorno",
       obj: {},
+      cache: setCacheFormRecebimento,
     },
-    { aba: "20 - Dados Finais", API: "/api/auth/form-dados-finais", obj: {} },
-    { aba: "21 - Assinatura", API: "/api/auth/form-assinatura", obj: {} },
-    { aba: "22 - Encerramento", API: "/api/auth/form-encerramento", obj: {} },
+    {
+      aba: "20 - Dados Finais",
+      API: "/api/auth/form-dados-finais",
+      obj: {},
+      cache: setCacheFormRecebimento,
+    },
+    {
+      aba: "21 - Assinatura",
+      API: "/api/auth/form-assinatura",
+      obj: {},
+      cache: setCacheFormRecebimento,
+    },
+    {
+      aba: "22 - Encerramento",
+      API: "/api/auth/form-encerramento",
+      obj: {},
+      cache: setCacheFormRecebimento,
+    },
   ];
   const logout = async () => {
     setProgress(true);
@@ -292,9 +341,11 @@ export default function Report() {
       </nav>
 
       <div className="flex flex-col gap-3 flex-1 items-center justify-center">
-       { <div className="text-center text-gray-500">
-          <p>Esses dados são relativos a data de: </p>
-        </div>}
+        { dateCurrent.current && (
+          <div className="text-center text-gray-500 pointer-events-none">
+            <p>Esses dados são relativos à data de {dateCurrent.current} </p>
+          </div>)
+        }
         {renderForm()}
         <button>
           <SavePlus
@@ -305,11 +356,20 @@ export default function Report() {
         <button>
           <SquarePen className="p-3 w-16 h-16 fixed right-5 bottom-25 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all" />
         </button>
-        <button onClick={(e) => {setShowCalendar(true)}}>
+        <button
+          onClick={(e) => {
+            setShowCalendar(true);
+          }}
+        >
           <Calendar className="p-3 w-16 h-16 fixed right-5 bottom-45 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all" />
         </button>
       </div>
-      <DialogDate showCalendar={showCalendar} setShowCalendar={setShowCalendar} setDate={setDateCalendar} date={dateCalendar} />
+      <DialogDate
+        showCalendar={showCalendar}
+        setShowCalendar={setShowCalendar}
+        setDate={setDateCalendar}
+        date={dateCalendar}
+      />
       <DialogInfo mensagem={dialogInfoMsg} ref={dialogInfo} show={showDialog} />
     </main>
   );

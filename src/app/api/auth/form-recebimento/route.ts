@@ -6,24 +6,27 @@ import { ObjFormRecebimento } from "@/app/types/form";
 
 export async function GET(request: Request) {
   try {
-    const currentDate = new Date().toISOString().split("T")[0];
-
-    const relatorioDia = await prisma.relatorioDoDia.findUnique({
-      where: { data: currentDate },
-      include: {
-        formRecebimento: true,
-      },
-    });
-    if (!relatorioDia || !relatorioDia.formRecebimento) {
-      return NextResponse.json({
-        sucess: false,
-        error: "Relatório do dia não encontrado" as dialogMsg,
-      } as SucessAuth);
+    const { searchParams } = new URL(request.url);
+    const data = searchParams.get("data");
+    
+    if (data) {
+      const relatorioDia = await prisma.relatorioDoDia.findUnique({
+        where: { data },
+        include: {
+          formRecebimento: true,
+        },
+      });
+      if (!relatorioDia || !relatorioDia.formRecebimento) {
+        return NextResponse.json({
+          sucess: false,
+          error: "Relatório do dia não encontrado" as dialogMsg,
+        } as SucessAuth);
+      }
+      return NextResponse.json(
+        { sucess: true, payload: relatorioDia } as SucessAuth,
+        { status: 200 },
+      );
     }
-    return NextResponse.json(
-      { sucess: true, payload: relatorioDia } as SucessAuth,
-      { status: 200 },
-    );
   } catch (error) {
     return NextResponse.json(
       {
