@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const data = searchParams.get("data");
-    
+
     if (data) {
       const relatorioDia = await prisma.relatorioDoDia.findUnique({
         where: { data },
@@ -40,32 +40,37 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const currentDate = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
-
+    const { date, data } = (await request.json()) as {
+      date: string;
+      data: ObjFormRecebimento;
+    };
+    const dateFormat = date.split("T")[0];
     const relatorioDia = await prisma.relatorioDoDia.upsert({
-      where: { data: currentDate },
+      where: { data: dateFormat },
       update: {},
-      create: { data: currentDate },
+      create: { data: dateFormat },
+    });
+    console.log(relatorioDia)
+    await prisma.formRecebimento.upsert({
+      where: {relatorioId: relatorioDia.id},
+      update: {...data},
+      create: {relatorioId: relatorioDia.id, ...data}
+      
     });
 
-    const data = (await request.json()) as ObjFormRecebimento;
-    await prisma.formRecebimento.create({
-      data: {
-        ...data,
-        relatorioId: relatorioDia.id,
-      },
-    });
     return NextResponse.json(
       {
-        message: "Formulário de Recebimento criado com sucesso",
-      },
+        sucess: true,
+        message: "Formulário de Recebimento atualizado com sucesso",
+      } as SucessAuth,
       { status: 201 },
     );
+
   } catch (error) {
     return NextResponse.json(
       {
         sucess: false,
-        error: "Erro ao submeter o formulário de Recebimento" as dialogMsg,
+        error: "Erro ao submeter o formulário de Recebimento",
       } as SucessAuth,
       { status: 500 },
     );

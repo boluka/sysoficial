@@ -20,8 +20,8 @@ export default function Forms({
 }) {
   const [date, setDate] = useState("");
   const optionsSituation = ["Completo e sem alterações", "Incompleto"];
-  const textArea = useRef<HTMLTextAreaElement>(null);
-  const textAreaTwo = useRef<HTMLTextAreaElement>(null);
+  const [textArea, setTextArea] = useState("");
+  const [textAreaTwo, setTextAreaTwo] = useState("");
 
   const [plantao, setPlantao] = useState("");
   const [chefeReceb, setChefeReceb] = useState("");
@@ -57,9 +57,34 @@ export default function Forms({
         setChefeAuxiliar(chefeAuxiliar);
         setEfetivoCarc(efetivoCarc);
         setTransitoCarc(transitoCarc);
-        setMat_carga(mat_carga);
-        setMat_belico(mat_belico);
+        if (mat_carga != "Completo e sem alterações") {
+          const valorSeparate = (mat_carga as string).split(":");
+          setMat_carga(valorSeparate[0].trim() as situation);
+          setTextArea(valorSeparate[1].trim());
+        } else {
+          setMat_carga(mat_carga);
+          setTextArea('');
+        }
+        if (mat_belico != "Completo e sem alterações") {
+          const valorSeparate = (mat_belico as string).split(":");
+          setMat_belico(valorSeparate[0].trim() as situation);
+          setTextAreaTwo(valorSeparate[1].trim());
+        } else {
+          setMat_belico(mat_belico);
+          setTextAreaTwo('');
+        }
       }
+    } else {
+      setPlantao("");
+      setChefeReceb("");
+      setChefeEntrega("");
+      setChefeAuxiliar("");
+      setEfetivoCarc(0);
+      setTransitoCarc(0);
+      setMat_carga("Completo e sem alterações");
+      setMat_belico("Completo e sem alterações");
+      setTextArea('')
+      setTextAreaTwo('')
     }
   }, [cacheData]);
 
@@ -72,11 +97,11 @@ export default function Forms({
     transitoCarc: transitoCarc,
     mat_carga:
       mat_carga != "Completo e sem alterações"
-        ? `Incompleto: ${mat_carga}`
+        ? `Incompleto: ${textArea}`
         : mat_carga,
     mat_belico:
       mat_belico != "Completo e sem alterações"
-        ? `Incompleto: ${mat_belico}`
+        ? `Incompleto: ${textAreaTwo}`
         : mat_belico,
   });
 
@@ -87,20 +112,20 @@ export default function Forms({
     setMat_belico(e.target.value);
   };
 
-  useEffect(() => {
-    if (textArea.current) {
-      if (textArea.current.value != "Completo e sem alterações") {
-        textArea.current.value = "";
-      }
-    }
-  }, [mat_carga]);
-  useEffect(() => {
-    if (textAreaTwo.current) {
-      if (textAreaTwo.current.value != "Completo e sem alterações") {
-        textAreaTwo.current.value = "";
-      }
-    }
-  }, [mat_belico]);
+  // useEffect(() => {
+  //   if (textArea.current) {
+  //     if (textArea.current.value != "Completo e sem alterações") {
+  //       textArea.current.value = "";
+  //     }
+  //   }
+  // }, [mat_carga]);
+  // useEffect(() => {
+  //   if (textAreaTwo.current) {
+  //     if (textAreaTwo.current.value != "Completo e sem alterações") {
+  //       textAreaTwo.current.value = "";
+  //     }
+  //   }
+  // }, [mat_belico]);
 
   return (
     <FormDefault>
@@ -142,6 +167,7 @@ export default function Forms({
       <div className={`${styles["style-div"]} text-justify p-3! leading-7  `}>
         Eu,
         <SelectComponent
+          value={chefeReceb}
           width="w-[30%]"
           onChange={(e: any) => {
             setChefeReceb(e.target.value);
@@ -163,6 +189,7 @@ export default function Forms({
         recebi os serviços do plantão do Instituto Penal de Campo Grande/MS, do
         chefe de equipe
         <SelectComponent
+          value={chefeEntrega}
           width="w-[30%]"
           onChange={(e: any) => {
             setChefeEntrega(e.target.value);
@@ -183,6 +210,7 @@ export default function Forms({
         </SelectComponent>
         ,
         <SelectComponent
+          value={chefeAuxiliar}
           width="w-[30%]"
           onChange={(e: any) => {
             setChefeAuxiliar(e.target.value);
@@ -203,6 +231,7 @@ export default function Forms({
         </SelectComponent>
         com o efetivo carcerário de
         <InputComponentForm
+          value={efetivoCarc}
           type="number"
           width="w-[15%]"
           height="h-5"
@@ -211,6 +240,7 @@ export default function Forms({
         />
         e em trânsito de
         <InputComponentForm
+          value={transitoCarc}
           type="number"
           width="w-[15%]"
           height="h-5"
@@ -222,7 +252,7 @@ export default function Forms({
       <div className={`${styles["style-div"]} `}>
         <div className="flex items-center justify-center gap-3">
           <p className="w-1/2">Com o Material Carga:</p>
-          <SelectComponent width="w-full" onChange={handler}>
+          <SelectComponent value={mat_carga} width="w-full" onChange={handler}>
             {optionsSituation.map((e, index) => {
               return (
                 <option key={index} value={e} className="bg-cinza-escuro">
@@ -239,16 +269,20 @@ export default function Forms({
           <TextAreaComponent
             width="w-full"
             height="h-25"
-            value={mat_carga}
-            setSituacao={setMat_carga}
-            ref={textArea}
+            value={textArea}
+            readOnly={mat_carga}
+            setTextArea={setTextArea}
           />
         </div>
       </div>
       <div className={`${styles["style-div"]}`}>
         <div className="flex items-center justify-center gap-3">
           <p className="w-1/2 text-base">Com o Material Bélico:</p>
-          <SelectComponent width="w-full" onChange={handlerTwo}>
+          <SelectComponent
+            value={mat_belico}
+            width="w-full"
+            onChange={handlerTwo}
+          >
             {optionsSituation.map((e, index) => {
               return (
                 <option key={index} value={e} className="bg-cinza-escuro">
@@ -265,9 +299,9 @@ export default function Forms({
           <TextAreaComponent
             width="w-full"
             height="h-25"
-            value={mat_belico}
-            setSituacao={setMat_belico}
-            ref={textAreaTwo}
+            value={textAreaTwo}
+            readOnly={mat_belico}
+            setTextArea={setTextAreaTwo}
           />
         </div>
       </div>

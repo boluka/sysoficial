@@ -30,9 +30,13 @@ import DialogInfo, { dialogMsg } from "../components/dialog/DialogInfo";
 import { ObjFormRecebimento } from "@/app/types/form";
 import DialogDate from "../components/dialog/DialogDate";
 import fetchData from "./services";
+import DialogSave from "../components/dialog/DialogSave";
 
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
+  const dialogSave = useRef<HTMLDialogElement>(null);
+  
+
   const [dialogArmamentoActive, setDialogArmamentoActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [nickname, setNickname] = useState("");
@@ -53,11 +57,12 @@ export default function Report() {
   });
   const [progress, setProgress] = useState(false);
 
-  const [showDialog, setShowDialog] = useState(false);
+  const [showDialogAnimation, setShowDialogAnimation] = useState(false);
 
   const [dialogInfoMsg, setDialogInfoMsg] = useState<dialogMsg>(
     "Buscando dados de hoje...",
   );
+  
 
   const [lockFecth, setLockFecth] = useState(false);
 
@@ -66,35 +71,43 @@ export default function Report() {
   const timeout = useRef<NodeJS.Timeout | null>(null);
   let dateCurrent = useRef<String | null>(null);
 
+ 
+
   async function showMsgFetchData(date: Date) {
-    if (showDialog) {
+    
+    if (showDialogAnimation) {
       if (timeout.current) {
-        console.log(timeout.current);
         clearTimeout(timeout.current);
-        setShowDialog(false);
+        setShowDialogAnimation(false);
         dialogInfo.current?.close();
       }
     }
-
     dialogInfo.current?.show();
     setDialogInfoMsg("Buscando dados de hoje...");
-    setShowDialog(true);
+    setShowDialogAnimation(true);
+    
     let dateStr = date.toLocaleString('pt-BR').split(',')[0];
-    const data = fetchData(date.toISOString().split("T")[0], itemActive.API).then(
+    fetchData(date.toISOString().split("T")[0], itemActive.API).then(
       (e) => {
         if (e?.sucess) {
+          
           setDialogInfoMsg("Dados encontrados com sucesso!");
           dateCurrent.current = dateStr
           itemActive.cache(e);
         } else {
           setDialogInfoMsg(e?.error as dialogMsg);
+          itemActive.cache(null)
            dateCurrent.current = null;
         }
         timeout.current = setTimeout(() => {
-          setShowDialog(false);
+          setShowDialogAnimation(false);
+          setTimeout(() => {
+            dialogInfo.current?.close()
+          }, 2000);
         }, 2000);
       },
     );
+    
   }
 
   //Lógica ao setar uma nova data:
@@ -106,13 +119,14 @@ export default function Report() {
 
   //Lógica ao mudar de aba:
    useEffect(() => {
+  
     (async() => {
+        console.log(dialogInfo.current)
         showMsgFetchData(new Date());
     })();
   }, [itemActive]);
 
   useEffect(() => {
-    dialogInfo.current?.close();
     const user = searchParams.get("nome");
     if (user) {
       localStorage.setItem("nome", user);
@@ -128,15 +142,25 @@ export default function Report() {
  
 
   const handleRegister = async () => {
+    let object;
+    if(itemActive.obj){
+      object = {date: dateCalendar ?? new Date(), data: {...itemActive.obj}}
+    }
     const result = await fetch(itemActive.API, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(itemActive.obj),
+      body: JSON.stringify(object),
     });
     result.json().then((e) => {
-      console.log(e);
+      if(e.sucess){
+        dialogSave.current?.showModal();
+        setTimeout(() => {
+        dialogSave.current?.close();
+        }, 2000);
+      
+      }
     });
   };
 
@@ -358,7 +382,11 @@ export default function Report() {
         </button>
         <button
           onClick={(e) => {
-            setShowCalendar(true);
+            if(showCalendar){
+              setShowCalendar(false);
+            } else {
+              setShowCalendar(true);
+            }
           }}
         >
           <Calendar className="p-3 w-16 h-16 fixed right-5 bottom-45 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all" />
@@ -370,7 +398,8 @@ export default function Report() {
         setDate={setDateCalendar}
         date={dateCalendar}
       />
-      <DialogInfo mensagem={dialogInfoMsg} ref={dialogInfo} show={showDialog} />
+      <DialogInfo mensagem={dialogInfoMsg} ref={dialogInfo} show={showDialogAnimation} />
+      <DialogSave ref={dialogSave}/>
     </main>
   );
 }
