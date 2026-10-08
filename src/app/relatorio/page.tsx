@@ -6,6 +6,7 @@ import {
   RefreshCcw,
   SavePlus,
   SquarePen,
+  StickyNotes,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -49,6 +50,8 @@ export default function Report() {
   const [cacheFormRecebimento, setCacheFormRecebimento] =
     useState<SucessAuth | null>(null);
 
+  const [cacheFormArmamento, setCacheFormArmamento] = useState<SucessAuth | null>(null);
+
   const [itemActive, setItemActive] = useState({
     aba: "1- Recebimento",
     API: "/api/auth/form-recebimento",
@@ -82,8 +85,8 @@ export default function Report() {
         dialogInfo.current?.close();
       }
     }
-    dialogInfo.current?.show();
     setDialogInfoMsg("Buscando dados de hoje...");
+    if(!dialogInfo.current?.hasAttribute('show')){ dialogInfo.current?.show();}
     setShowDialogAnimation(true);
     
     let dateStr = date.toLocaleString('pt-BR').split(',')[0];
@@ -93,6 +96,7 @@ export default function Report() {
           
           setDialogInfoMsg("Dados encontrados com sucesso!");
           dateCurrent.current = dateStr
+          console.log(e)
           itemActive.cache(e);
         } else {
           setDialogInfoMsg(e?.error as dialogMsg);
@@ -101,9 +105,6 @@ export default function Report() {
         }
         timeout.current = setTimeout(() => {
           setShowDialogAnimation(false);
-          setTimeout(() => {
-            dialogInfo.current?.close()
-          }, 2000);
         }, 2000);
       },
     );
@@ -121,7 +122,6 @@ export default function Report() {
    useEffect(() => {
   
     (async() => {
-        console.log(dialogInfo.current)
         showMsgFetchData(new Date());
     })();
   }, [itemActive]);
@@ -174,7 +174,8 @@ export default function Report() {
           <FormRecebimento onSave={onSave} cacheData={cacheFormRecebimento} />
         );
       case "1.1- Armamento":
-        return;
+        
+        return <FormArmamento/>;
       case "2- Equipe":
         return <FormEquipe />;
 
@@ -231,7 +232,7 @@ export default function Report() {
       aba: "1.1- Armamento",
       API: "/api/auth/form-armamento",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheFormArmamento,
     },
     {
       aba: "2- Equipe",
@@ -371,16 +372,17 @@ export default function Report() {
           </div>)
         }
         {renderForm()}
-        <button>
+        <button title="Salva o formulário">
           <SavePlus
             className="p-3 w-16 h-16 fixed right-5 bottom-5 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all"
             onClick={handleRegister}
           />
         </button>
-        <button>
-          <SquarePen className="p-3 w-16 h-16 fixed right-5 bottom-25 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all" />
+        <button title="Gera o relatório em PDF">
+          <StickyNotes className="p-3 w-16 h-16 fixed right-5 bottom-25 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all" />
         </button>
         <button
+          title="Selecione uma data para visualizar os dados"
           onClick={(e) => {
             if(showCalendar){
               setShowCalendar(false);

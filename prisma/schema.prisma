@@ -22,6 +22,7 @@ model RelatorioDoDia {
   id              String           @id @default(uuid())
   data            String           @unique
   formRecebimento FormRecebimento?
+  formArmamento FormArmamento?
 }
 
 model FormRecebimento {
@@ -36,6 +37,21 @@ model FormRecebimento {
   mat_belico    String
   relatorioId   String         @unique
   relatorio     RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model FormArmamento {
+  id  Int  @default(autoincrement())
+  armamento   String
+  numeracao   String
+  relatorioId String @unique
+  relatorio RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model Armamento {
+  id     Int      @id @default(autoincrement())
+  num    String   @unique
+  tipo   String
+  calibre  String
 }
 
 enum Role {

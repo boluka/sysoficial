@@ -1,12 +1,12 @@
 import { SucessAuth } from "../types/auth";
 
 export default async function fetchData(
-  data: string,
+  date: string,
   API: string,
 ): Promise<SucessAuth | null> {
   try {
     const params = new URLSearchParams({
-        data
+        date
     })
     const result = fetch(`${API}?${params.toString()}`);
     const response = await result;

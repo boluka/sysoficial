@@ -7,7 +7,7 @@ import { ObjFormRecebimento } from "@/app/types/form";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const data = searchParams.get("data");
+    const data = searchParams.get("date");
 
     if (data) {
       const relatorioDia = await prisma.relatorioDoDia.findUnique({

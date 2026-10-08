@@ -8,3 +8,13 @@ export interface ObjFormRecebimento {
   mat_carga: string;
   mat_belico: string;
 }
+export interface ObjFormArmamento {
+
+}
+
+
+export interface ObjArmamento {
+  num: string
+  tipo: string
+  calibre: string
+}
