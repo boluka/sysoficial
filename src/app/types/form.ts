@@ -9,7 +9,9 @@ export interface ObjFormRecebimento {
   mat_belico: string;
 }
 export interface ObjFormArmamento {
-
+  id: number
+  num: string
+  tipo: string
 }
 
 

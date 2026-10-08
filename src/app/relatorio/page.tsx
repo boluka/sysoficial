@@ -28,7 +28,7 @@ import FormAssinatura from "../components/forms/FormAssinatura";
 import { useRouter } from "next/navigation";
 import { SucessAuth } from "../types/auth";
 import DialogInfo, { dialogMsg } from "../components/dialog/DialogInfo";
-import { ObjFormRecebimento } from "@/app/types/form";
+import { ObjArmamento, ObjFormArmamento, ObjFormRecebimento } from "@/app/types/form";
 import DialogDate from "../components/dialog/DialogDate";
 import fetchData from "./services";
 import DialogSave from "../components/dialog/DialogSave";
@@ -167,15 +167,11 @@ export default function Report() {
   function renderForm() {
     switch (itemActive.aba) {
       case "1- Recebimento":
-        function onSave(data: ObjFormRecebimento) {
-          itemActive.obj = data;
-        }
         return (
-          <FormRecebimento onSave={onSave} cacheData={cacheFormRecebimento} />
+          <FormRecebimento onSave={(data: ObjFormRecebimento)=> {itemActive.obj = data}} cacheData={cacheFormRecebimento} />
         );
       case "1.1- Armamento":
-        
-        return <FormArmamento/>;
+        return <FormArmamento onSave={(data: ObjFormArmamento[]) => {itemActive.obj = data}}/>;
       case "2- Equipe":
         return <FormEquipe />;
 

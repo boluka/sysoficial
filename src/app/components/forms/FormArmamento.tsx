@@ -13,9 +13,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ObjArmamento } from "@/app/types/form";
+import { ObjArmamento, ObjFormArmamento } from "@/app/types/form";
 
-export default function FormArmamento(props: any) {
+export default function FormArmamento({
+  onSave,
+}: {
+  onSave: (param: ObjFormArmamento[]) => void;
+}) {
   const [qtMunicao, setQtMunicao] = useState(0);
   const [qtCarregadoresPist, setQtCarregadoresPist] = useState(0);
   const [qtCarregadoresCarabina, setQtCarregadoresCarabina] = useState(0);
@@ -24,6 +28,10 @@ export default function FormArmamento(props: any) {
   const [selectNumeration, setSelectNumeration] = useState("");
   const [guns, setGuns] = useState<ObjArmamento[]>([]);
   const [numeration, setNumeration] = useState<ObjArmamento[]>([]);
+  const [data, setData] = useState<ObjFormArmamento[]>([]);
+  const [itemSelect, setItemSelect] = useState<ObjFormArmamento>();
+  const [itemSelectColor, setItemSelectColor] = useState(false);
+  const [id, setId] = useState(0);
 
   const fetchGuns = async () => {
     fetch("/api/auth/armamento/")
@@ -34,6 +42,10 @@ export default function FormArmamento(props: any) {
         }
       });
   };
+  useEffect(() => {
+    if (numeration.length > 0) setSelectNumeration(numeration[0].num);
+  }, [numeration]);
+
   const filterGuns = () => {
     setNumeration(
       guns.filter((e) => {
@@ -41,11 +53,21 @@ export default function FormArmamento(props: any) {
       }),
     );
   };
+ 
+  const handlerInsert = (e: any) => {
+    e.preventDefault();
+    setId(id + 1)
+    setData((prev) => [{id: id, tipo: selectGuns, num: selectNumeration }, ...prev]);
+    console.log(data)
+  };
+
   useEffect(() => {
     filterGuns();
   }, [selectGuns]);
 
-  const tiposDeArmamentoUnicos = Array.from(new Set(guns.map((e) => e.tipo.trim().toUpperCase())))
+  const tiposDeArmamentoUnicos = Array.from(
+    new Set(guns.map((e) => e.tipo.trim().toUpperCase())),
+  );
   useEffect(() => {
     if (tiposDeArmamentoUnicos.length > 0 && !selectGuns) {
       setSelectGuns(tiposDeArmamentoUnicos[0]);
@@ -53,8 +75,10 @@ export default function FormArmamento(props: any) {
   }, [guns]);
 
   useEffect(() => {
+    onSave(data);
     fetchGuns();
   }, []);
+
 
   return (
     <FormDefault>
@@ -127,8 +151,8 @@ export default function FormArmamento(props: any) {
               })}
             </SelectComponent>
             <button
-              className="bg-amarelo-claro py-1 px-3 rounded-[5px] text-sm text-black font-bold cursor-pointer"
-              onClick={(e) => e.preventDefault()}
+              className="bg-amarelo-claro py-1 px-3 rounded-[5px] text-sm text-black font-bold cursor-pointer hover:bg-cinza-maisescuro hover:text-amarelo-claro"
+              onClick={handlerInsert}
             >
               Inserir
             </button>
@@ -155,7 +179,7 @@ export default function FormArmamento(props: any) {
               })}
             </SelectComponent>
             <button
-              className="bg-amarelo-claro py-1 px-3 rounded-[5px] text-sm text-black font-bold cursor-pointer"
+              className="bg-amarelo-claro py-1 px-3 rounded-[5px] text-sm text-black font-bold cursor-pointer hover:bg-cinza-maisescuro hover:text-amarelo-claro"
               onClick={(e) => e.preventDefault()}
             >
               Excluir
@@ -171,45 +195,26 @@ export default function FormArmamento(props: any) {
                 <TableHead className="w-1/2 text-amarelo-claro">
                   Numeração
                 </TableHead>
-                
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-               
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-               
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-               
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-               
-              </TableRow>
+              {data.map((e, i) => {
+                return (
+                  <TableRow
+                    key={i}
+                    onClick={() => {
+                      setItemSelect({id:e.id,  tipo: e.tipo, num: e.num })
+                    
+                    }}
+                    className={`${e.id === itemSelect?.id && "bg-cinza-maisclaro"}`}
+                  >
+                    <TableCell className="font-medium cursor-pointer">
+                      {e.tipo}
+                    </TableCell>
+                    <TableCell className="cursor-pointer">{e.num}</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
           {/* <table
