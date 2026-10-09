@@ -18,29 +18,43 @@ import { ObjArmamento, ObjFormArmamento } from "@/app/types/form";
 export default function FormArmamento({
   onSave,
 }: {
-  onSave: (param: ObjFormArmamento[]) => void;
+  onSave: (param: ObjFormArmamento) => void;
 }) {
+
+  
+
   const [qtMunicao, setQtMunicao] = useState(0);
   const [qtCarregadoresPist, setQtCarregadoresPist] = useState(0);
-  const [qtCarregadoresCarabina, setQtCarregadoresCarabina] = useState(0);
-
+  const [qtCarregadoresCarabina, setQtCarregadoresCarabina] = useState({qtCarabinaQuinze: 0, qtCarabinaTrinta: 0});
   const [selectGuns, setSelectGuns] = useState("");
   const [selectNumeration, setSelectNumeration] = useState("");
   const [guns, setGuns] = useState<ObjArmamento[]>([]);
   const [numeration, setNumeration] = useState<ObjArmamento[]>([]);
-  const [data, setData] = useState<ObjFormArmamento[]>([]);
-  const [itemSelect, setItemSelect] = useState<ObjFormArmamento>();
-  const [itemSelectColor, setItemSelectColor] = useState(false);
+  const [data, setData] = useState<ObjArmamento[]>([]);
+  const [itemSelect, setItemSelect] = useState<ObjArmamento>();
   const [id, setId] = useState(0);
+  
+
+  onSave({
+    armamento: JSON.stringify(data),
+    qtPistola: qtCarregadoresPist,
+    qtCarabinaQuinze: qtCarregadoresCarabina.qtCarabinaQuinze,
+    qtCarabinaTrinta: qtCarregadoresCarabina.qtCarabinaTrinta,
+    municao: qtMunicao
+  })
 
   const fetchGuns = async () => {
-    fetch("/api/auth/armamento/")
+    try {
+      fetch("/api/auth/armamento/")
       .then((e) => e.json())
       .then((e) => {
         if (e.sucess) {
           setGuns(e.payload);
         }
       });
+    } catch (error) {
+      console.log(error)
+    }
   };
   useEffect(() => {
     if (numeration.length > 0) setSelectNumeration(numeration[0].num);
@@ -61,6 +75,16 @@ export default function FormArmamento({
     console.log(data)
   };
 
+  const handlerDelete = (e:any) => {
+    e.preventDefault();
+      if(itemSelect){
+        setData(data.filter((e) => {
+            return e.id != itemSelect.id
+        }))
+        setItemSelect(undefined);
+      }
+  }
+
   useEffect(() => {
     filterGuns();
   }, [selectGuns]);
@@ -75,7 +99,6 @@ export default function FormArmamento({
   }, [guns]);
 
   useEffect(() => {
-    onSave(data);
     fetchGuns();
   }, []);
 
@@ -92,7 +115,7 @@ export default function FormArmamento({
             type="number"
             value={qtMunicao}
             onChange={(e: any) => {
-              setQtMunicao(e);
+              setQtMunicao(e.target.value);
             }}
           />
           <p className="text-amarelo-claro text-base mt-2">Carregadores: </p>
@@ -103,25 +126,25 @@ export default function FormArmamento({
               type="number"
               value={qtCarregadoresPist}
               onChange={(e: any) => {
-                setQtCarregadoresPist(e);
+                setQtCarregadoresPist(e.target.value);
               }}
             />
             <p>De 15 para Carabina: </p>
             <InputComponentForm
               width="w-30"
               type="number"
-              value={qtCarregadoresCarabina}
+              value={qtCarregadoresCarabina.qtCarabinaQuinze}
               onChange={(e: any) => {
-                setQtCarregadoresCarabina(e);
+                setQtCarregadoresCarabina((prev) => ({...prev, qtCarabinaQuinze: e.target.value}));
               }}
             />
             <p>De 30 para Carabina: </p>
             <InputComponentForm
               width="w-30"
               type="number"
-              value={qtCarregadoresCarabina}
+              value={qtCarregadoresCarabina.qtCarabinaTrinta}
               onChange={(e: any) => {
-                setQtCarregadoresCarabina(e);
+                setQtCarregadoresCarabina((prev) => ({...prev, qtCarabinaTrinta: e.target.value}));
               }}
             />
           </div>
@@ -180,7 +203,7 @@ export default function FormArmamento({
             </SelectComponent>
             <button
               className="bg-amarelo-claro py-1 px-3 rounded-[5px] text-sm text-black font-bold cursor-pointer hover:bg-cinza-maisescuro hover:text-amarelo-claro"
-              onClick={(e) => e.preventDefault()}
+              onClick={handlerDelete}
             >
               Excluir
             </button>

@@ -41,8 +41,11 @@ model FormRecebimento {
 
 model FormArmamento {
   id  Int  @default(autoincrement())
-  armamento   String
-  numeracao   String
+  armamento   Json
+  municao   Int
+  qtPistola Int
+  qtCarabinaQuinze Int
+  qtCarabinaTrinta Int
   relatorioId String @unique
   relatorio RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
 }

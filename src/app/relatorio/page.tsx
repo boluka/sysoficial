@@ -28,7 +28,11 @@ import FormAssinatura from "../components/forms/FormAssinatura";
 import { useRouter } from "next/navigation";
 import { SucessAuth } from "../types/auth";
 import DialogInfo, { dialogMsg } from "../components/dialog/DialogInfo";
-import { ObjArmamento, ObjFormArmamento, ObjFormRecebimento } from "@/app/types/form";
+import {
+  ObjArmamento,
+  ObjFormArmamento,
+  ObjFormRecebimento,
+} from "@/app/types/form";
 import DialogDate from "../components/dialog/DialogDate";
 import fetchData from "./services";
 import DialogSave from "../components/dialog/DialogSave";
@@ -36,12 +40,11 @@ import DialogSave from "../components/dialog/DialogSave";
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
   const dialogSave = useRef<HTMLDialogElement>(null);
-  
 
   const [dialogArmamentoActive, setDialogArmamentoActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [nickname, setNickname] = useState("");
-   const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
 
   const [showCalendar, setShowCalendar] = useState(false);
 
@@ -50,7 +53,8 @@ export default function Report() {
   const [cacheFormRecebimento, setCacheFormRecebimento] =
     useState<SucessAuth | null>(null);
 
-  const [cacheFormArmamento, setCacheFormArmamento] = useState<SucessAuth | null>(null);
+  const [cacheFormArmamento, setCacheFormArmamento] =
+    useState<SucessAuth | null>(null);
 
   const [itemActive, setItemActive] = useState({
     aba: "1- Recebimento",
@@ -65,7 +69,6 @@ export default function Report() {
   const [dialogInfoMsg, setDialogInfoMsg] = useState<dialogMsg>(
     "Buscando dados de hoje...",
   );
-  
 
   const [lockFecth, setLockFecth] = useState(false);
 
@@ -74,10 +77,7 @@ export default function Report() {
   const timeout = useRef<NodeJS.Timeout | null>(null);
   let dateCurrent = useRef<String | null>(null);
 
- 
-
   async function showMsgFetchData(date: Date) {
-    
     if (showDialogAnimation) {
       if (timeout.current) {
         clearTimeout(timeout.current);
@@ -86,29 +86,27 @@ export default function Report() {
       }
     }
     setDialogInfoMsg("Buscando dados de hoje...");
-    if(!dialogInfo.current?.hasAttribute('show')){ dialogInfo.current?.show();}
+    if (!dialogInfo.current?.hasAttribute("show")) {
+      dialogInfo.current?.show();
+    }
     setShowDialogAnimation(true);
-    
-    let dateStr = date.toLocaleString('pt-BR').split(',')[0];
-    fetchData(date.toISOString().split("T")[0], itemActive.API).then(
-      (e) => {
-        if (e?.sucess) {
-          
-          setDialogInfoMsg("Dados encontrados com sucesso!");
-          dateCurrent.current = dateStr
-          console.log(e)
-          itemActive.cache(e);
-        } else {
-          setDialogInfoMsg(e?.error as dialogMsg);
-          itemActive.cache(null)
-           dateCurrent.current = null;
-        }
-        timeout.current = setTimeout(() => {
-          setShowDialogAnimation(false);
-        }, 2000);
-      },
-    );
-    
+
+    let dateStr = date.toLocaleString("pt-BR").split(",")[0];
+    fetchData(date.toISOString().split("T")[0], itemActive.API).then((e) => {
+      if (e?.sucess) {
+        setDialogInfoMsg("Dados encontrados com sucesso!");
+        dateCurrent.current = dateStr;
+        console.log(e);
+        itemActive.cache(e);
+      } else {
+        setDialogInfoMsg(e?.error as dialogMsg);
+        itemActive.cache(null);
+        dateCurrent.current = null;
+      }
+      timeout.current = setTimeout(() => {
+        setShowDialogAnimation(false);
+      }, 2000);
+    });
   }
 
   //Lógica ao setar uma nova data:
@@ -119,10 +117,9 @@ export default function Report() {
   }, [dateCalendar]);
 
   //Lógica ao mudar de aba:
-   useEffect(() => {
-  
-    (async() => {
-        showMsgFetchData(new Date());
+  useEffect(() => {
+    (async () => {
+      showMsgFetchData(new Date());
     })();
   }, [itemActive]);
 
@@ -139,39 +136,56 @@ export default function Report() {
     }
   }, []);
 
- 
-
   const handleRegister = async () => {
     let object;
-    if(itemActive.obj){
-      object = {date: dateCalendar ?? new Date(), data: {...itemActive.obj}}
+    if (itemActive.obj) {
+      object = {
+        date: dateCalendar ?? new Date(),
+        data: { ...itemActive.obj },
+      };
     }
-    const result = await fetch(itemActive.API, {
+    console.log(itemActive.obj)
+
+    try {const result = await fetch(itemActive.API, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(object),
     });
-    result.json().then((e) => {
-      if(e.sucess){
-        dialogSave.current?.showModal();
-        setTimeout(() => {
-        dialogSave.current?.close();
-        }, 2000);
-      
-      }
-    });
+    
+      result.json().then((e) => {
+        if (e.sucess) {
+          dialogSave.current?.showModal();
+          setTimeout(() => {
+            dialogSave.current?.close();
+          }, 2000);
+        }
+      });
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   function renderForm() {
     switch (itemActive.aba) {
       case "1- Recebimento":
         return (
-          <FormRecebimento onSave={(data: ObjFormRecebimento)=> {itemActive.obj = data}} cacheData={cacheFormRecebimento} />
+          <FormRecebimento
+            onSave={(data: ObjFormRecebimento) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheFormRecebimento}
+          />
         );
       case "1.1- Armamento":
-        return <FormArmamento onSave={(data: ObjFormArmamento[]) => {itemActive.obj = data}}/>;
+        return (
+          <FormArmamento
+            onSave={(data: ObjFormArmamento) => {
+              itemActive.obj = data;
+            }}
+          />
+        );
       case "2- Equipe":
         return <FormEquipe />;
 
@@ -362,11 +376,11 @@ export default function Report() {
       </nav>
 
       <div className="flex flex-col gap-3 flex-1 items-center justify-center">
-        { dateCurrent.current && (
+        {dateCurrent.current && (
           <div className="text-center text-gray-500 pointer-events-none">
             <p>Esses dados são relativos à data de {dateCurrent.current} </p>
-          </div>)
-        }
+          </div>
+        )}
         {renderForm()}
         <button title="Salva o formulário">
           <SavePlus
@@ -380,7 +394,7 @@ export default function Report() {
         <button
           title="Selecione uma data para visualizar os dados"
           onClick={(e) => {
-            if(showCalendar){
+            if (showCalendar) {
               setShowCalendar(false);
             } else {
               setShowCalendar(true);
@@ -396,8 +410,12 @@ export default function Report() {
         setDate={setDateCalendar}
         date={dateCalendar}
       />
-      <DialogInfo mensagem={dialogInfoMsg} ref={dialogInfo} show={showDialogAnimation} />
-      <DialogSave ref={dialogSave}/>
+      <DialogInfo
+        mensagem={dialogInfoMsg}
+        ref={dialogInfo}
+        show={showDialogAnimation}
+      />
+      <DialogSave ref={dialogSave} />
     </main>
   );
 }

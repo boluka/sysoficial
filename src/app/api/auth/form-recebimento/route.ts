@@ -50,7 +50,6 @@ export async function POST(request: Request) {
       update: {},
       create: { data: dateFormat },
     });
-    console.log(relatorioDia)
     await prisma.formRecebimento.upsert({
       where: {relatorioId: relatorioDia.id},
       update: {...data},

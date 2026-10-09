@@ -1,3 +1,5 @@
+import { InputJsonValue, JsonValue } from "@/generated/prisma/runtime/client";
+
 export interface ObjFormRecebimento {
   plantao: string;
   chefeReceb: string;
@@ -9,14 +11,18 @@ export interface ObjFormRecebimento {
   mat_belico: string;
 }
 export interface ObjFormArmamento {
-  id: number
-  num: string
-  tipo: string
+  armamento: InputJsonValue
+  municao: number
+  qtPistola: number
+  qtCarabinaQuinze: number
+  qtCarabinaTrinta: number
 }
 
 
+
 export interface ObjArmamento {
+  id:number
   num: string
   tipo: string
-  calibre: string
+  calibre?: string
 }
