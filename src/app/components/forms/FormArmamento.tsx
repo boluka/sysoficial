@@ -115,7 +115,7 @@ export default function FormArmamento({
             type="number"
             value={qtMunicao}
             onChange={(e: any) => {
-              setQtMunicao(e.target.value);
+              setQtMunicao(parseInt(e.target.value));
             }}
           />
           <p className="text-amarelo-claro text-base mt-2">Carregadores: </p>
@@ -126,7 +126,7 @@ export default function FormArmamento({
               type="number"
               value={qtCarregadoresPist}
               onChange={(e: any) => {
-                setQtCarregadoresPist(e.target.value);
+                setQtCarregadoresPist(parseInt(e.target.value));
               }}
             />
             <p>De 15 para Carabina: </p>
@@ -135,7 +135,7 @@ export default function FormArmamento({
               type="number"
               value={qtCarregadoresCarabina.qtCarabinaQuinze}
               onChange={(e: any) => {
-                setQtCarregadoresCarabina((prev) => ({...prev, qtCarabinaQuinze: e.target.value}));
+                setQtCarregadoresCarabina((prev) => ({...prev, qtCarabinaQuinze: parseInt(e.target.value)}));
               }}
             />
             <p>De 30 para Carabina: </p>
@@ -144,7 +144,7 @@ export default function FormArmamento({
               type="number"
               value={qtCarregadoresCarabina.qtCarabinaTrinta}
               onChange={(e: any) => {
-                setQtCarregadoresCarabina((prev) => ({...prev, qtCarabinaTrinta: e.target.value}));
+                setQtCarregadoresCarabina((prev) => ({...prev, qtCarabinaTrinta: parseInt(e.target.value)}));
               }}
             />
           </div>

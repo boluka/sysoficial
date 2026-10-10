@@ -144,6 +144,7 @@ export default function Report() {
         data: { ...itemActive.obj },
       };
     }
+    
     console.log(itemActive.obj)
 
     try {const result = await fetch(itemActive.API, {
