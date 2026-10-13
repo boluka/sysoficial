@@ -34,12 +34,14 @@ import {
   ObjFormRecebimento,
 } from "@/app/types/form";
 import DialogDate from "../components/dialog/DialogDate";
-import fetchData from "./services";
+import fetchData, { fetchPerson } from "./services";
 import DialogSave from "../components/dialog/DialogSave";
+import { Person } from "@/generated/prisma";
 
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
   const dialogSave = useRef<HTMLDialogElement>(null);
+  const [person, setPerson] = useState<Person[]>();
   const verifyDateActual = new Date().toLocaleString("pt-BR").split(",")[0];
 
   const [dialogArmamentoActive, setDialogArmamentoActive] = useState(false);
@@ -75,8 +77,6 @@ export default function Report() {
   const [dialogInfoMsg, setDialogInfoMsg] = useState<dialogMsg>(
     "Buscando dados de hoje...",
   );
-
-  const [lockFecth, setLockFecth] = useState(false);
 
   const router = useRouter();
 
@@ -129,6 +129,12 @@ export default function Report() {
   // }, [itemActive]);
 
   useEffect(() => {
+    (async ()=> {
+      const result = await fetchPerson()
+      if(result){
+        setPerson(result)
+      }
+    })()
     const user = searchParams.get("nome");
     if (user) {
       localStorage.setItem("nome", user);

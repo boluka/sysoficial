@@ -17,6 +17,21 @@ export interface ObjFormArmamento {
   qtCarabinaQuinze: number
   qtCarabinaTrinta: number
 }
+export interface ObjFormEquipe {
+  id: number
+  chefeEquipe: string 
+  auxChefe: String
+  portariaPrinc: String
+  auxPort1?: String
+  auxPort2?: String
+  passarelaPrinc?: String
+  escolaPadaria?: String
+  trabalhoCrina?: String
+  responsavelPv1: String
+  corredorPv1?: String
+  responsavelPv2: String
+  corredorPv2?: String
+}
 
 
 

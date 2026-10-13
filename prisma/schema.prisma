@@ -23,6 +23,7 @@ model RelatorioDoDia {
   data            String           @unique
   formRecebimento FormRecebimento?
   formArmamento FormArmamento?
+  formEquipe FormEquipe?
 }
 
 model FormRecebimento {
@@ -48,6 +49,29 @@ model FormArmamento {
   qtCarabinaTrinta Int
   relatorioId String @unique
   relatorio RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model FormEquipe {
+  id Int  @id @default(autoincrement())
+  chefeEquipe String 
+  auxChefe String
+  portariaPrinc String
+  auxPort1 String?
+  auxPort2 String?
+  passarelaPrinc String?
+  escolaPadaria String?
+  trabalhoCrina String?
+  responsavelPv1 String
+  corredorPv1 Json?
+  responsavelPv2 String
+  corredorPv2 Json?
+  relatorioId String @unique
+  relatorio RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model Person {
+  id Int @id @default(autoincrement())
+  name String
 }
 
 model Armamento {
