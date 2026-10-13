@@ -40,6 +40,7 @@ import DialogSave from "../components/dialog/DialogSave";
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
   const dialogSave = useRef<HTMLDialogElement>(null);
+  const verifyDateActual = new Date().toLocaleString("pt-BR").split(",")[0];
 
   const [dialogArmamentoActive, setDialogArmamentoActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,7 +49,9 @@ export default function Report() {
 
   const [showCalendar, setShowCalendar] = useState(false);
 
-  const [dateCalendar, setDateCalendar] = useState<Date | undefined>(undefined);
+  const [dateCalendar, setDateCalendar] = useState<Date | undefined>(
+    new Date(),
+  );
 
   const [cacheFormRecebimento, setCacheFormRecebimento] =
     useState<SucessAuth | null>(null);
@@ -56,12 +59,15 @@ export default function Report() {
   const [cacheFormArmamento, setCacheFormArmamento] =
     useState<SucessAuth | null>(null);
 
+  const [cacheFormEquipe, setCacheFormEquipe] =
+    useState<SucessAuth | null>(null);
+
   const [itemActive, setItemActive] = useState({
-    aba: "1- Recebimento",
-    API: "/api/auth/form-recebimento",
-    obj: {},
-    cache: setCacheFormRecebimento,
-  });
+      aba: "2- Equipe",
+      API: "/api/auth/form-equipe",
+      obj: {},
+      cache: setCacheFormEquipe,
+    });
   const [progress, setProgress] = useState(false);
 
   const [showDialogAnimation, setShowDialogAnimation] = useState(false);
@@ -109,19 +115,18 @@ export default function Report() {
     });
   }
 
-  //Lógica ao setar uma nova data:
+  //Lógica ao setar uma nova data e Lógica ao mudar de aba:
   useEffect(() => {
     (async () => {
       if (dateCalendar) showMsgFetchData(dateCalendar);
     })();
-  }, [dateCalendar]);
+  }, [dateCalendar, itemActive]);
 
-  //Lógica ao mudar de aba:
-  useEffect(() => {
-    (async () => {
-      showMsgFetchData(new Date());
-    })();
-  }, [itemActive]);
+  // useEffect(() => {
+  //   (async () => {
+  //      if (dateCalendar) showMsgFetchData(dateCalendar);
+  //   })();
+  // }, [itemActive]);
 
   useEffect(() => {
     const user = searchParams.get("nome");
@@ -144,17 +149,18 @@ export default function Report() {
         data: { ...itemActive.obj },
       };
     }
-    
-    console.log(itemActive.obj)
 
-    try {const result = await fetch(itemActive.API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(object),
-    });
-    
+    console.log(itemActive.obj);
+
+    try {
+      const result = await fetch(itemActive.API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(object),
+      });
+
       result.json().then((e) => {
         if (e.sucess) {
           dialogSave.current?.showModal();
@@ -164,7 +170,7 @@ export default function Report() {
         }
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -185,6 +191,7 @@ export default function Report() {
             onSave={(data: ObjFormArmamento) => {
               itemActive.obj = data;
             }}
+            cacheData={cacheFormArmamento}
           />
         );
       case "2- Equipe":
@@ -249,7 +256,7 @@ export default function Report() {
       aba: "2- Equipe",
       API: "/api/auth/form-equipe",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheFormEquipe,
     },
     {
       aba: "3- Trocas / HE",
@@ -379,7 +386,9 @@ export default function Report() {
       <div className="flex flex-col gap-3 flex-1 items-center justify-center">
         {dateCurrent.current && (
           <div className="text-center text-gray-500 pointer-events-none">
-            <p>Esses dados são relativos à data de {dateCurrent.current} </p>
+            <p>
+              {`Esses dados são relativos à data de ${dateCurrent?.current == verifyDateActual ? "hoje" : dateCurrent.current}`}{" "}
+            </p>
           </div>
         )}
         {renderForm()}

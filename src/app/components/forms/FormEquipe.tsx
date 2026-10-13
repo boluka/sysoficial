@@ -1,8 +1,12 @@
+'use client'
+import { useState } from "react";
 import SelectComponent from "../select/Select";
 import TextAreaComponent from "../textarea/TextAreaComponent";
 import FormDefault from "./FormDefault";
 import styles from "./styles-forms.module.css";
 export default function FormEquipe() {
+  const [textArea, setTextArea] = useState('');
+
   return (
     <FormDefault>
       <h1 className="text-center bg-cinza-escuro rounded-[5px] text-[1.3em] font-bold text-amarelo-claro">
@@ -12,7 +16,7 @@ export default function FormEquipe() {
         <section
           className={`${styles["style-div"]} flex flex-col gap-4! w-full`}
         >
-          <fieldset className="flex flex-col gap-2 border border-amarelo-claro rounded-[5px] py-2">
+          <fieldset className="flex flex-col gap-2 border border-amarelo-claro rounded-[5px] p-2">
             <legend className="text-amarelo-claro text-center">
               Oficial do Dia:{" "}
             </legend>
@@ -21,7 +25,7 @@ export default function FormEquipe() {
               <SelectComponent width="w-[50%]" />
             </div>
             <div className="flex items-center justify-end gap-2">
-              <p className="text-sm">Aux. Chefe-Equipe: </p>
+              <p className="text-[0.8em]">Aux. Chefe-Equipe: </p>
               <SelectComponent width="w-[50%]" />
             </div>
           </fieldset>
@@ -58,7 +62,7 @@ export default function FormEquipe() {
               <SelectComponent width="w-[50%]" />
             </div>
             <div className="flex items-center justify-end gap-2">
-              <p className="text-sm">Trabalho/Crina</p>
+              <p className="text-sm">Trabalho/Crina:</p>
               <SelectComponent width="w-[50%]" />
             </div>
           </fieldset>
@@ -114,7 +118,7 @@ export default function FormEquipe() {
       </div>
       <div className={`${styles["style-div"]}`}>
         <p className="text-amarelo-claro mb-1">Demais auxiliares:</p>
-        <TextAreaComponent width="w-full" height="h-10"/>
+        <TextAreaComponent width="w-full" height="h-10" setTextArea={setTextArea} value={textArea}/>
       </div>
     </FormDefault>
   );

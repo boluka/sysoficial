@@ -14,10 +14,10 @@ export async function GET(request: Request) {
         update: {},
         create: { data },
       });
-      const returnData = await prisma.formArmamento.findMany({
+      const returnData = await prisma.formArmamento.findUnique({
         where: { relatorioId: relatorioDia.id },
       });
-      if (returnData.length != 0) {
+      if (returnData) {
         return NextResponse.json(
           { sucess: true, payload: returnData } as SucessAuth,
           { status: 200 },
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       });
       await prisma.formArmamento.upsert({
         where: { relatorioId: relatorioDia.id },
-        update: {},
+        update: {...data},
         create: {
           ...data,
           relatorioId: relatorioDia.id,

@@ -5,9 +5,8 @@
     gap: 10px;
 }
 .style-opt {
-    font-size: 0.9em;
+    font-size: 1em;
     background-color: var(--color-cinza-escuro);
-
 }
 .style-dialog {
     transition: all;

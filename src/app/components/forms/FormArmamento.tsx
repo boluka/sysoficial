@@ -14,51 +14,50 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ObjArmamento, ObjFormArmamento } from "@/app/types/form";
+import { SucessAuth } from "@/app/types/auth";
 
 export default function FormArmamento({
   onSave,
+  cacheData,
 }: {
   onSave: (param: ObjFormArmamento) => void;
+  cacheData: SucessAuth | null;
 }) {
-
-  
-
   const [qtMunicao, setQtMunicao] = useState(0);
   const [qtCarregadoresPist, setQtCarregadoresPist] = useState(0);
-  const [qtCarregadoresCarabina, setQtCarregadoresCarabina] = useState({qtCarabinaQuinze: 0, qtCarabinaTrinta: 0});
+  const [qtCarregadoresCarabina, setQtCarregadoresCarabina] = useState({
+    qtCarabinaQuinze: 0,
+    qtCarabinaTrinta: 0,
+  });
   const [selectGuns, setSelectGuns] = useState("");
   const [selectNumeration, setSelectNumeration] = useState("");
   const [guns, setGuns] = useState<ObjArmamento[]>([]);
   const [numeration, setNumeration] = useState<ObjArmamento[]>([]);
-  const [data, setData] = useState<ObjArmamento[]>([]);
+  const [manyGuns, setManyGuns] = useState<ObjArmamento[]>([]);
   const [itemSelect, setItemSelect] = useState<ObjArmamento>();
   const [id, setId] = useState(0);
-  
 
   onSave({
-    armamento: JSON.stringify(data),
+    armamento: JSON.stringify(manyGuns),
     qtPistola: qtCarregadoresPist,
     qtCarabinaQuinze: qtCarregadoresCarabina.qtCarabinaQuinze,
     qtCarabinaTrinta: qtCarregadoresCarabina.qtCarabinaTrinta,
-    municao: qtMunicao
-  })
+    municao: qtMunicao,
+  });
 
   const fetchGuns = async () => {
     try {
       fetch("/api/auth/armamento/")
-      .then((e) => e.json())
-      .then((e) => {
-        if (e.sucess) {
-          setGuns(e.payload);
-        }
-      });
+        .then((e) => e.json())
+        .then((e) => {
+          if (e.sucess) {
+            setGuns(e.payload);
+          }
+        });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
-  useEffect(() => {
-    if (numeration.length > 0) setSelectNumeration(numeration[0].num);
-  }, [numeration]);
 
   const filterGuns = () => {
     setNumeration(
@@ -67,23 +66,76 @@ export default function FormArmamento({
       }),
     );
   };
- 
+
   const handlerInsert = (e: any) => {
     e.preventDefault();
-    setId(id + 1)
-    setData((prev) => [{id: id, tipo: selectGuns, num: selectNumeration }, ...prev]);
-    console.log(data)
+    setId(id + 1);
+    setManyGuns((prev) => [
+      ...prev,
+      { id: id, tipo: selectGuns, num: selectNumeration },
+    ]);
   };
 
-  const handlerDelete = (e:any) => {
+  useEffect(() => {
+    console.log(manyGuns);
+  }, [manyGuns]);
+
+  const handlerDelete = (e: any) => {
     e.preventDefault();
-      if(itemSelect){
-        setData(data.filter((e) => {
-            return e.id != itemSelect.id
-        }))
-        setItemSelect(undefined);
-      }
-  }
+    if (itemSelect) {
+      setManyGuns(
+        manyGuns.filter((e) => {
+          return e.id != itemSelect.id;
+        }),
+      );
+      setItemSelect(undefined);
+    }
+  };
+
+  useEffect(() => {
+    if (cacheData?.sucess) {
+      const {
+        municao,
+        qtPistola,
+        qtCarabinaQuinze,
+        qtCarabinaTrinta,
+        armamento,
+      } = cacheData.payload as ObjFormArmamento;
+      setQtCarregadoresCarabina({
+        qtCarabinaTrinta: qtCarabinaTrinta,
+        qtCarabinaQuinze: qtCarabinaQuinze,
+      });
+      setQtMunicao(municao);
+      setQtCarregadoresPist(qtPistola);
+
+      let i = id;
+      let valorsArm = JSON.parse(armamento.toString());
+      valorsArm = valorsArm.map((e: any) => {
+        e.id = i++;
+        return e;
+      });
+      setId(i);
+      setManyGuns(valorsArm);
+    } else {
+      setQtCarregadoresCarabina({
+        qtCarabinaTrinta: 0,
+        qtCarabinaQuinze: 0,
+      });
+      setQtMunicao(0);
+      setQtCarregadoresPist(0);
+      // //Lógica para incluir linhas vazias na tabela
+
+      // let v = [];
+      // for (let i = 1; i <= 6; i++) {
+      //   v.push({ id: -1, num: "-", calibre: "-", tipo: "-" } as ObjArmamento);
+      // }
+      setManyGuns([]);
+    }
+  }, [cacheData]);
+
+  useEffect(() => {
+    if (numeration.length > 0) setSelectNumeration(numeration[0].num);
+  }, [numeration]);
 
   useEffect(() => {
     filterGuns();
@@ -102,9 +154,11 @@ export default function FormArmamento({
     fetchGuns();
   }, []);
 
-
   return (
     <FormDefault>
+      <h2 className="text-center bg-cinza-escuro text-amarelo-claro text-[1.3em] font-bold rounded-[5px]">
+        Armamento
+      </h2>
       <div
         className={`${styles["style-div"]} flex p-4! rounded-b-2xl! max-h-100 justify-between flex-row-reverse`}
       >
@@ -135,7 +189,10 @@ export default function FormArmamento({
               type="number"
               value={qtCarregadoresCarabina.qtCarabinaQuinze}
               onChange={(e: any) => {
-                setQtCarregadoresCarabina((prev) => ({...prev, qtCarabinaQuinze: parseInt(e.target.value)}));
+                setQtCarregadoresCarabina((prev) => ({
+                  ...prev,
+                  qtCarabinaQuinze: parseInt(e.target.value),
+                }));
               }}
             />
             <p>De 30 para Carabina: </p>
@@ -144,7 +201,10 @@ export default function FormArmamento({
               type="number"
               value={qtCarregadoresCarabina.qtCarabinaTrinta}
               onChange={(e: any) => {
-                setQtCarregadoresCarabina((prev) => ({...prev, qtCarabinaTrinta: parseInt(e.target.value)}));
+                setQtCarregadoresCarabina((prev) => ({
+                  ...prev,
+                  qtCarabinaTrinta: parseInt(e.target.value),
+                }));
               }}
             />
           </div>
@@ -221,13 +281,12 @@ export default function FormArmamento({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((e, i) => {
+              {manyGuns.map((e, i) => {
                 return (
                   <TableRow
                     key={i}
                     onClick={() => {
-                      setItemSelect({id:e.id,  tipo: e.tipo, num: e.num })
-                    
+                      setItemSelect({ id: e.id, tipo: e.tipo, num: e.num });
                     }}
                     className={`${e.id === itemSelect?.id && "bg-cinza-maisclaro"}`}
                   >
