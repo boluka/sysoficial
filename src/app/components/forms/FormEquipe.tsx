@@ -6,11 +6,16 @@ import FormDefault from "./FormDefault";
 import styles from "./styles-forms.module.css";
 import { Person } from "@/generated/prisma";
 import { ObjFormEquipe } from "@/app/types/form";
+import { SucessAuth } from "@/app/types/auth";
 
 export default function FormEquipe({
-  person, onSave
+  person,
+  onSave,
+  cacheData,
 }: {
-  person: Person[] | undefined, onSave: (data: ObjFormEquipe) => void;
+  person: Person[] | undefined;
+  onSave: (data: ObjFormEquipe) => void;
+  cacheData: SucessAuth<ObjFormEquipe> | null;
 }) {
   const [textArea, setTextArea] = useState("");
   const [chefeEquipe, setChefeEquipe] = useState("");
@@ -22,9 +27,71 @@ export default function FormEquipe({
   const [escolaPadaria, setEscolaPadaria] = useState("");
   const [crina, setCrina] = useState("");
   const [resposPv1, setResposPv1] = useState("");
-  const [corredorPv1, setCorredorPv1] = useState({person1: "", person2: "", person3: "", person4: ""})
+  const [corredorPv1, setCorredorPv1] = useState({
+    person1: "",
+    person2: "",
+    person3: "",
+    person4: "",
+  });
   const [resposPv2, setResposPv2] = useState("");
-  const [corredorPv2, setCorredorPv2] = useState({person1: "", person2: "", person3: ""})
+  const [corredorPv2, setCorredorPv2] = useState({
+    person1: "",
+    person2: "",
+    person3: "",
+  });
+
+  useEffect(() => {
+    if (cacheData?.sucess) {
+      if (cacheData.payload) {
+        const {
+          chefeEquipe,
+          auxChefe,
+          portariaPrinc,
+          auxPort1,
+          auxPort2,
+          passarelaPrinc,
+          escolaPadaria,
+          trabalhoCrina,
+          responsavelPv1,
+          corredorPv1,
+          responsavelPv2,
+          corredorPv2,
+          demaisAux,
+        } = cacheData.payload;
+        setChefeEquipe(chefeEquipe);
+        setAuxEquipe(auxChefe);
+        setPortPrincipal(portariaPrinc);
+        setAuxPort1(auxPort1 ? auxPort1 : "");
+        setAuxPort2(auxPort2 ? auxPort2 : "");
+        setPassPrincipal(passarelaPrinc ? passarelaPrinc : "");
+        setEscolaPadaria(escolaPadaria ? escolaPadaria : "");
+        setCrina(trabalhoCrina ? trabalhoCrina : "");
+        if (corredorPv1) {
+          setCorredorPv1(JSON.parse(corredorPv1.toString()));
+        }
+        if (corredorPv2) {
+          setCorredorPv2(JSON.parse(corredorPv2.toString()));
+        }
+        setResposPv1(responsavelPv1);
+        setResposPv2(responsavelPv2);
+        setTextArea(demaisAux ? demaisAux : "");
+      }
+    } else {
+      setChefeEquipe("");
+      setAuxEquipe("");
+      setPortPrincipal("");
+      setAuxPort1("");
+      setAuxPort2("");
+      setPassPrincipal("");
+      setEscolaPadaria("");
+      setCrina("");
+      setResposPv1("");
+      setCorredorPv1({person1:'', person2: '', person3:'', person4:''})
+      setCorredorPv2({person1:'', person2: '', person3:''})
+      setResposPv2("");
+      setTextArea("");
+    }
+  }, [cacheData]);
 
   onSave({
     chefeEquipe: chefeEquipe,
@@ -39,8 +106,8 @@ export default function FormEquipe({
     corredorPv1: JSON.stringify(corredorPv1),
     responsavelPv2: resposPv2,
     corredorPv2: JSON.stringify(corredorPv2),
-    demaisAux: textArea
-  })
+    demaisAux: textArea,
+  });
 
   return (
     <FormDefault>
@@ -134,7 +201,7 @@ export default function FormEquipe({
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Auxiliar Portaria 1:</p>
-             <SelectComponent
+              <SelectComponent
                 width="w-[50%]"
                 value={auxPort1}
                 onChange={(e: any) => {
@@ -187,7 +254,7 @@ export default function FormEquipe({
             </legend>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Passarela Principal:</p>
-             <SelectComponent
+              <SelectComponent
                 width="w-[50%]"
                 value={passPrincipal}
                 onChange={(e: any) => {
@@ -235,7 +302,7 @@ export default function FormEquipe({
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Trabalho/Crina:</p>
-             <SelectComponent
+              <SelectComponent
                 width="w-[50%]"
                 value={crina}
                 onChange={(e: any) => {
@@ -294,7 +361,10 @@ export default function FormEquipe({
                 width="w-[50%]"
                 value={corredorPv1.person1}
                 onChange={(e: any) => {
-                  setCorredorPv1((prev) => ({...prev, person1: e.target.value }));
+                  setCorredorPv1((prev) => ({
+                    ...prev,
+                    person1: e.target.value,
+                  }));
                 }}
               >
                 <option className="disabled hidden" value=""></option>
@@ -318,7 +388,10 @@ export default function FormEquipe({
                 width="w-[50%]"
                 value={corredorPv1.person2}
                 onChange={(e: any) => {
-                  setCorredorPv1((prev) => ({...prev, person2: e.target.value }));
+                  setCorredorPv1((prev) => ({
+                    ...prev,
+                    person2: e.target.value,
+                  }));
                 }}
               >
                 <option className="disabled hidden" value=""></option>
@@ -342,7 +415,10 @@ export default function FormEquipe({
                 width="w-[50%]"
                 value={corredorPv1.person3}
                 onChange={(e: any) => {
-                  setCorredorPv1((prev) => ({...prev, person3: e.target.value }));
+                  setCorredorPv1((prev) => ({
+                    ...prev,
+                    person3: e.target.value,
+                  }));
                 }}
               >
                 <option className="disabled hidden" value=""></option>
@@ -366,7 +442,10 @@ export default function FormEquipe({
                 width="w-[50%]"
                 value={corredorPv1.person4}
                 onChange={(e: any) => {
-                  setCorredorPv1((prev) => ({...prev, person4: e.target.value }));
+                  setCorredorPv1((prev) => ({
+                    ...prev,
+                    person4: e.target.value,
+                  }));
                 }}
               >
                 <option className="disabled hidden" value=""></option>
@@ -419,7 +498,10 @@ export default function FormEquipe({
                 width="w-[50%]"
                 value={corredorPv2.person1}
                 onChange={(e: any) => {
-                  setCorredorPv2((prev) => ({...prev, person1: e.target.value }));
+                  setCorredorPv2((prev) => ({
+                    ...prev,
+                    person1: e.target.value,
+                  }));
                 }}
               >
                 <option className="disabled hidden" value=""></option>
@@ -439,11 +521,14 @@ export default function FormEquipe({
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV2:</p>
-             <SelectComponent
+              <SelectComponent
                 width="w-[50%]"
                 value={corredorPv2.person2}
                 onChange={(e: any) => {
-                  setCorredorPv2((prev) => ({...prev, person2: e.target.value }));
+                  setCorredorPv2((prev) => ({
+                    ...prev,
+                    person2: e.target.value,
+                  }));
                 }}
               >
                 <option className="disabled hidden" value=""></option>
@@ -463,11 +548,14 @@ export default function FormEquipe({
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV2:</p>
-             <SelectComponent
+              <SelectComponent
                 width="w-[50%]"
                 value={corredorPv2.person3}
                 onChange={(e: any) => {
-                  setCorredorPv2((prev) => ({...prev, person3: e.target.value }));
+                  setCorredorPv2((prev) => ({
+                    ...prev,
+                    person3: e.target.value,
+                  }));
                 }}
               >
                 <option className="disabled hidden" value=""></option>

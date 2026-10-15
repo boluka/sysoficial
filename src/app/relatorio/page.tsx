@@ -195,7 +195,7 @@ export default function Report() {
       case "2- Equipe":
         return <FormEquipe person={person} onSave={(data: ObjFormEquipe) => {
           itemActive.obj = data
-        }}/>;
+        }} cacheData={cacheFormEquipe}/>;
 
       case "3- Trocas / HE":
         return <FormTrocasHe />;
