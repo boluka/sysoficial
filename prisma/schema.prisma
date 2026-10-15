@@ -65,6 +65,7 @@ model FormEquipe {
   corredorPv1 Json?
   responsavelPv2 String
   corredorPv2 Json?
+  demaisAux String?
   relatorioId String @unique
   relatorio RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
 }

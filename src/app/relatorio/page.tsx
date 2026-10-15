@@ -31,6 +31,7 @@ import DialogInfo, { dialogMsg } from "../components/dialog/DialogInfo";
 import {
   ObjArmamento,
   ObjFormArmamento,
+  ObjFormEquipe,
   ObjFormRecebimento,
 } from "@/app/types/form";
 import DialogDate from "../components/dialog/DialogDate";
@@ -102,7 +103,6 @@ export default function Report() {
       if (e?.sucess) {
         setDialogInfoMsg("Dados encontrados com sucesso!");
         dateCurrent.current = dateStr;
-        console.log(e);
         itemActive.cache(e);
       } else {
         setDialogInfoMsg(e?.error as dialogMsg);
@@ -121,12 +121,6 @@ export default function Report() {
       if (dateCalendar) showMsgFetchData(dateCalendar);
     })();
   }, [dateCalendar, itemActive]);
-
-  // useEffect(() => {
-  //   (async () => {
-  //      if (dateCalendar) showMsgFetchData(dateCalendar);
-  //   })();
-  // }, [itemActive]);
 
   useEffect(() => {
     (async ()=> {
@@ -155,9 +149,7 @@ export default function Report() {
         data: { ...itemActive.obj },
       };
     }
-
-    console.log(itemActive.obj);
-
+    console.log(itemActive.obj)
     try {
       const result = await fetch(itemActive.API, {
         method: "POST",
@@ -201,7 +193,9 @@ export default function Report() {
           />
         );
       case "2- Equipe":
-        return <FormEquipe />;
+        return <FormEquipe person={person} onSave={(data: ObjFormEquipe) => {
+          itemActive.obj = data
+        }}/>;
 
       case "3- Trocas / HE":
         return <FormTrocasHe />;
