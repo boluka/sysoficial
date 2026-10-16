@@ -24,6 +24,7 @@ model RelatorioDoDia {
   formRecebimento FormRecebimento?
   formArmamento FormArmamento?
   formEquipe FormEquipe?
+  formTrocaHe FormTrocaHe?
 }
 
 model FormRecebimento {
@@ -66,6 +67,20 @@ model FormEquipe {
   responsavelPv2 String
   corredorPv2 Json?
   demaisAux String?
+  relatorioId String @unique
+  relatorio RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+model FormTrocaHe {
+  id Int @id @default(autoincrement())
+  substituto String?
+  substituido String?
+  data_entrada String?
+  horario_entrada String?
+  data_saida String?
+  horario_saida String?
+  servidor_he String?
+  inicio_he String?
+  termino_he String?
   relatorioId String @unique
   relatorio RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
 }

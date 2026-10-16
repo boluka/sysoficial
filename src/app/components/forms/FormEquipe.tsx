@@ -120,7 +120,7 @@ export default function FormEquipe({
         >
           <fieldset className="flex flex-col gap-2 border border-amarelo-claro rounded-[5px] p-2">
             <legend className="text-amarelo-claro text-center">
-              Oficial do Dia:{" "}
+              Oficial do Dia:
             </legend>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Chefe de Equipe: </p>
@@ -171,7 +171,7 @@ export default function FormEquipe({
               </SelectComponent>
             </div>
           </fieldset>
-          <fieldset className="flex flex-col gap-2 border border-amarelo-claro rounded-[5px] py-2">
+          <fieldset className="flex flex-col gap-2 border border-amarelo-claro rounded-[5px] p-2">
             <legend className="text-amarelo-claro text-center">
               Portaria:{" "}
             </legend>
@@ -248,12 +248,12 @@ export default function FormEquipe({
               </SelectComponent>
             </div>
           </fieldset>
-          <fieldset className="flex flex-col gap-2 border border-amarelo-claro rounded-[5px] py-2">
+          <fieldset className="flex flex-col gap-2 border border-amarelo-claro rounded-[5px] p-2">
             <legend className="text-amarelo-claro text-center">
               Trabalhos:
             </legend>
             <div className="flex items-center justify-end gap-2">
-              <p className="text-sm">Passarela Principal:</p>
+              <p className="text-[0.8em]">Passarela Principal:</p>
               <SelectComponent
                 width="w-[50%]"
                 value={passPrincipal}
@@ -327,12 +327,12 @@ export default function FormEquipe({
           </fieldset>
         </section>
         <section className={`${styles["style-div"]} flex flex-col w-full`}>
-          <fieldset className="flex flex-col gap-3 border border-amarelo-claro rounded-[5px] py-2">
+          <fieldset className="flex flex-col gap-3 border border-amarelo-claro rounded-[5px] p-2">
             <legend className="text-amarelo-claro text-center">
               Pavilhão 1:
             </legend>
             <div className="flex items-center justify-end gap-2">
-              <p className="text-sm">Responsável PV1:</p>
+              <p className="text-[0.8em]">Responsável PV1:</p>
               <SelectComponent
                 width="w-[50%]"
                 value={resposPv1}
@@ -464,12 +464,12 @@ export default function FormEquipe({
               </SelectComponent>
             </div>
           </fieldset>
-          <fieldset className="flex flex-col gap-3 border border-amarelo-claro rounded-[5px] py-2">
+          <fieldset className="flex flex-col gap-3 border border-amarelo-claro rounded-[5px] p-2">
             <legend className="text-amarelo-claro text-center">
               Pavilhão 2:
             </legend>
             <div className="flex items-center justify-end gap-2">
-              <p className="text-sm">Responsável PV2:</p>
+              <p className="text-[0.8em]">Responsável PV2:</p>
               <SelectComponent
                 width="w-[50%]"
                 value={resposPv2}

@@ -37,7 +37,7 @@ import {
 import DialogDate from "../components/dialog/DialogDate";
 import fetchData, { fetchPerson } from "./services";
 import DialogSave from "../components/dialog/DialogSave";
-import { Person } from "@/generated/prisma";
+import { FormTrocaHe, Person } from "@/generated/prisma";
 
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
@@ -65,11 +65,15 @@ export default function Report() {
   const [cacheFormEquipe, setCacheFormEquipe] =
     useState<SucessAuth | null>(null);
 
+  const [cacheFormTrocaHe, setCacheFormTrocaHe] = useState<SucessAuth | null>(null);
+
   const [itemActive, setItemActive] = useState({
-      aba: "2- Equipe",
-      API: "/api/auth/form-equipe",
+      
+      aba: "3- Trocas / HE",
+      API: "/api/auth/form-trocas-he",
       obj: {},
-      cache: setCacheFormEquipe,
+      cache: setCacheFormTrocaHe,
+    
     });
   const [progress, setProgress] = useState(false);
 
@@ -198,7 +202,9 @@ export default function Report() {
         }} cacheData={cacheFormEquipe}/>;
 
       case "3- Trocas / HE":
-        return <FormTrocasHe />;
+        return <FormTrocasHe person={person} onSave={(data: FormTrocaHe) => {
+          itemActive.obj = data
+        }} cache={cacheFormTrocaHe} />;
 
       case "05- 11 Expediente":
         return <FormExpediente />;
@@ -262,7 +268,7 @@ export default function Report() {
       aba: "3- Trocas / HE",
       API: "/api/auth/form-trocas-he",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheFormTrocaHe,
     },
     {
       aba: "05- 11 Expediente",
