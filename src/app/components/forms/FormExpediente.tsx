@@ -14,8 +14,6 @@ export default function FormExpediente() {
       </h2>
       <section className={`${styles["style-div"]} flex`}>
         <TextAreaComponent width="w-auto" height="h-30 flex-1" />
-        <TextAreaComponent width="w-auto" height="h-30 flex-1" />
-        <TextAreaComponent width="w-auto" height="h-30 flex-1" />
       </section>
       <section className={`${styles["style-div"]}  flex flex-col`}>
         <div className="flex w-full gap-2 items-center justify-end">

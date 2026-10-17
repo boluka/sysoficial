@@ -6,6 +6,7 @@ import FormDefault from "./FormDefault";
 import styles from "./styles-forms.module.css";
 import { useEffect, useState } from "react";
 import { SucessAuth } from "@/app/types/auth";
+import { ComboboxBasic } from "../shadcn/combobox/ComboboxBasic";
 export default function FormTrocas({
   person,
   onSave,
@@ -65,6 +66,7 @@ export default function FormTrocas({
 
   return (
     <FormDefault>
+     
       <h2 className="text-center bg-cinza-escuro rounded-[5px] text-amarelo-claro text-[1.3em] font-bold">
         Trocas de serviço
       </h2>
@@ -72,52 +74,12 @@ export default function FormTrocas({
         <fieldset className="flex w-full gap-2 border border-amarelo-claro rounded-[5px] p-2">
           <legend className="text-amarelo-claro text-center">Servidores</legend>
           <div className="flex w-full gap-2">
-            <p>substituto:</p>
-            <SelectComponent
-              width="w-full"
-              value={substituto}
-              onChange={(e: any) => {
-                setSubstituto(e.target.value);
-              }}
-            >
-              <option className="hidden" value=""></option>
-              {person &&
-                person.map((e) => {
-                  return (
-                    <option
-                      className="bg-cinza-escuro text-amarelo-claro"
-                      key={e.id}
-                      value={e.name}
-                    >
-                      {e.name}
-                    </option>
-                  );
-                })}
-            </SelectComponent>
+            <p>Substituto:</p>
+             <ComboboxBasic items={person ? person : []} onChange={setSubstituto} value={substituto} />
           </div>
           <div className="flex w-full  gap-2">
             <p>Substituído:</p>
-            <SelectComponent
-              width="w-full"
-              value={substituido}
-              onChange={(e: any) => {
-                setSubstituido(e.target.value);
-              }}
-            >
-              <option className="hidden" value=""></option>
-              {person &&
-                person.map((e) => {
-                  return (
-                    <option
-                      className="bg-cinza-escuro text-amarelo-claro"
-                      key={e.id}
-                      value={e.name}
-                    >
-                      {e.name}
-                    </option>
-                  );
-                })}
-            </SelectComponent>
+            <ComboboxBasic items={person ? person : []} onChange={setSubstituido} value={substituido} />
           </div>
         </fieldset>
         <fieldset className="flex w-full justify-around gap-2 border border-amarelo-claro rounded-[5px] p-2">
@@ -142,27 +104,7 @@ export default function FormTrocas({
       <section className={`${styles["style-div"]} flex justify-between `}>
         <div className="flex flex-1 gap-2">
           <p className="">Servidor: </p>
-          <SelectComponent
-            width="w-full"
-            value={servidorHe}
-            onChange={(e: any) => {
-              setServidorHe(e.target.value);
-            }}
-          >
-            <option className="hidden" value=""></option>
-            {person &&
-              person.map((e) => {
-                return (
-                  <option
-                    className="bg-cinza-escuro text-amarelo-claro"
-                    key={e.id}
-                    value={e.name}
-                  >
-                    {e.name}
-                  </option>
-                );
-              })}
-          </SelectComponent>
+          <ComboboxBasic items={person ? person : []} onChange={setSubstituto} value={substituto} />
         </div>
         <div className="flex gap-2">
           <p className="">Ínicio: </p>
