@@ -9,12 +9,20 @@ export default async function fetchData(
     const params = new URLSearchParams({
       date,
     });
-    const result = fetch(`${API}?${params.toString()}`);
-    const response = await result;
+    const response = await fetch(`${API}?${params.toString()}`);
+    if(!response.ok){
+      const dataError = await response.json().catch(() => null)
+      return {
+        message: 'Erro fatal',
+        sucess: false,
+        error: dataError.error || `Servidor respondeu com status: ${response.status}`
+      }
+    }
     return (await response.json()) as SucessAuth;
+    return null;
   } catch (error) {
     console.log("Error fetching data:", error);
-    return null;
+    return {message: 'Erro fatal', sucess: false};
   }
 }
 export async function fetchPerson(): Promise<Person[] | null> {

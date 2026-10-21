@@ -7,6 +7,7 @@ import styles from "./styles-forms.module.css";
 import { Person } from "@/generated/prisma";
 import { ObjFormEquipe } from "@/app/types/form";
 import { SucessAuth } from "@/app/types/auth";
+import { ComboboxBasic } from "../shadcn/combobox/ComboboxBasic";
 
 export default function FormEquipe({
   person,
@@ -86,8 +87,8 @@ export default function FormEquipe({
       setEscolaPadaria("");
       setCrina("");
       setResposPv1("");
-      setCorredorPv1({person1:'', person2: '', person3:'', person4:''})
-      setCorredorPv2({person1:'', person2: '', person3:''})
+      setCorredorPv1({ person1: "", person2: "", person3: "", person4: "" });
+      setCorredorPv2({ person1: "", person2: "", person3: "" });
       setResposPv2("");
       setTextArea("");
     }
@@ -124,51 +125,25 @@ export default function FormEquipe({
             </legend>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Chefe de Equipe: </p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={chefeEquipe}
-                onChange={(e: any) => {
-                  setChefeEquipe(e.target.value);
+                onChange={(e) => {
+                  setChefeEquipe(e ?? "");
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-[0.8em]">Aux. Chefe-Equipe: </p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={auxEquipe}
-                onChange={(e: any) => {
-                  setAuxEquipe(e.target.value);
+                onChange={(e) => {
+                  setAuxEquipe(e ?? "");
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
           </fieldset>
           <fieldset className="flex flex-col gap-2 border border-amarelo-claro rounded-[5px] p-2">
@@ -177,75 +152,36 @@ export default function FormEquipe({
             </legend>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Portaria Principal: </p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={portPrincipal}
-                onChange={(e: any) => {
-                  setPortPrincipal(e.target.value);
+                onChange={(e) => {
+                  setPortPrincipal(e ?? "");
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Auxiliar Portaria 1:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={auxPort1}
-                onChange={(e: any) => {
-                  setAuxPort1(e.target.value);
+                onChange={(e) => {
+                  setAuxPort1(e ?? "");
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Auxiliar Portaria 2:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={auxPort2}
-                onChange={(e: any) => {
-                  setAuxPort2(e.target.value);
+                onChange={(e) => {
+                  setAuxPort2(e ?? "");
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
           </fieldset>
           <fieldset className="flex flex-col gap-2 border border-amarelo-claro rounded-[5px] p-2">
@@ -254,75 +190,36 @@ export default function FormEquipe({
             </legend>
             <div className="flex items-center justify-end gap-2">
               <p className="text-[0.8em]">Passarela Principal:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={passPrincipal}
-                onChange={(e: any) => {
-                  setPassPrincipal(e.target.value);
+                onChange={(e) => {
+                  setPassPrincipal(e ?? "");
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Escola Padaria:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={escolaPadaria}
-                onChange={(e: any) => {
-                  setEscolaPadaria(e.target.value);
+                onChange={(e) => {
+                  setEscolaPadaria(e ?? "");
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Trabalho/Crina:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={crina}
-                onChange={(e: any) => {
-                  setCrina(e.target.value);
+                onChange={(e) => {
+                  setCrina(e ?? "");
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
           </fieldset>
         </section>
@@ -332,136 +229,72 @@ export default function FormEquipe({
               Pavilhão 1:
             </legend>
             <div className="flex items-center justify-end gap-2">
-              <p className="text-[0.8em]">Responsável PV1:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <p className="text-sm">Responsável PV1:</p>
+              <ComboboxBasic
+                items={person ?? []}
                 value={resposPv1}
-                onChange={(e: any) => {
-                  setResposPv1(e.target.value);
+                onChange={(e) => {
+                  setResposPv1(e ?? "");
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV1:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={corredorPv1.person1}
-                onChange={(e: any) => {
+                onChange={(e) => {
                   setCorredorPv1((prev) => ({
                     ...prev,
-                    person1: e.target.value,
+                    person1: e ?? "",
                   }));
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV1:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={corredorPv1.person2}
-                onChange={(e: any) => {
+                onChange={(e) => {
                   setCorredorPv1((prev) => ({
                     ...prev,
-                    person2: e.target.value,
+                    person2: e ?? "",
                   }));
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
+              
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV1:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={corredorPv1.person3}
-                onChange={(e: any) => {
+                onChange={(e) => {
                   setCorredorPv1((prev) => ({
                     ...prev,
-                    person3: e.target.value,
+                    person3: e ?? "",
                   }));
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV1:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={corredorPv1.person4}
-                onChange={(e: any) => {
+                onChange={(e) => {
                   setCorredorPv1((prev) => ({
                     ...prev,
-                    person4: e.target.value,
+                    person4: e ?? "",
                   }));
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
           </fieldset>
           <fieldset className="flex flex-col gap-3 border border-amarelo-claro rounded-[5px] p-2">
@@ -469,109 +302,58 @@ export default function FormEquipe({
               Pavilhão 2:
             </legend>
             <div className="flex items-center justify-end gap-2">
-              <p className="text-[0.8em]">Responsável PV2:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <p className="text-sm">Responsável PV2:</p>
+              <ComboboxBasic
+                items={person ?? []}
                 value={resposPv2}
-                onChange={(e: any) => {
-                  setResposPv2(e.target.value);
+                onChange={(e) => {
+                  setResposPv2(e ?? "");
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV2:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={corredorPv2.person1}
-                onChange={(e: any) => {
+                onChange={(e) => {
                   setCorredorPv2((prev) => ({
                     ...prev,
-                    person1: e.target.value,
+                    person1: e ?? "",
                   }));
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
-            </div>
+                styles="w-40"
+              />
+              </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV2:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={corredorPv2.person2}
-                onChange={(e: any) => {
+                onChange={(e) => {
                   setCorredorPv2((prev) => ({
                     ...prev,
-                    person2: e.target.value,
+                    person2: e ?? "",
                   }));
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
+              
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV2:</p>
-              <SelectComponent
-                width="w-[50%]"
+              <ComboboxBasic
+                items={person ?? []}
                 value={corredorPv2.person3}
-                onChange={(e: any) => {
+                onChange={(e) => {
                   setCorredorPv2((prev) => ({
                     ...prev,
-                    person3: e.target.value,
+                    person3: e ?? "",
                   }));
                 }}
-              >
-                <option className="disabled hidden" value=""></option>
-                {person &&
-                  person.map((e) => {
-                    return (
-                      <option
-                        className="bg-cinza-escuro text-amarelo-claro"
-                        key={e.id}
-                        value={e.name}
-                      >
-                        {e.name}
-                      </option>
-                    );
-                  })}
-              </SelectComponent>
+                styles="w-40"
+              />
             </div>
           </fieldset>
         </section>

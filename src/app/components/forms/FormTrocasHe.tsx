@@ -104,7 +104,7 @@ export default function FormTrocas({
       <section className={`${styles["style-div"]} flex justify-between `}>
         <div className="flex flex-1 gap-2">
           <p className="">Servidor: </p>
-          <ComboboxBasic items={person ? person : []} onChange={setSubstituto} value={substituto} />
+          <ComboboxBasic items={person ?? []} onChange={setServidorHe} value={servidorHe} />
         </div>
         <div className="flex gap-2">
           <p className="">Ínicio: </p>

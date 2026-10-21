@@ -8,15 +8,19 @@ import TextAreaComponent, { situation } from "../textarea/TextAreaComponent";
 import FormDefault from "./FormDefault";
 import { ObjFormRecebimento } from "@/app/types/form";
 import { SucessAuth } from "@/app/types/auth";
+import { ComboboxBasic } from "../shadcn/combobox/ComboboxBasic";
+import { Person } from "@/generated/prisma";
 
 export default function Forms({
   children,
   onSave,
   cacheData,
+  person,
 }: {
   children?: ReactNode;
   onSave: (obj: ObjFormRecebimento) => void;
   cacheData: SucessAuth | null;
+  person: Person[] | undefined;
 }) {
   const [date, setDate] = useState("");
   const optionsSituation = ["Completo e sem alterações", "Incompleto"];
@@ -63,7 +67,7 @@ export default function Forms({
           setTextArea(valorSeparate[1].trim());
         } else {
           setMat_carga(mat_carga);
-          setTextArea('');
+          setTextArea("");
         }
         if (mat_belico != "Completo e sem alterações") {
           const valorSeparate = (mat_belico as string).split(":");
@@ -71,7 +75,7 @@ export default function Forms({
           setTextAreaTwo(valorSeparate[1].trim());
         } else {
           setMat_belico(mat_belico);
-          setTextAreaTwo('');
+          setTextAreaTwo("");
         }
       }
     } else {
@@ -83,8 +87,8 @@ export default function Forms({
       setTransitoCarc(0);
       setMat_carga("Completo e sem alterações");
       setMat_belico("Completo e sem alterações");
-      setTextArea('')
-      setTextAreaTwo('')
+      setTextArea("");
+      setTextAreaTwo("");
     }
   }, [cacheData]);
 
@@ -164,78 +168,47 @@ export default function Forms({
           <DateComponent setDate={setDate} />
         </div>
       </div> */}
-      <div className={`${styles["style-div"]} text-justify p-3! leading-7  `}>
+      <div className={`${styles["style-div"]} text-justify p-3! leading-7 `}>
         Eu,
-        <SelectComponent
-          value={chefeReceb}
-          width="w-[30%]"
-          onChange={(e: any) => {
-            setChefeReceb(e.target.value);
-          }}
-          styles="mx-1"
-        >
-          {["", "Ana", "Hugo", "Sarate", "Saulo"].map((e) => {
-            return (
-              <option
-                key={e}
-                value={e}
-                className={`${styles["style-opt"]} ${e === "" && "disabled hidden"}`}
-              >
-                {e}
-              </option>
-            );
-          })}
-        </SelectComponent>
+        <div className="inline-block mx-1">
+          <ComboboxBasic
+            items={person ?? []}
+            value={chefeReceb}
+            onChange={(e) => {
+              setChefeReceb(e ?? "");
+            }}
+            styles="w-50"
+          />
+        </div>
         recebi os serviços do plantão do Instituto Penal de Campo Grande/MS, do
         chefe de equipe
-        <SelectComponent
-          value={chefeEntrega}
-          width="w-[30%]"
-          onChange={(e: any) => {
-            setChefeEntrega(e.target.value);
-          }}
-          styles="mx-1"
-        >
-          {["", "Ana", "Hugo", "Sarate", "Saulo"].map((e) => {
-            return (
-              <option
-                key={e}
-                value={e}
-                className={`${styles["style-opt"]} ${e === "" && "disabled hidden"}`}
-              >
-                {e}
-              </option>
-            );
-          })}
-        </SelectComponent>
-        ,
-        <SelectComponent
-          value={chefeAuxiliar}
-          width="w-[30%]"
-          onChange={(e: any) => {
-            setChefeAuxiliar(e.target.value);
-          }}
-          styles="mx-1"
-        >
-          {["", "Ana", "Hugo", "Sarate", "Saulo"].map((e) => {
-            return (
-              <option
-                key={e}
-                value={e}
-                className={`${styles["style-opt"]} ${e === "" && "disabled hidden"}`}
-              >
-                {e}
-              </option>
-            );
-          })}
-        </SelectComponent>
+        <div className="inline-block mx-1">
+          <ComboboxBasic
+            items={person ?? []}
+            value={chefeEntrega}
+            onChange={(e) => {
+              setChefeEntrega(e ?? "");
+            }}
+            styles="w-40"
+          />
+        </div>,
+        <div className="inline-block mx-1">
+          <ComboboxBasic
+            items={person ?? []}
+            value={chefeAuxiliar}
+            onChange={(e) => {
+              setChefeAuxiliar(e ?? "");
+            }}
+            styles="w-40"
+          />
+        </div>
         com o efetivo carcerário de
         <InputComponentForm
           value={efetivoCarc}
           type="number"
           width="w-[15%]"
           height="h-5"
-          styles="mx-1"
+          styles="mx-2"
           onChange={(e: any) => setEfetivoCarc(parseInt(e.target.value))}
         />
         e em trânsito de
@@ -244,7 +217,7 @@ export default function Forms({
           type="number"
           width="w-[15%]"
           height="h-5"
-          styles="mx-1"
+          styles="mx-2"
           onChange={(e: any) => setTransitoCarc(parseInt(e.target.value))}
         />
         .

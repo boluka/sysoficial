@@ -29,7 +29,6 @@ import { useRouter } from "next/navigation";
 import { SucessAuth } from "../types/auth";
 import DialogInfo, { dialogMsg } from "../components/dialog/DialogInfo";
 import {
-  ObjArmamento,
   ObjFormArmamento,
   ObjFormEquipe,
   ObjFormRecebimento,
@@ -38,10 +37,17 @@ import DialogDate from "../components/dialog/DialogDate";
 import fetchData, { fetchPerson } from "./services";
 import DialogSave from "../components/dialog/DialogSave";
 import { FormTrocaHe, Person } from "@/generated/prisma";
+import { useFetchData } from "@/hooks/useFetchData";
 
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
   const dialogSave = useRef<HTMLDialogElement>(null);
+
+  const [dialogInfoMsg, setDialogInfoMsg] = useState<dialogMsg>(
+    "Buscando dados de hoje...",
+  );
+   const [showDialogAnimation, setShowDialogAnimation] = useState(false);
+  const showMsgFetchData = useFetchData({showDialogAnimation, setShowDialogAnimation, setDialogInfoMsg});
   const [person, setPerson] = useState<Person[]>();
   const verifyDateActual = new Date().toLocaleString("pt-BR").split(",")[0];
 
@@ -62,77 +68,82 @@ export default function Report() {
   const [cacheFormArmamento, setCacheFormArmamento] =
     useState<SucessAuth | null>(null);
 
-  const [cacheFormEquipe, setCacheFormEquipe] =
-    useState<SucessAuth | null>(null);
-
-  const [cacheFormTrocaHe, setCacheFormTrocaHe] = useState<SucessAuth | null>(null);
-
-  const [itemActive, setItemActive] = useState({
-      
-      aba: "3- Trocas / HE",
-      API: "/api/auth/form-trocas-he",
-      obj: {},
-      cache: setCacheFormTrocaHe,
-    
-    });
-  const [progress, setProgress] = useState(false);
-
-  const [showDialogAnimation, setShowDialogAnimation] = useState(false);
-
-  const [dialogInfoMsg, setDialogInfoMsg] = useState<dialogMsg>(
-    "Buscando dados de hoje...",
+  const [cacheFormEquipe, setCacheFormEquipe] = useState<SucessAuth | null>(
+    null,
   );
 
+  const [cacheFormTrocaHe, setCacheFormTrocaHe] = useState<SucessAuth | null>(
+    null,
+  );
+
+  const [cacheFormExpediente, setCacheFormExpediente] =
+    useState<SucessAuth | null>(null);
+
+  const [itemActive, setItemActive] = useState({
+    aba: "05- 11 Expediente",
+    API: "/api/auth/form-expediente",
+    obj: {},
+    cache: setCacheFormExpediente,
+  });
+  const [progress, setProgress] = useState(false);
+
+
   const router = useRouter();
+  let dateCurrent = useRef<string | null>(null);
 
-  const timeout = useRef<NodeJS.Timeout | null>(null);
-  let dateCurrent = useRef<String | null>(null);
+  // async function showMsgFetchData(date: Date) {
+  //   if (showDialogAnimation) {
+  //     if (timeout.current) {
+  //       clearTimeout(timeout.current);
+  //       setShowDialogAnimation(false);
+  //       dialogInfo.current?.close();
+  //     }
+  //   }
+  //   setDialogInfoMsg("Buscando dados de hoje...");
+  //   if (!dialogInfo.current?.hasAttribute("show")) {
+  //     dialogInfo.current?.show();
+  //   }
+  //   setShowDialogAnimation(true);
 
-  async function showMsgFetchData(date: Date) {
-    if (showDialogAnimation) {
-      if (timeout.current) {
-        clearTimeout(timeout.current);
-        setShowDialogAnimation(false);
-        dialogInfo.current?.close();
-      }
-    }
-    setDialogInfoMsg("Buscando dados de hoje...");
-    if (!dialogInfo.current?.hasAttribute("show")) {
-      dialogInfo.current?.show();
-    }
-    setShowDialogAnimation(true);
-
-    let dateStr = date.toLocaleString("pt-BR").split(",")[0];
-    fetchData(date.toISOString().split("T")[0], itemActive.API).then((e) => {
-      if (e?.sucess) {
-        setDialogInfoMsg("Dados encontrados com sucesso!");
-        dateCurrent.current = dateStr;
-        itemActive.cache(e);
-      } else {
-        setDialogInfoMsg(e?.error as dialogMsg);
-        itemActive.cache(null);
-        dateCurrent.current = null;
-      }
-      timeout.current = setTimeout(() => {
-        setShowDialogAnimation(false);
-      }, 2000);
-    });
-  }
+  //   let dateStr = date.toLocaleString("pt-BR").split(",")[0];
+  //   fetchData(date.toISOString().split("T")[0], itemActive.API).then((e) => {
+  //     if (e?.sucess) {
+  //       setDialogInfoMsg("Dados encontrados com sucesso!");
+  //       dateCurrent.current = dateStr;
+  //       itemActive.cache(e);
+  //     } else {
+  //       setDialogInfoMsg(e?.error as dialogMsg);
+  //       itemActive.cache(null);
+  //       dateCurrent.current = null;
+  //     }
+  //     timeout.current = setTimeout(() => {
+  //       setShowDialogAnimation(false);
+  //     }, 2000);
+  //   });
+  // }
 
   //Lógica ao setar uma nova data e Lógica ao mudar de aba:
   useEffect(() => {
+    
     (async () => {
-      if (dateCalendar) showMsgFetchData(dateCalendar);
+      console.log(itemActive)
+      if (dateCalendar)
+        showMsgFetchData(
+          dateCalendar,
+          itemActive,
+          dialogInfo.current,
+          dateCurrent,
+        );
     })();
   }, [dateCalendar, itemActive]);
 
   useEffect(() => {
-    (async ()=> {
-      const result = await fetchPerson()
-      if(result){
-        setPerson(result)
+    (async () => {
+      const result = await fetchPerson();
+      if (result) {
+        setPerson(result);
       }
-    })()
+    })();
     const user = searchParams.get("nome");
     if (user) {
       localStorage.setItem("nome", user);
@@ -153,7 +164,7 @@ export default function Report() {
         data: { ...itemActive.obj },
       };
     }
-    console.log(itemActive.obj)
+    console.log(itemActive.obj);
     try {
       const result = await fetch(itemActive.API, {
         method: "POST",
@@ -185,6 +196,7 @@ export default function Report() {
               itemActive.obj = data;
             }}
             cacheData={cacheFormRecebimento}
+            person={person}
           />
         );
       case "1.1- Armamento":
@@ -197,17 +209,29 @@ export default function Report() {
           />
         );
       case "2- Equipe":
-        return <FormEquipe person={person} onSave={(data: ObjFormEquipe) => {
-          itemActive.obj = data
-        }} cacheData={cacheFormEquipe}/>;
+        return (
+          <FormEquipe
+            person={person}
+            onSave={(data: ObjFormEquipe) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheFormEquipe}
+          />
+        );
 
       case "3- Trocas / HE":
-        return <FormTrocasHe person={person} onSave={(data: FormTrocaHe) => {
-          itemActive.obj = data
-        }} cache={cacheFormTrocaHe} />;
+        return (
+          <FormTrocasHe
+            person={person}
+            onSave={(data: FormTrocaHe) => {
+              itemActive.obj = data;
+            }}
+            cache={cacheFormTrocaHe}
+          />
+        );
 
       case "05- 11 Expediente":
-        return <FormExpediente />;
+        return <FormExpediente person={person} />;
 
       case "12- Revezamento":
         return <FormRevezamento />;
@@ -274,7 +298,7 @@ export default function Report() {
       aba: "05- 11 Expediente",
       API: "/api/auth/form-expediente",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheFormExpediente,
     },
     {
       aba: "12- Revezamento",
@@ -356,14 +380,14 @@ export default function Report() {
           </button>
           <div
             ref={containerRef}
-            className="flex overflow-x-auto scroll-smooth scrollbar-none w-full  px-2  gap-3 items-center "
+            className="flex overflow-x-auto scroll-smooth scrollbar-none w-full px-2  gap-3 items-center "
           >
             {elementLi.map((e) => {
               const active = itemActive.aba === e.aba;
               return (
                 <div
                   key={e.aba}
-                  className={`${active ? "bg-amarelo-claro text-cinza-escuro font-bold " : "bg-cinza-escuro text-amarelo-claro"} p-3 my-1 rounded-[5px] text-sm cursor-pointer shadow-black shadow-[1px_1px_4px] whitespace-nowrap shrink-0 `}
+                  className={`${active ? "bg-amarelo-claro text-cinza-escuro font-bold " : "bg-cinza-escuro text-amarelo-claro"} p-3 my-1 rounded-[5px] text-sm cursor-pointer transition-all duration-200 shadow-black shadow-[1px_1px_4px] whitespace-nowrap shrink-0 `}
                   onClick={() => setItemActive(e)}
                 >
                   {e.aba}
