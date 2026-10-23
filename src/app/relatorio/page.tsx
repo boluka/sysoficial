@@ -31,6 +31,7 @@ import DialogInfo, { dialogMsg } from "../components/dialog/DialogInfo";
 import {
   ObjFormArmamento,
   ObjFormEquipe,
+  ObjFormExpediente,
   ObjFormRecebimento,
 } from "@/app/types/form";
 import DialogDate from "../components/dialog/DialogDate";
@@ -42,7 +43,6 @@ import { useFetchData } from "@/hooks/useFetchData";
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
   const dialogSave = useRef<HTMLDialogElement>(null);
-
   const [dialogInfoMsg, setDialogInfoMsg] = useState<dialogMsg>(
     "Buscando dados de hoje...",
   );
@@ -50,14 +50,10 @@ export default function Report() {
   const showMsgFetchData = useFetchData({showDialogAnimation, setShowDialogAnimation, setDialogInfoMsg});
   const [person, setPerson] = useState<Person[]>();
   const verifyDateActual = new Date().toLocaleString("pt-BR").split(",")[0];
-
-  const [dialogArmamentoActive, setDialogArmamentoActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [nickname, setNickname] = useState("");
   const searchParams = useSearchParams();
-
   const [showCalendar, setShowCalendar] = useState(false);
-
   const [dateCalendar, setDateCalendar] = useState<Date | undefined>(
     new Date(),
   );
@@ -90,37 +86,6 @@ export default function Report() {
 
   const router = useRouter();
   let dateCurrent = useRef<string | null>(null);
-
-  // async function showMsgFetchData(date: Date) {
-  //   if (showDialogAnimation) {
-  //     if (timeout.current) {
-  //       clearTimeout(timeout.current);
-  //       setShowDialogAnimation(false);
-  //       dialogInfo.current?.close();
-  //     }
-  //   }
-  //   setDialogInfoMsg("Buscando dados de hoje...");
-  //   if (!dialogInfo.current?.hasAttribute("show")) {
-  //     dialogInfo.current?.show();
-  //   }
-  //   setShowDialogAnimation(true);
-
-  //   let dateStr = date.toLocaleString("pt-BR").split(",")[0];
-  //   fetchData(date.toISOString().split("T")[0], itemActive.API).then((e) => {
-  //     if (e?.sucess) {
-  //       setDialogInfoMsg("Dados encontrados com sucesso!");
-  //       dateCurrent.current = dateStr;
-  //       itemActive.cache(e);
-  //     } else {
-  //       setDialogInfoMsg(e?.error as dialogMsg);
-  //       itemActive.cache(null);
-  //       dateCurrent.current = null;
-  //     }
-  //     timeout.current = setTimeout(() => {
-  //       setShowDialogAnimation(false);
-  //     }, 2000);
-  //   });
-  // }
 
   //Lógica ao setar uma nova data e Lógica ao mudar de aba:
   useEffect(() => {
@@ -231,7 +196,7 @@ export default function Report() {
         );
 
       case "05- 11 Expediente":
-        return <FormExpediente person={person} />;
+        return <FormExpediente person={person} onSave={(data: {}) => itemActive.obj = data} cacheData={cacheFormExpediente} />;
 
       case "12- Revezamento":
         return <FormRevezamento />;
