@@ -28,7 +28,6 @@ export default function FormExpediente({
   cacheData,
   onSave,
 }: FormProps<ObjFormExpediente>) {
-  useEffect(() => {}, [cacheData]);
 
   const [linhaSelecionada, setLinhaSelecionada] = useState<number | null>(null);
   // const [falta, setFalta] = useState<Person>({ id: 0, name: "" });
@@ -146,7 +145,7 @@ export default function FormExpediente({
     );
   };
 
-  const handlerInsertTable = (e: any) => {
+  const handlerInsertTable = (e: React.MouseEvent) => {
     e.preventDefault();
     if (pessoaExpediente) {
       if (verifyString) {
@@ -162,7 +161,7 @@ export default function FormExpediente({
       setPessoaExpedienteTable((prev) => [pessoaExpediente, ...prev]);
     }
   };
-  const handlerDeleteTable = (e: any) => {
+  const handlerDeleteTable = (e: React.MouseEvent) => {
     e.preventDefault();
     if (linhaSelecionada === null) {
       return;

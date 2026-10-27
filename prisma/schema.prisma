@@ -26,6 +26,7 @@ model RelatorioDoDia {
   formEquipe FormEquipe?
   formTrocaHe FormTrocaHe?
   formExpediente FormExpediente?
+  formRevezamento FormRevezamento?
 }
 
 model FormRecebimento {
@@ -101,6 +102,20 @@ model FormExpediente {
   observacoes String?
   relatorioId String @unique
   relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+model FormRevezamento {
+  id Int @id @default(autoincrement())
+  primeiro_turno Json?
+  segundo_turno Json?
+  terceiro_turno Json?
+  quarto_turno Json?
+  relatorioId String @unique
+  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model Hours {
+  id Int @id @default(autoincrement())
+  hour String
 }
 
 

@@ -33,9 +33,6 @@ export interface ObjFormEquipe {
   corredorPv2?: InputJsonValue
   demaisAux?: string
 }
-export interface ObjFormExpediente {
-  
-}
 
 
 

@@ -31,13 +31,12 @@ import DialogInfo, { dialogMsg } from "../components/dialog/DialogInfo";
 import {
   ObjFormArmamento,
   ObjFormEquipe,
-  ObjFormExpediente,
   ObjFormRecebimento,
 } from "@/app/types/form";
 import DialogDate from "../components/dialog/DialogDate";
-import fetchData, { fetchPerson } from "./services";
+import fetchData, { fetchHorarios, fetchPerson } from "./services";
 import DialogSave from "../components/dialog/DialogSave";
-import { FormTrocaHe, Person } from "@/generated/prisma";
+import { FormTrocaHe, Hours, Person } from "@/generated/prisma";
 import { useFetchData } from "@/hooks/useFetchData";
 
 export default function Report() {
@@ -75,13 +74,17 @@ export default function Report() {
   const [cacheFormExpediente, setCacheFormExpediente] =
     useState<SucessAuth | null>(null);
 
+      const [cacheFormRevezamento, setCacheFormRevezamento] =
+    useState<SucessAuth | null>(null);
+
   const [itemActive, setItemActive] = useState({
-    aba: "05- 11 Expediente",
-    API: "/api/auth/form-expediente",
-    obj: {},
-    cache: setCacheFormExpediente,
+      aba: "12- Revezamento",
+      API: "/api/auth/form-revezamento",
+      obj: {},
+      cache: setCacheFormRevezamento
   });
   const [progress, setProgress] = useState(false);
+  const [hour, setHour] = useState<Hours[]>([]);
 
 
   const router = useRouter();
@@ -109,6 +112,15 @@ export default function Report() {
         setPerson(result);
       }
     })();
+
+    (async () => {
+      const result = await fetchHorarios();
+      console.log(result);
+      if(result){
+        setHour(result);
+      }
+    })()
+
     const user = searchParams.get("nome");
     if (user) {
       localStorage.setItem("nome", user);
@@ -199,7 +211,7 @@ export default function Report() {
         return <FormExpediente person={person} onSave={(data: {}) => itemActive.obj = data} cacheData={cacheFormExpediente} />;
 
       case "12- Revezamento":
-        return <FormRevezamento />;
+        return <FormRevezamento person={person} onSave={(data: {}) => {itemActive.obj = data}} cacheData={cacheFormRevezamento} hours={hour}/>;
       case "13-14 Rotina Diária":
         return <FormRotinaDiaria />;
       case "15- Entrada/Saída de Presos":
@@ -269,7 +281,7 @@ export default function Report() {
       aba: "12- Revezamento",
       API: "/api/auth/form-revezamento",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheFormRevezamento,
     },
     {
       aba: "13-14 Rotina Diária",

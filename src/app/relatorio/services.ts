@@ -1,4 +1,4 @@
-import { Person } from "@/generated/prisma";
+import { Hours, Person } from "@/generated/prisma";
 import { SucessAuth } from "../types/auth";
 
 export default async function fetchData(
@@ -10,19 +10,20 @@ export default async function fetchData(
       date,
     });
     const response = await fetch(`${API}?${params.toString()}`);
-    if(!response.ok){
-      const dataError = await response.json().catch(() => null)
+    if (!response.ok) {
+      const dataError = await response.json().catch(() => null);
       return {
-        message: 'Erro fatal',
+        message: "Erro fatal",
         sucess: false,
-        error: dataError.error || `Servidor respondeu com status: ${response.status}`
-      }
+        error:
+          dataError.error ||
+          `Servidor respondeu com status: ${response.status}`,
+      };
     }
     return (await response.json()) as SucessAuth;
-    return null;
   } catch (error) {
     console.log("Error fetching data:", error);
-    return {message: 'Erro fatal', sucess: false};
+    return { message: "Erro fatal", sucess: false };
   }
 }
 export async function fetchPerson(): Promise<Person[] | null> {
@@ -31,5 +32,22 @@ export async function fetchPerson(): Promise<Person[] | null> {
   if (value.sucess) {
     return value.payload;
   }
-  return null
+  return null;
+}
+
+export async function fetchHorarios(): Promise<Hours[] | null> {
+  try {
+    const response = await fetch("/api/auth/hour");
+    if (!response.ok) {
+      return null;
+    }
+    const data = await response.json().catch(() => null);
+    if(data.sucess){
+      return data.payload;
+    }
+    return null;
+  } catch (error) {
+    console.error("Erro ao buscar dados", error)
+    return null;
+  }
 }
