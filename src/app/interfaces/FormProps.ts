@@ -6,4 +6,6 @@ export interface FormProps<T> {
       person?: Person[] | undefined;
       onSave: (data: T) => void;
       cacheData: SucessAuth<T> | null;
+      generateData?: boolean;
+      readyData?: (b: boolean) => void
 }

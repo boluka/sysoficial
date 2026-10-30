@@ -50,6 +50,7 @@ export function useFetchData(dialog: {showDialogAnimation: boolean, setShowDialo
     cache: Dispatch<SetStateAction<SucessAuth<any> | null>>},
     dialogElement: HTMLDialogElement | null,
     dateCurrent: React.RefObject<string | null>,
+
   ) {
     prepareDialog(dialogElement);
     const formatDate = formatToISODate(date);
@@ -73,6 +74,7 @@ export function useFetchData(dialog: {showDialogAnimation: boolean, setShowDialo
       })
       .finally(() => {
         scheduleDialogClose();
+
       });
   }
   return showMsgFetchData;

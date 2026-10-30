@@ -34,7 +34,7 @@ import {
   ObjFormRecebimento,
 } from "@/app/types/form";
 import DialogDate from "../components/dialog/DialogDate";
-import fetchData, { fetchHorarios, fetchPerson } from "./services";
+import { fetchHorarios, fetchPerson } from "./services";
 import DialogSave from "../components/dialog/DialogSave";
 import { FormTrocaHe, Hours, Person } from "@/generated/prisma";
 import { useFetchData } from "@/hooks/useFetchData";
@@ -45,8 +45,14 @@ export default function Report() {
   const [dialogInfoMsg, setDialogInfoMsg] = useState<dialogMsg>(
     "Buscando dados de hoje...",
   );
-   const [showDialogAnimation, setShowDialogAnimation] = useState(false);
-  const showMsgFetchData = useFetchData({showDialogAnimation, setShowDialogAnimation, setDialogInfoMsg});
+  const [showDialogAnimation, setShowDialogAnimation] = useState(false);
+  const showMsgFetchData = useFetchData({
+    showDialogAnimation,
+    setShowDialogAnimation,
+    setDialogInfoMsg,
+  });
+  const [generateDataForm, setGenerateDataForm] = useState<boolean>(false);
+  const [formDataReady, setFormDataReady] = useState<boolean>(false);
   const [person, setPerson] = useState<Person[]>();
   const verifyDateActual = new Date().toLocaleString("pt-BR").split(",")[0];
   const containerRef = useRef<HTMLDivElement>(null);
@@ -74,27 +80,27 @@ export default function Report() {
   const [cacheFormExpediente, setCacheFormExpediente] =
     useState<SucessAuth | null>(null);
 
-      const [cacheFormRevezamento, setCacheFormRevezamento] =
+  const [cacheFormRevezamento, setCacheFormRevezamento] =
+    useState<SucessAuth | null>(null);
+
+  const [cacheFormRotinaDiaria, setCacheFormRotinaDiaria] =
     useState<SucessAuth | null>(null);
 
   const [itemActive, setItemActive] = useState({
-      aba: "12- Revezamento",
-      API: "/api/auth/form-revezamento",
-      obj: {},
-      cache: setCacheFormRevezamento
+    aba: "13-14 Rotina Diária",
+    API: "/api/auth/form-rotina-diaria",
+    obj: {},
+    cache: setCacheFormRotinaDiaria,
   });
   const [progress, setProgress] = useState(false);
   const [hour, setHour] = useState<Hours[]>([]);
-
 
   const router = useRouter();
   let dateCurrent = useRef<string | null>(null);
 
   //Lógica ao setar uma nova data e Lógica ao mudar de aba:
   useEffect(() => {
-    
     (async () => {
-      console.log(itemActive)
       if (dateCalendar)
         showMsgFetchData(
           dateCalendar,
@@ -116,10 +122,10 @@ export default function Report() {
     (async () => {
       const result = await fetchHorarios();
       console.log(result);
-      if(result){
+      if (result) {
         setHour(result);
       }
-    })()
+    })();
 
     const user = searchParams.get("nome");
     if (user) {
@@ -133,35 +139,45 @@ export default function Report() {
     }
   }, []);
 
-  const handleRegister = async () => {
-    let object;
-    if (itemActive.obj) {
-      object = {
-        date: dateCalendar ?? new Date(),
-        data: { ...itemActive.obj },
-      };
-    }
-    console.log(itemActive.obj);
-    try {
-      const result = await fetch(itemActive.API, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(object),
-      });
+  useEffect(() => {
+    (async () => {
+      if(formDataReady){
+      let object;
+      if (itemActive.obj) {
+        object = {
+          date: dateCalendar ?? new Date(),
+          data: { ...itemActive.obj },
+        };
+      }
+      console.log(itemActive.obj);
+      try {
+        const result = await fetch(itemActive.API, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(object),
+        });
 
-      result.json().then((e) => {
-        if (e.sucess) {
-          dialogSave.current?.showModal();
-          setTimeout(() => {
-            dialogSave.current?.close();
-          }, 2000);
-        }
-      });
-    } catch (error) {
-      console.log(error);
-    }
+        result.json().then((e) => {
+          if (e.sucess) {
+            dialogSave.current?.showModal();
+            setTimeout(() => {
+              dialogSave.current?.close();
+            }, 2000);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setGenerateDataForm(false);
+        setFormDataReady(false);
+      }
+    }})();
+  }, [formDataReady]);
+
+  const handleRegister = async () => {
+    setGenerateDataForm(true);
   };
 
   function renderForm() {
@@ -208,12 +224,38 @@ export default function Report() {
         );
 
       case "05- 11 Expediente":
-        return <FormExpediente person={person} onSave={(data: {}) => itemActive.obj = data} cacheData={cacheFormExpediente} />;
+        return (
+          <FormExpediente
+            person={person}
+            onSave={(data: {}) => (itemActive.obj = data)}
+            cacheData={cacheFormExpediente}
+          />
+        );
 
       case "12- Revezamento":
-        return <FormRevezamento person={person} onSave={(data: {}) => {itemActive.obj = data}} cacheData={cacheFormRevezamento} hours={hour}/>;
+        return (
+          <FormRevezamento
+            person={person}
+            onSave={(data: {}) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheFormRevezamento}
+            readyData={setFormDataReady}
+            generateData={generateDataForm}
+            hours={hour}
+          />
+        );
       case "13-14 Rotina Diária":
-        return <FormRotinaDiaria />;
+        return (
+          <FormRotinaDiaria
+            onSave={(data: {}) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheFormRotinaDiaria}
+            generateData={generateDataForm}
+            readyData={setFormDataReady}
+          />
+        );
       case "15- Entrada/Saída de Presos":
         return <FormEntradaPresos />;
       case "16- Mudança de cela/Pedido Seguro":
@@ -246,7 +288,7 @@ export default function Report() {
     }
   }
 
-  const elementLi = [
+  const elementLi = useRef([
     {
       aba: "1- Recebimento",
       API: "/api/auth/form-recebimento",
@@ -287,7 +329,7 @@ export default function Report() {
       aba: "13-14 Rotina Diária",
       API: "/api/auth/form-rotina-diaria",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheFormRotinaDiaria,
     },
     {
       aba: "15- Entrada/Saída de Presos",
@@ -337,7 +379,7 @@ export default function Report() {
       obj: {},
       cache: setCacheFormRecebimento,
     },
-  ];
+  ]);
   const logout = async () => {
     setProgress(true);
     const result = await fetch("/api/auth/logout", {
@@ -359,7 +401,7 @@ export default function Report() {
             ref={containerRef}
             className="flex overflow-x-auto scroll-smooth scrollbar-none w-full px-2  gap-3 items-center "
           >
-            {elementLi.map((e) => {
+            {elementLi.current.map((e) => {
               const active = itemActive.aba === e.aba;
               return (
                 <div

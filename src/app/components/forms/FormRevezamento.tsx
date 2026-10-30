@@ -19,36 +19,45 @@ interface Turno {
   ronda: string;
   rondaAlternadaMonitor: boolean;
 }
+const gerarObjTurnoVazio = (): Turno => {
+  return {
+    horario: "",
+    pavilhaoUm: "",
+    pavilhaoDois: "",
+    monitoramento: "",
+    ronda: "",
+    rondaAlternadaMonitor: false,
+  };
+};
 export default function FormRevezamento({
   cacheData,
   onSave,
   person,
+  generateData,
+  readyData,
   hours,
 }: FormProps<ObjFormRevezamento> & { hours: Hours[] }) {
-  const gerarObjTurnoVazio = (): Turno => {
-    return {
-      horario: "",
-      pavilhaoUm: "",
-      pavilhaoDois: "",
-      monitoramento: "",
-      ronda: "",
-      rondaAlternadaMonitor: false,
-    };
-  };
   const [primeiroTurno, setPrimeiroTurno] =
     useState<Turno>(gerarObjTurnoVazio());
   const [segundoTurno, setSegundoTurno] = useState<Turno>(gerarObjTurnoVazio());
   const [terceiroTurno, setTerceiroTurno] =
     useState<Turno>(gerarObjTurnoVazio());
   const [quartoTurno, setQuartoTurno] = useState<Turno>(gerarObjTurnoVazio());
-  onSave({
-    id: 0,
-    relatorioId: "",
-    primeiro_turno: JSON.stringify(primeiroTurno),
-    segundo_turno: JSON.stringify(segundoTurno),
-    terceiro_turno: JSON.stringify(terceiroTurno),
-    quarto_turno: JSON.stringify(quartoTurno),
+
+  useEffect(() => {
+    if (generateData) {
+      onSave({
+        id: 0,
+        relatorioId: "",
+        primeiro_turno: JSON.stringify(primeiroTurno),
+        segundo_turno: JSON.stringify(segundoTurno),
+        terceiro_turno: JSON.stringify(terceiroTurno),
+        quarto_turno: JSON.stringify(quartoTurno),
+      });
+      if(readyData){readyData(true);}
+    }
   });
+
   useEffect(() => {
     if (cacheData?.payload) {
       const { primeiro_turno, segundo_turno, terceiro_turno, quarto_turno } =
