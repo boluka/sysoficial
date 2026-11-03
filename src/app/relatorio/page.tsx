@@ -17,7 +17,6 @@ import FormTrocasHe from "../components/forms/FormTrocasHe";
 import FormExpediente from "../components/forms/FormExpediente";
 import FormRevezamento from "../components/forms/FormRevezamento";
 import FormRotinaDiaria from "../components/forms/FormRotinaDiaria";
-import FormEntradaPresos from "../components/forms/FormEntradaSaidaPresos";
 import FormMudancaCela from "../components/forms/FormMudancaCela";
 import FormEscoltaPreso from "../components/forms/FormEscoltaPreso";
 import FormSigo from "../components/forms/FormSigo";
@@ -36,8 +35,15 @@ import {
 import DialogDate from "../components/dialog/DialogDate";
 import { fetchHorarios, fetchPerson } from "./services";
 import DialogSave from "../components/dialog/DialogSave";
-import { FormTrocaHe, Hours, Person } from "@/generated/prisma";
+import {
+  FormEntradaPresos as ObjFormEntradaPresos,
+  FormTrocaHe,
+  Hours,
+  Person,
+} from "@/generated/prisma";
 import { useFetchData } from "@/hooks/useFetchData";
+import FormEntradaPresos from "../components/forms/FormEntradaPresos";
+import FormaSaidaPresos from "../components/forms/FormSaidaPresos";
 
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
@@ -51,6 +57,7 @@ export default function Report() {
     setShowDialogAnimation,
     setDialogInfoMsg,
   });
+
   const [generateDataForm, setGenerateDataForm] = useState<boolean>(false);
   const [formDataReady, setFormDataReady] = useState<boolean>(false);
   const [person, setPerson] = useState<Person[]>();
@@ -86,11 +93,14 @@ export default function Report() {
   const [cacheFormRotinaDiaria, setCacheFormRotinaDiaria] =
     useState<SucessAuth | null>(null);
 
+  const [cacheFormEntradaPresos, setCacheFormEntradaPresos] =
+    useState<SucessAuth | null>(null);
+
   const [itemActive, setItemActive] = useState({
-    aba: "13-14 Rotina Diária",
-    API: "/api/auth/form-rotina-diaria",
-    obj: {},
-    cache: setCacheFormRotinaDiaria,
+aba: "16- Saída Presos",
+      API: "/api/auth/form-saida-presos",
+      obj: {},
+      cache: setCacheFormRecebimento,
   });
   const [progress, setProgress] = useState(false);
   const [hour, setHour] = useState<Hours[]>([]);
@@ -141,39 +151,40 @@ export default function Report() {
 
   useEffect(() => {
     (async () => {
-      if(formDataReady){
-      let object;
-      if (itemActive.obj) {
-        object = {
-          date: dateCalendar ?? new Date(),
-          data: { ...itemActive.obj },
-        };
-      }
-      console.log(itemActive.obj);
-      try {
-        const result = await fetch(itemActive.API, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(object),
-        });
+      if (formDataReady) {
+        dialogSave.current?.showModal();
+        let object;
+        if (itemActive.obj) {
+          object = {
+            date: dateCalendar ?? new Date(),
+            data: { ...itemActive.obj },
+          };
+        }
+        console.log(itemActive.obj);
+        try {
+          const result = await fetch(itemActive.API, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(object),
+          });
 
-        result.json().then((e) => {
-          if (e.sucess) {
-            dialogSave.current?.showModal();
-            setTimeout(() => {
-              dialogSave.current?.close();
-            }, 2000);
-          }
-        });
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setGenerateDataForm(false);
-        setFormDataReady(false);
+          result.json().then((e) => {
+            if (e.sucess) {
+              setTimeout(() => {
+                dialogSave.current?.close();
+              }, 2000);
+            }
+          });
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setGenerateDataForm(false);
+          setFormDataReady(false);
+        }
       }
-    }})();
+    })();
   }, [formDataReady]);
 
   const handleRegister = async () => {
@@ -231,7 +242,6 @@ export default function Report() {
             cacheData={cacheFormExpediente}
           />
         );
-
       case "12- Revezamento":
         return (
           <FormRevezamento
@@ -256,8 +266,19 @@ export default function Report() {
             readyData={setFormDataReady}
           />
         );
-      case "15- Entrada/Saída de Presos":
-        return <FormEntradaPresos />;
+      case "15- Entrada Presos":
+        return (
+          <FormEntradaPresos
+            onSave={(data: ObjFormEntradaPresos) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheFormEntradaPresos}
+            generateData={generateDataForm}
+            readyData={setFormDataReady}
+          />
+        );
+      case "16- Saída Presos":
+        return (<FormaSaidaPresos/>)
       case "16- Mudança de cela/Pedido Seguro":
         return <FormMudancaCela />;
       case "17- Escolta de Presos":
@@ -332,8 +353,14 @@ export default function Report() {
       cache: setCacheFormRotinaDiaria,
     },
     {
-      aba: "15- Entrada/Saída de Presos",
+      aba: "15- Entrada Presos",
       API: "/api/auth/form-entrada-presos",
+      obj: {},
+      cache: setCacheFormEntradaPresos,
+    },
+    {
+      aba: "16- Saída Presos",
+      API: "/api/auth/form-saida-presos",
       obj: {},
       cache: setCacheFormRecebimento,
     },
