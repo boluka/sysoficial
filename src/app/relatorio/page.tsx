@@ -45,6 +45,7 @@ import { useFetchData } from "@/hooks/useFetchData";
 import FormEntradaPresos from "../components/forms/FormEntradaPresos";
 import FormaSaidaPresos from "../components/forms/FormSaidaPresos";
 
+
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
   const dialogSave = useRef<HTMLDialogElement>(null);
@@ -152,7 +153,7 @@ aba: "16- Saída Presos",
   useEffect(() => {
     (async () => {
       if (formDataReady) {
-        dialogSave.current?.showModal();
+        
         let object;
         if (itemActive.obj) {
           object = {
