@@ -40,11 +40,12 @@ import {
   FormTrocaHe,
   Hours,
   Person,
+  FormSaidaPresos as ObjFormSaidaPresos,
 } from "@/generated/prisma";
 import { useFetchData } from "@/hooks/useFetchData";
 import FormEntradaPresos from "../components/forms/FormEntradaPresos";
 import FormaSaidaPresos from "../components/forms/FormSaidaPresos";
-
+import { useSaveData } from "@/hooks/useSaveData";
 
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
@@ -53,11 +54,9 @@ export default function Report() {
     "Buscando dados de hoje...",
   );
   const [showDialogAnimation, setShowDialogAnimation] = useState(false);
-  const showMsgFetchData = useFetchData({
-    showDialogAnimation,
-    setShowDialogAnimation,
-    setDialogInfoMsg,
-  });
+
+  
+
 
   const [generateDataForm, setGenerateDataForm] = useState<boolean>(false);
   const [formDataReady, setFormDataReady] = useState<boolean>(false);
@@ -70,6 +69,12 @@ export default function Report() {
   const [dateCalendar, setDateCalendar] = useState<Date | undefined>(
     new Date(),
   );
+    const showMsgFetchData = useFetchData({
+    showDialogAnimation,
+    setShowDialogAnimation,
+    setDialogInfoMsg,
+  });
+  const postData = useSaveData(setGenerateDataForm, setFormDataReady, dateCalendar, dialogSave)
 
   const [cacheFormRecebimento, setCacheFormRecebimento] =
     useState<SucessAuth | null>(null);
@@ -97,11 +102,15 @@ export default function Report() {
   const [cacheFormEntradaPresos, setCacheFormEntradaPresos] =
     useState<SucessAuth | null>(null);
 
+  const [cacheGeneralista, setCacheGeneralista] = useState<SucessAuth | null>(
+    null,
+  );
+
   const [itemActive, setItemActive] = useState({
-aba: "16- Saída Presos",
-      API: "/api/auth/form-saida-presos",
-      obj: {},
-      cache: setCacheFormRecebimento,
+    aba: "16- Saída Presos",
+    API: "/api/auth/form-saida-presos",
+    obj: {},
+    cache: setCacheGeneralista,
   });
   const [progress, setProgress] = useState(false);
   const [hour, setHour] = useState<Hours[]>([]);
@@ -122,6 +131,7 @@ aba: "16- Saída Presos",
     })();
   }, [dateCalendar, itemActive]);
 
+  //Ao carregar a página, recebe os servidores cadastrados e os horários de ronda.
   useEffect(() => {
     (async () => {
       const result = await fetchPerson();
@@ -150,40 +160,11 @@ aba: "16- Saída Presos",
     }
   }, []);
 
+  //Insere os dados dos formulários nas tabelas
   useEffect(() => {
     (async () => {
       if (formDataReady) {
-        
-        let object;
-        if (itemActive.obj) {
-          object = {
-            date: dateCalendar ?? new Date(),
-            data: { ...itemActive.obj },
-          };
-        }
-        console.log(itemActive.obj);
-        try {
-          const result = await fetch(itemActive.API, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(object),
-          });
-
-          result.json().then((e) => {
-            if (e.sucess) {
-              setTimeout(() => {
-                dialogSave.current?.close();
-              }, 2000);
-            }
-          });
-        } catch (error) {
-          console.log(error);
-        } finally {
-          setGenerateDataForm(false);
-          setFormDataReady(false);
-        }
+        await postData (itemActive.obj, itemActive.API);
       }
     })();
   }, [formDataReady]);
@@ -279,7 +260,16 @@ aba: "16- Saída Presos",
           />
         );
       case "16- Saída Presos":
-        return (<FormaSaidaPresos/>)
+        return (
+          <FormaSaidaPresos
+            onSave={(data: ObjFormSaidaPresos) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheGeneralista}
+            generateData={generateDataForm}
+            readyData={setFormDataReady}
+          />
+        );
       case "16- Mudança de cela/Pedido Seguro":
         return <FormMudancaCela />;
       case "17- Escolta de Presos":
@@ -363,7 +353,7 @@ aba: "16- Saída Presos",
       aba: "16- Saída Presos",
       API: "/api/auth/form-saida-presos",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheGeneralista,
     },
     {
       aba: "16- Mudança de cela/Pedido Seguro",
@@ -487,6 +477,7 @@ aba: "16- Saída Presos",
               setShowCalendar(true);
             }
           }}
+          
         >
           <Calendar className="p-3 w-16 h-16 fixed right-5 bottom-45 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all" />
         </button>

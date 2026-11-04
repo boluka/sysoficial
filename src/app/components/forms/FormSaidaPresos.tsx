@@ -11,7 +11,9 @@ import {
 import InputComponentForm from "../input/InputComponentForm";
 import FormDefault from "./FormDefault";
 import styles from "./styles-forms.module.css";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { FormSaidaPresos as  ObjFormSaidaPresos} from "@/generated/prisma";
+import { FormProps } from "@/app/interfaces/FormProps";
 
 interface FormatoTabelaSaida {
   nome: string;
@@ -37,13 +39,50 @@ const gerarInputComponentForm = (
     );
   };
 
-export default function FormaSaidaPresos() {
+export default function FormaSaidaPresos({
+  cacheData,
+  onSave,
+  generateData,
+  readyData,
+}: FormProps<ObjFormSaidaPresos>) {
   const [linhaSelecionada, setLinhaSelecionada] = useState({});
-
   const [nomeSaidaPreso, setNomeSaidaPreso] = useState("");
   const [documentoSaidaPreso, setDocumentoSaidaPreso] = useState("");
   const [destinoSaidaPreso, setDestinoSaidaPreso] = useState("");
   const [autorizadoSaidaPreso, setAutorizadoSaidaPreso] = useState("");
+  const valorCampoVazio = useRef(5);
+
+  useEffect(() => {
+      if (generateData) {
+        onSave({
+          id: 0,
+          relatorioId: "",
+          presos: JSON.stringify(limparCamposVazios()),
+        });
+        if (readyData) {
+          readyData(true);
+        }
+      }
+    }, [generateData]);
+  
+    useEffect(() => {
+      if (cacheData && cacheData.payload) {
+        const { presos } = cacheData.payload;
+        console.log(presos)
+        if (presos) {
+          setTabelaSaidaPresos(JSON.parse(presos.toString()));
+        }
+      } else {
+        setTabelaSaidaPresos(gerarCamposVazios(valorCampoVazio.current));
+      }
+    }, [cacheData]);
+  
+    const limparCamposVazios = (): FormatoTabelaSaida[] => {
+      const arr = [...tabelaSaidaPresos];
+      return arr.filter((_) => {
+        return _.nome !== "--";
+      });
+    };
 
   const camposSaidaPresos = useMemo(() => [
     { nome: "Nome:", value: nomeSaidaPreso, onchange: setNomeSaidaPreso },
@@ -66,31 +105,62 @@ export default function FormaSaidaPresos() {
   const [tabelaSaidaPresos, setTabelaSaidaPresos] = useState<
     FormatoTabelaSaida[]
   >([]);
-
-  
-  const handlerInserir = (e:any) => {
-    e.preventDefault();
-    setTabelaSaidaPresos((prev) => [
-      ...prev,
-      {
-        nome: nomeSaidaPreso,
-        documento: documentoSaidaPreso,
-        destino: destinoSaidaPreso,
-        autorizado: autorizadoSaidaPreso,
-      },
-    ]);
+  const limparCampos = () => {
     setNomeSaidaPreso("");
     setDocumentoSaidaPreso("");
     setDestinoSaidaPreso("");
     setAutorizadoSaidaPreso("");
   };
-  const handlerDeletar = (e:any) => {
+
+  const gerarCamposVazios = (i: number): FormatoTabelaSaida[] => {
+    const arr = [];
+    for (let v = 1; v <= i; v++) {
+      arr.push({
+        nome: "--",
+        documento: "--",
+        destino: "--",
+        autorizado: "--",
+      });
+    }
+    return arr;
+  };
+
+  
+  const handlerInserir = (e: any) => {
     e.preventDefault();
-    setTabelaSaidaPresos((prev) => (
-      prev.filter((_) => _ !== linhaSelecionada)
-    ));
+    setTabelaSaidaPresos((prev) => {
+      let arr = [...prev];
+      let elemento = arr[0];
+      if (elemento && elemento.autorizado == "--") {
+        arr.shift();
+      }
+      return [
+        ...arr,
+        {
+          nome: nomeSaidaPreso,
+          documento: documentoSaidaPreso,
+          destino: destinoSaidaPreso,
+          autorizado: autorizadoSaidaPreso,
+        },
+      ];
+    });
+    limparCampos();
+  };
+  const handlerDeletar = (e: any) => {
+    e.preventDefault();
+    if (!("nome" in linhaSelecionada)) {
+      return;
+    }
+    setTabelaSaidaPresos((prev) => {
+      let arr = [...prev];
+      if (arr.length <= 1) {
+        return gerarCamposVazios(valorCampoVazio.current);
+      }
+
+      return arr.filter((_) => _ !== linhaSelecionada);
+    });
     setLinhaSelecionada({});
-  }
+  };
 
   return (
     <FormDefault>
@@ -100,7 +170,7 @@ export default function FormaSaidaPresos() {
       <section
         className={`${styles["style-div"]} flex flex-col gap-2 text-amarelo-claro`}
       >
-        <section className="flex max-h-35 border rounded-[5px] border-cinza-maisclaro w-full">
+        <section className="flex max-h-70 border rounded-[5px] border-cinza-maisclaro w-full">
           <Table className="">
             <TableCaption></TableCaption>
             <TableHeader className="">
@@ -134,6 +204,20 @@ export default function FormaSaidaPresos() {
             </TableBody>
           </Table>
         </section>
+        <div className="flex gap-2 items-stretch">
+          <button
+            className="bg-amarelo-claro py-1 px-3 rounded-[5px] w-full text-sm text-black font-bold cursor-pointer hover:bg-cinza-maisescuro hover:text-amarelo-claro transition-all duration-200"
+            onClick={handlerInserir}
+          >
+            Inserir
+          </button>
+          <button
+            className="bg-amarelo-claro py-1 px-3 rounded-[5px] w-full text-sm text-black font-bold cursor-pointer hover:bg-cinza-maisescuro hover:text-amarelo-claro transition-all duration-200"
+            onClick={handlerDeletar}
+          >
+            Excluir
+          </button>
+        </div>
         {camposSaidaPresos.map((e) => {
           return gerarInputComponentForm(e.nome, [e.value, e.onchange]);
         })}
