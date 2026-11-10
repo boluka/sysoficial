@@ -5,7 +5,6 @@ import {
   ChevronRight,
   RefreshCcw,
   SavePlus,
-  SquarePen,
   StickyNotes,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -41,11 +40,14 @@ import {
   Hours,
   Person,
   FormSaidaPresos as ObjFormSaidaPresos,
+  FormMudancaCelaOperacional,
+  FormPedidoSeguro as ObjFormPedidoSeguro,
 } from "@/generated/prisma";
 import { useFetchData } from "@/hooks/useFetchData";
 import FormEntradaPresos from "../components/forms/FormEntradaPresos";
 import FormaSaidaPresos from "../components/forms/FormSaidaPresos";
 import { useSaveData } from "@/hooks/useSaveData";
+import FormPedidoSeguro from "../components/forms/FormPedidoSeguro";
 
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
@@ -54,9 +56,6 @@ export default function Report() {
     "Buscando dados de hoje...",
   );
   const [showDialogAnimation, setShowDialogAnimation] = useState(false);
-
-  
-
 
   const [generateDataForm, setGenerateDataForm] = useState<boolean>(false);
   const [formDataReady, setFormDataReady] = useState<boolean>(false);
@@ -69,12 +68,17 @@ export default function Report() {
   const [dateCalendar, setDateCalendar] = useState<Date | undefined>(
     new Date(),
   );
-    const showMsgFetchData = useFetchData({
+  const showMsgFetchData = useFetchData({
     showDialogAnimation,
     setShowDialogAnimation,
     setDialogInfoMsg,
   });
-  const postData = useSaveData(setGenerateDataForm, setFormDataReady, dateCalendar, dialogSave)
+  const postData = useSaveData(
+    setGenerateDataForm,
+    setFormDataReady,
+    dateCalendar,
+    { showDialogAnimation, setShowDialogAnimation, setDialogInfoMsg },
+  );
 
   const [cacheFormRecebimento, setCacheFormRecebimento] =
     useState<SucessAuth | null>(null);
@@ -107,11 +111,11 @@ export default function Report() {
   );
 
   const [itemActive, setItemActive] = useState({
-    aba: "16- Saída Presos",
-    API: "/api/auth/form-saida-presos",
-    obj: {},
-    cache: setCacheGeneralista,
-  });
+      aba: "Pedido Seguro",
+      API: "/api/auth/form-pedido-seguro",
+      obj: {},
+      cache: setCacheGeneralista,
+    });
   const [progress, setProgress] = useState(false);
   const [hour, setHour] = useState<Hours[]>([]);
 
@@ -164,7 +168,7 @@ export default function Report() {
   useEffect(() => {
     (async () => {
       if (formDataReady) {
-        await postData (itemActive.obj, itemActive.API);
+        await postData(itemActive.obj, itemActive.API, dialogInfo.current);
       }
     })();
   }, [formDataReady]);
@@ -270,19 +274,40 @@ export default function Report() {
             readyData={setFormDataReady}
           />
         );
-      case "16- Mudança de cela/Pedido Seguro":
-        return <FormMudancaCela />;
-      case "17- Escolta de Presos":
+      case "17- Mudança Cela Operacional":
+        return (
+          <FormMudancaCela
+            onSave={(data: FormMudancaCelaOperacional) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheGeneralista}
+            generateData={generateDataForm}
+            readyData={setFormDataReady}
+          />
+        );
+      case "Pedido Seguro":
+        return (
+          <FormPedidoSeguro
+            onSave={(data: ObjFormPedidoSeguro) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheGeneralista}
+            generateData={generateDataForm}
+            readyData={setFormDataReady}
+          ></FormPedidoSeguro>
+        );
+
+      case "18- Escolta de Presos":
         return <FormEscoltaPreso />;
-      case "18 - SIGO":
+      case "19 - SIGO":
         return <FormSigo />;
-      case "19 - Inclusão/Retorno":
+      case "20 - Inclusão/Retorno":
         return <FormInclusaoRetorno />;
-      case "20 - Dados Finais":
+      case "21 - Dados Finais":
         return <FormDadosFinanis />;
-      case "21 - Assinatura":
+      case "22 - Assinatura":
         return <FormAssinatura />;
-      case "22 - Encerramento":
+      case "23 - Encerramento":
         return <FormEncerramento />;
       default:
         return null;
@@ -356,10 +381,16 @@ export default function Report() {
       cache: setCacheGeneralista,
     },
     {
-      aba: "16- Mudança de cela/Pedido Seguro",
+      aba: "17- Mudança Cela Operacional",
       API: "/api/auth/form-mudanca-cela",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheGeneralista,
+    },
+    {
+      aba: "Pedido Seguro",
+      API: "/api/auth/form-pedido-seguro",
+      obj: {},
+      cache: setCacheGeneralista,
     },
     {
       aba: "17- Escolta de Presos",
@@ -451,13 +482,13 @@ export default function Report() {
       </nav>
 
       <div className="flex flex-col gap-3 flex-1 items-center justify-center">
-        {dateCurrent.current && (
+        {/* {dateCurrent.current && (
           <div className="text-center text-gray-500 pointer-events-none">
             <p>
               {`Esses dados são relativos à data de ${dateCurrent?.current == verifyDateActual ? "hoje" : dateCurrent.current}`}{" "}
             </p>
           </div>
-        )}
+        )} */}
         {renderForm()}
         <button title="Salva o formulário">
           <SavePlus
@@ -477,7 +508,6 @@ export default function Report() {
               setShowCalendar(true);
             }
           }}
-          
         >
           <Calendar className="p-3 w-16 h-16 fixed right-5 bottom-45 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all" />
         </button>
