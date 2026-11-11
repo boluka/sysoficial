@@ -9,8 +9,12 @@ import {
   ComboboxList,
 } from "@/components/ui/combobox"
 
+interface Items {
+  id: number
+  name: string
+}
 
-export function ComboboxBasic({items, value, onChange, styles, placeholder}: {items: any[], value: string | null, onChange: (e: string | null) =>  void, styles?: string, placeholder?: string}) {
+export function ComboboxBasic({items, value, onChange, styles, placeholder}: {items: Items[], value: string | null, onChange: (e: string | null) =>  void, styles?: string, placeholder?: string}) {
   return (
     <Combobox items={items} onValueChange={onChange} value={value} >
       <ComboboxInput className={`bg-cinza-escuro  border-amarelo-escuro h-6 rounded-[5px] ${styles}`} placeholder={placeholder ?? "PP/Servidor"} />

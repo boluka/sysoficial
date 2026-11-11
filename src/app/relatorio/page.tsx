@@ -42,12 +42,14 @@ import {
   FormSaidaPresos as ObjFormSaidaPresos,
   FormMudancaCelaOperacional,
   FormPedidoSeguro as ObjFormPedidoSeguro,
+  FormEscoltaPresos as ObjFormEscoltaPresos,
 } from "@/generated/prisma";
 import { useFetchData } from "@/hooks/useFetchData";
 import FormEntradaPresos from "../components/forms/FormEntradaPresos";
 import FormaSaidaPresos from "../components/forms/FormSaidaPresos";
 import { useSaveData } from "@/hooks/useSaveData";
 import FormPedidoSeguro from "../components/forms/FormPedidoSeguro";
+import FormEscoltaNRealizada from "../components/forms/FormEscoltaNaoRealizada";
 
 export default function Report() {
   const dialogInfo = useRef<HTMLDialogElement>(null);
@@ -106,15 +108,26 @@ export default function Report() {
   const [cacheFormEntradaPresos, setCacheFormEntradaPresos] =
     useState<SucessAuth | null>(null);
 
-  const [cacheGeneralista, setCacheGeneralista] = useState<SucessAuth | null>(
-    null,
-  );
+  const [cacheFormSaidaPresos, setCacheFormSaidaPresos] =
+    useState<SucessAuth | null>(null);
+
+  const [cacheFormPedidoSeguro, setCacheFormPedidoSeguro] =
+    useState<SucessAuth | null>(null);
+
+  const [cacheFormMudancaCela, setCacheFormMudancaCela] =
+    useState<SucessAuth | null>(null);
+
+  const [cacheFormEscoltaPresos, setCacheFormEscoltaPresos] =
+    useState<SucessAuth | null>(null);
+
+   const [cacheFormEscoltaNaoRealizada, setCacheFormEscoltaNaoRealizada] =
+    useState<SucessAuth | null>(null);
 
   const [itemActive, setItemActive] = useState({
-      aba: "Pedido Seguro",
-      API: "/api/auth/form-pedido-seguro",
+      aba: "18- Escolta não realizada",
+      API: "/api/auth/form-escolta-nao-realizada",
       obj: {},
-      cache: setCacheGeneralista,
+      cache: setCacheFormEscoltaNaoRealizada,
     });
   const [progress, setProgress] = useState(false);
   const [hour, setHour] = useState<Hours[]>([]);
@@ -269,7 +282,7 @@ export default function Report() {
             onSave={(data: ObjFormSaidaPresos) => {
               itemActive.obj = data;
             }}
-            cacheData={cacheGeneralista}
+            cacheData={cacheFormSaidaPresos}
             generateData={generateDataForm}
             readyData={setFormDataReady}
           />
@@ -280,7 +293,7 @@ export default function Report() {
             onSave={(data: FormMudancaCelaOperacional) => {
               itemActive.obj = data;
             }}
-            cacheData={cacheGeneralista}
+            cacheData={cacheFormMudancaCela}
             generateData={generateDataForm}
             readyData={setFormDataReady}
           />
@@ -291,14 +304,34 @@ export default function Report() {
             onSave={(data: ObjFormPedidoSeguro) => {
               itemActive.obj = data;
             }}
-            cacheData={cacheGeneralista}
+            cacheData={cacheFormPedidoSeguro}
             generateData={generateDataForm}
             readyData={setFormDataReady}
-          ></FormPedidoSeguro>
+          />
         );
 
-      case "18- Escolta de Presos":
-        return <FormEscoltaPreso />;
+      case "17- Escolta de Presos":
+        return (
+          <FormEscoltaPreso
+            onSave={(data: ObjFormEscoltaPresos) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheFormEscoltaPresos}
+            generateData={generateDataForm}
+            readyData={setFormDataReady}
+          />
+        );
+      case "18- Escolta não realizada":
+        return (
+          <FormEscoltaNRealizada
+            onSave={(data: ObjFormEscoltaPresos) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheFormEscoltaNaoRealizada}
+            generateData={generateDataForm}
+            readyData={setFormDataReady}
+          />
+        );
       case "19 - SIGO":
         return <FormSigo />;
       case "20 - Inclusão/Retorno":
@@ -378,25 +411,31 @@ export default function Report() {
       aba: "16- Saída Presos",
       API: "/api/auth/form-saida-presos",
       obj: {},
-      cache: setCacheGeneralista,
+      cache: setCacheFormSaidaPresos,
     },
     {
       aba: "17- Mudança Cela Operacional",
       API: "/api/auth/form-mudanca-cela",
       obj: {},
-      cache: setCacheGeneralista,
+      cache: setCacheFormMudancaCela,
     },
     {
       aba: "Pedido Seguro",
       API: "/api/auth/form-pedido-seguro",
       obj: {},
-      cache: setCacheGeneralista,
+      cache: setCacheFormPedidoSeguro,
     },
     {
       aba: "17- Escolta de Presos",
       API: "/api/auth/form-escolta-preso",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheFormEscoltaPresos,
+    },
+    {
+      aba: "18- Escolta não realizada",
+      API: "/api/auth/form-escolta-nao-realizada",
+      obj: {},
+      cache: setCacheFormEscoltaNaoRealizada,
     },
     {
       aba: "18 - SIGO",

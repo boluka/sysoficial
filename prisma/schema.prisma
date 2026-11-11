@@ -32,6 +32,8 @@ model RelatorioDoDia {
   formSaidaPresos FormSaidaPresos?
   formMudancaCelaOperacional FormMudancaCelaOperacional?
   formPedidoSeguro FormPedidoSeguro?
+  formEscoltaPresos FormEscoltaPresos?
+  formEscoltaNaoRealizada FormEscoltaNaoRealizada?
 }
 
 model FormRecebimento {
@@ -145,6 +147,18 @@ model FormMudancaCelaOperacional {
   relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
 }
 model FormPedidoSeguro {
+  id Int @id @default(autoincrement())
+  presos Json
+  relatorioId String @unique
+  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+model FormEscoltaPresos {
+  id Int @id @default(autoincrement())
+  presos Json
+  relatorioId String @unique
+  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+model FormEscoltaNaoRealizada {
   id Int @id @default(autoincrement())
   presos Json
   relatorioId String @unique

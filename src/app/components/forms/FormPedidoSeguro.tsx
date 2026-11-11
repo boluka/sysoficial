@@ -30,20 +30,20 @@ interface FormatoTabela {
   de: Setores;
   para: Setores;
 }
- const gerarCamposVazios = (): FormMudancaCampos => {
-    return {
-      de: {
-        pav: "",
-        sol: "",
-        cela: "",
-      },
-      para: {
-        pav: "",
-        sol: "",
-        cela: "",
-      },
-    };
+const gerarCamposVazios = (): FormMudancaCampos => {
+  return {
+    de: {
+      pav: "",
+      sol: "",
+      cela: "",
+    },
+    para: {
+      pav: "",
+      sol: "",
+      cela: "",
+    },
   };
+};
 
 export default function FormPedidoSeguro({
   cacheData,
@@ -51,11 +51,12 @@ export default function FormPedidoSeguro({
   readyData,
   generateData,
 }: FormProps<ObjFormPedidoSeguro>) {
-  
   const [nome, setNome] = useState("");
   const [tabelaDados, setTabelaDados] = useState<FormatoTabela[]>([]);
   const [linhaSelecionada, setLinhaSelecionada] = useState({});
   const [data, setData] = useState<FormMudancaCampos>(gerarCamposVazios());
+
+
   useEffect(() => {
     if (cacheData && cacheData.payload) {
       const { presos } = cacheData.payload;
@@ -65,24 +66,23 @@ export default function FormPedidoSeguro({
       }
       setNome(nome);
     } else {
-      setTabelaDados([])
+      setTabelaDados([]);
       setNome("");
     }
   }, [cacheData]);
 
   useEffect(() => {
-    if(generateData){
+    if (generateData) {
       onSave({
         id: 0,
         presos: JSON.stringify(tabelaDados),
-        relatorioId: ""
-      })
-      if(readyData){
+        relatorioId: "",
+      });
+      if (readyData) {
         readyData(true);
       }
     }
-  }, [generateData])
- 
+  }, [generateData]);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -205,24 +205,6 @@ export default function FormPedidoSeguro({
                   </TableRow>
                 );
               })}
-              {/* <TableRow>
-                <TableCell>Lucas Borgo Soares</TableCell>
-                <TableCell>1A</TableCell>
-                <TableCell>II</TableCell>
-                <TableCell className="border-r">55</TableCell>
-                <TableCell className="text-center">2A</TableCell>
-                <TableCell>I</TableCell>
-                <TableCell>35</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Mateus Borgo Soares</TableCell>
-                <TableCell>1A</TableCell>
-                <TableCell>II</TableCell>
-                <TableCell className="border-r">55</TableCell>
-                <TableCell className="text-center">2A</TableCell>
-                <TableCell>I</TableCell>
-                <TableCell>35</TableCell>
-              </TableRow> */}
             </TableBody>
           </Table>
         </section>
