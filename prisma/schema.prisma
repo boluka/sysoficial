@@ -34,6 +34,7 @@ model RelatorioDoDia {
   formPedidoSeguro FormPedidoSeguro?
   formEscoltaPresos FormEscoltaPresos?
   formEscoltaNaoRealizada FormEscoltaNaoRealizada?
+  formSigo FormSigo?
 }
 
 model FormRecebimento {
@@ -161,6 +162,15 @@ model FormEscoltaPresos {
 model FormEscoltaNaoRealizada {
   id Int @id @default(autoincrement())
   presos Json
+  relatorioId String @unique
+  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+model FormSigo {
+  id Int @id @default(autoincrement())
+  sigo String?
+  prisao_domiciliar String?
+  vistoria_cela String?
+  comunicados String?
   relatorioId String @unique
   relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
 }

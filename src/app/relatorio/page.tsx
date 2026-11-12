@@ -43,6 +43,7 @@ import {
   FormMudancaCelaOperacional,
   FormPedidoSeguro as ObjFormPedidoSeguro,
   FormEscoltaPresos as ObjFormEscoltaPresos,
+  FormSigo as ObjFormSigo,
 } from "@/generated/prisma";
 import { useFetchData } from "@/hooks/useFetchData";
 import FormEntradaPresos from "../components/forms/FormEntradaPresos";
@@ -120,15 +121,18 @@ export default function Report() {
   const [cacheFormEscoltaPresos, setCacheFormEscoltaPresos] =
     useState<SucessAuth | null>(null);
 
-   const [cacheFormEscoltaNaoRealizada, setCacheFormEscoltaNaoRealizada] =
+  const [cacheFormEscoltaNaoRealizada, setCacheFormEscoltaNaoRealizada] =
+    useState<SucessAuth | null>(null);
+
+  const [cacheFormSigo, setCacheFormSigo] =
     useState<SucessAuth | null>(null);
 
   const [itemActive, setItemActive] = useState({
-      aba: "18- Escolta não realizada",
-      API: "/api/auth/form-escolta-nao-realizada",
-      obj: {},
-      cache: setCacheFormEscoltaNaoRealizada,
-    });
+    aba: "19 - SIGO",
+    API: "/api/auth/form-sigo",
+    obj: {},
+    cache: setCacheFormSigo,
+  });
   const [progress, setProgress] = useState(false);
   const [hour, setHour] = useState<Hours[]>([]);
 
@@ -333,7 +337,16 @@ export default function Report() {
           />
         );
       case "19 - SIGO":
-        return <FormSigo />;
+        return (
+          <FormSigo
+            onSave={(data: ObjFormSigo) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheFormSigo}
+            generateData={generateDataForm}
+            readyData={setFormDataReady}
+          />
+        );
       case "20 - Inclusão/Retorno":
         return <FormInclusaoRetorno />;
       case "21 - Dados Finais":
@@ -438,10 +451,10 @@ export default function Report() {
       cache: setCacheFormEscoltaNaoRealizada,
     },
     {
-      aba: "18 - SIGO",
+      aba: "19 - SIGO",
       API: "/api/auth/form-sigo",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheFormSigo,
     },
     {
       aba: "19 - Inclusão/Retorno",
