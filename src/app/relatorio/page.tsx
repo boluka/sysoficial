@@ -44,6 +44,7 @@ import {
   FormPedidoSeguro as ObjFormPedidoSeguro,
   FormEscoltaPresos as ObjFormEscoltaPresos,
   FormSigo as ObjFormSigo,
+  FormInclusaoRetorno as ObjFormInclusaoRetorno,
 } from "@/generated/prisma";
 import { useFetchData } from "@/hooks/useFetchData";
 import FormEntradaPresos from "../components/forms/FormEntradaPresos";
@@ -124,14 +125,16 @@ export default function Report() {
   const [cacheFormEscoltaNaoRealizada, setCacheFormEscoltaNaoRealizada] =
     useState<SucessAuth | null>(null);
 
-  const [cacheFormSigo, setCacheFormSigo] =
+  const [cacheFormSigo, setCacheFormSigo] = useState<SucessAuth | null>(null);
+
+  const [cacheFormInclusaoRetorno, setCacheFormInclusaoRetorno] =
     useState<SucessAuth | null>(null);
 
   const [itemActive, setItemActive] = useState({
-    aba: "19 - SIGO",
-    API: "/api/auth/form-sigo",
+    aba: "19 - Inclusão/Retorno",
+    API: "/api/auth/form-inclusao-retorno",
     obj: {},
-    cache: setCacheFormSigo,
+    cache: setCacheFormInclusaoRetorno,
   });
   const [progress, setProgress] = useState(false);
   const [hour, setHour] = useState<Hours[]>([]);
@@ -347,8 +350,17 @@ export default function Report() {
             readyData={setFormDataReady}
           />
         );
-      case "20 - Inclusão/Retorno":
-        return <FormInclusaoRetorno />;
+      case "19 - Inclusão/Retorno":
+        return (
+          <FormInclusaoRetorno
+            onSave={(data: ObjFormInclusaoRetorno) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheFormInclusaoRetorno}
+            generateData={generateDataForm}
+            readyData={setFormDataReady}
+          />
+        );
       case "21 - Dados Finais":
         return <FormDadosFinanis />;
       case "22 - Assinatura":
@@ -460,7 +472,7 @@ export default function Report() {
       aba: "19 - Inclusão/Retorno",
       API: "/api/auth/form-inclusao-retorno",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheFormInclusaoRetorno,
     },
     {
       aba: "20 - Dados Finais",
