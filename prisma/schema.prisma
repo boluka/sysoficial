@@ -38,6 +38,7 @@ model RelatorioDoDia {
   formInclusaoRetorno        FormInclusaoRetorno?
   formDadosFinais            FormDadosFinais?
   formAssinatura             FormAssinatura?
+  formEncerramento           FormEncerramento?
 }
 
 model FormRecebimento {
@@ -212,15 +213,26 @@ model FormDadosFinais {
 }
 
 model FormAssinatura {
-  id                  Int            @id @default(autoincrement())
-  entrega_nome String
-  entrega_data String
+  id                Int            @id @default(autoincrement())
+  entrega_nome      String
+  entrega_data      String
   entrega_matricula String
-  recebe_nome String
-  recebe_data String
-  recebe_matricula String
-  relatorioId         String         @unique
-  relatorioDoDia      RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+  recebe_nome       String
+  recebe_data       String
+  recebe_matricula  String
+  relatorioId       String         @unique
+  relatorioDoDia    RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model FormEncerramento {
+  id             Int            @id @default(autoincrement())
+  chefeRecebe    String
+  chefeEntrega   String
+  efetivoCarc    Int
+  transitoCarc   Int
+  mat_carga      String
+  relatorioId    String         @unique
+  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
 }
 
 model Hours {

@@ -115,22 +115,6 @@ export default function Forms({
   const handlerTwo = (e: any) => {
     setMat_belico(e.target.value);
   };
-
-  // useEffect(() => {
-  //   if (textArea.current) {
-  //     if (textArea.current.value != "Completo e sem alterações") {
-  //       textArea.current.value = "";
-  //     }
-  //   }
-  // }, [mat_carga]);
-  // useEffect(() => {
-  //   if (textAreaTwo.current) {
-  //     if (textAreaTwo.current.value != "Completo e sem alterações") {
-  //       textAreaTwo.current.value = "";
-  //     }
-  //   }
-  // }, [mat_belico]);
-
   return (
     <FormDefault>
       <h2 className="text-center bg-cinza-escuro text-amarelo-claro text-[1.3em] font-bold rounded-[5px]">

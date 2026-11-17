@@ -46,7 +46,8 @@ import {
   FormSigo as ObjFormSigo,
   FormInclusaoRetorno as ObjFormInclusaoRetorno,
   FormDadosFinais as ObjFormDadosFinais,
-  FormAssinatura as ObjFormAssinatura
+  FormAssinatura as ObjFormAssinatura,
+  FormEncerramento as ObjFormEncerramento
 } from "@/generated/prisma";
 import { useFetchData } from "@/hooks/useFetchData";
 import FormEntradaPresos from "../components/forms/FormEntradaPresos";
@@ -135,14 +136,17 @@ export default function Report() {
   const [cacheFormDadosFinais, setCacheFormDadosFinais] =
     useState<SucessAuth | null>(null);
 
-    const [cacheFormAssinatura, setCacheFormAssinatura] =
+  const [cacheFormAssinatura, setCacheFormAssinatura] =
+    useState<SucessAuth | null>(null);
+
+  const [cacheFormEncerramento, setCacheFormEncerramento] =
     useState<SucessAuth | null>(null);
 
   const [itemActive, setItemActive] = useState({
     aba: "22 - Encerramento",
     API: "/api/auth/form-encerramento",
     obj: {},
-    cache: setCacheFormAssinatura,
+    cache: setCacheFormEncerramento,
   });
   const [progress, setProgress] = useState(false);
   const [hour, setHour] = useState<Hours[]>([]);
@@ -381,17 +385,30 @@ export default function Report() {
           />
         );
       case "21 - Assinatura":
-        return <FormAssinatura onSave={(data: ObjFormAssinatura) => {
+        return (
+          <FormAssinatura
+            onSave={(data: ObjFormAssinatura) => {
               itemActive.obj = data;
             }}
             cacheData={cacheFormAssinatura}
             generateData={generateDataForm}
             readyData={setFormDataReady}
             person={person}
-            />
-            
+          />
+        );
+
       case "22 - Encerramento":
-        return <FormEncerramento />;
+        return (
+          <FormEncerramento
+            onSave={(data: ObjFormEncerramento) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheFormEncerramento}
+            generateData={generateDataForm}
+            readyData={setFormDataReady}
+            person={person}
+          />
+        );
       default:
         return null;
     }
@@ -515,7 +532,7 @@ export default function Report() {
       aba: "22 - Encerramento",
       API: "/api/auth/form-encerramento",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheFormEncerramento,
     },
   ]);
   const logout = async () => {
@@ -531,7 +548,7 @@ export default function Report() {
   return (
     <main className="flex flex-col bg-linear-to-b from-cinza-maisescuro  to-cinza-escuro min-h-screen w-full ">
       <nav className="flex  justify-between items-center bg-cinza-escuro p-1 gap-4">
-        <div className="flex items-center min-w-75 gap-2 w-1/2">
+        <div className="flex items-center flex-1 min-w-75 gap-2 w-1/2">
           <button onClick={moveLeft} className="cursor-pointer shrink-0">
             <ChevronLeft className="text-amarelo-claro w-8 h-8" />
           </button>
