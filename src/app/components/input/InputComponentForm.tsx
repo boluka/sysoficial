@@ -18,6 +18,6 @@ export default function InputComponentForm({type, colors = [], onChange,  ...pro
      const {width = 'auto', height = 'auto', styles = null} = props
      
     return (
-        <input type={type} className={`outline-0 ${width} ${height} border p-0.5 rounded-[5px] border-${border} bg-${background} text-${text} min-w-0 text-sm indent-1 ${styles}` } onChange={onChange} value={props.value} min='0' />
+        <input type={type} className={`outline-0 ${width} ${height} border p-0.5 rounded-[5px] border-${border} bg-${background} text-${text} min-w-0 text-sm indent-1 focus-within:ring-1 focus-within:ring-ring focus-within:border-ring/50 transition-all duration-100 ${styles} ` } onChange={onChange} value={props.value} min='0' />
     )
 }

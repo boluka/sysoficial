@@ -19,23 +19,25 @@ model Usuario {
 }
 
 model RelatorioDoDia {
-  id              String           @id @default(uuid())
-  data            String           @unique
-  formRecebimento FormRecebimento?
-  formArmamento FormArmamento?
-  formEquipe FormEquipe?
-  formTrocaHe FormTrocaHe?
-  formExpediente FormExpediente?
-  formRevezamento FormRevezamento?
-  formRotinaDiaria FormRotinaDiaria?
-  formEntradaSaida FormEntradaPresos?
-  formSaidaPresos FormSaidaPresos?
+  id                         String                      @id @default(uuid())
+  data                       String                      @unique
+  formRecebimento            FormRecebimento?
+  formArmamento              FormArmamento?
+  formEquipe                 FormEquipe?
+  formTrocaHe                FormTrocaHe?
+  formExpediente             FormExpediente?
+  formRevezamento            FormRevezamento?
+  formRotinaDiaria           FormRotinaDiaria?
+  formEntradaSaida           FormEntradaPresos?
+  formSaidaPresos            FormSaidaPresos?
   formMudancaCelaOperacional FormMudancaCelaOperacional?
-  formPedidoSeguro FormPedidoSeguro?
-  formEscoltaPresos FormEscoltaPresos?
-  formEscoltaNaoRealizada FormEscoltaNaoRealizada?
-  formSigo FormSigo?
-  formInclusaoRetorno FormInclusaoRetorno?
+  formPedidoSeguro           FormPedidoSeguro?
+  formEscoltaPresos          FormEscoltaPresos?
+  formEscoltaNaoRealizada    FormEscoltaNaoRealizada?
+  formSigo                   FormSigo?
+  formInclusaoRetorno        FormInclusaoRetorno?
+  formDadosFinais            FormDadosFinais?
+  formAssinatura             FormAssinatura?
 }
 
 model FormRecebimento {
@@ -53,154 +55,189 @@ model FormRecebimento {
 }
 
 model FormArmamento {
-  id  Int  @default(autoincrement())
-  armamento   Json
-  municao   Int
-  qtPistola Int
+  id               Int            @default(autoincrement())
+  armamento        Json
+  municao          Int
+  qtPistola        Int
   qtCarabinaQuinze Int
   qtCarabinaTrinta Int
-  relatorioId String @unique
-  relatorio RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+  relatorioId      String         @unique
+  relatorio        RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
 }
 
 model FormEquipe {
-  id Int  @id @default(autoincrement())
-  chefeEquipe String 
-  auxChefe String
-  portariaPrinc String
-  auxPort1 String?
-  auxPort2 String?
+  id             Int            @id @default(autoincrement())
+  chefeEquipe    String
+  auxChefe       String
+  portariaPrinc  String
+  auxPort1       String?
+  auxPort2       String?
   passarelaPrinc String?
-  escolaPadaria String?
-  trabalhoCrina String?
+  escolaPadaria  String?
+  trabalhoCrina  String?
   responsavelPv1 String
-  corredorPv1 Json?
+  corredorPv1    Json?
   responsavelPv2 String
-  corredorPv2 Json?
-  demaisAux String?
-  relatorioId String @unique
-  relatorio RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+  corredorPv2    Json?
+  demaisAux      String?
+  relatorioId    String         @unique
+  relatorio      RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
 }
+
 model FormTrocaHe {
-  id Int @id @default(autoincrement())
-  substituto String?
-  substituido String?
-  data_entrada String?
+  id              Int            @id @default(autoincrement())
+  substituto      String?
+  substituido     String?
+  data_entrada    String?
   horario_entrada String?
-  data_saida String?
-  horario_saida String?
-  servidor_he String?
-  inicio_he String?
-  termino_he String?
-  relatorioId String @unique
-  relatorio RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+  data_saida      String?
+  horario_saida   String?
+  servidor_he     String?
+  inicio_he       String?
+  termino_he      String?
+  relatorioId     String         @unique
+  relatorio       RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
 }
+
 model FormExpediente {
-  id  Int @id @default(autoincrement())
+  id                 Int            @id @default(autoincrement())
   pessoas_expediente Json
-  pessoa_falta String?
-  pessoa_atraso String?
-  atraso_horario_de String?
+  pessoa_falta       String?
+  pessoa_atraso      String?
+  atraso_horario_de  String?
   atraso_horario_ate String?
-  pessoa_ferias String?
-  ferias_ate String?
-  retorno_ferias String?
-  pessoa_atestado String?
-  atestado_dias Int?
-  retorno_atestado String?
-  observacoes String?
-  relatorioId String @unique
-  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+  pessoa_ferias      String?
+  ferias_ate         String?
+  retorno_ferias     String?
+  pessoa_atestado    String?
+  atestado_dias      Int?
+  retorno_atestado   String?
+  observacoes        String?
+  relatorioId        String         @unique
+  relatorioDoDia     RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
 }
+
 model FormRevezamento {
-  id Int @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   primeiro_turno Json?
-  segundo_turno Json?
+  segundo_turno  Json?
   terceiro_turno Json?
-  quarto_turno Json?
-  relatorioId String @unique
-  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
-}
-model FormRotinaDiaria {
-  id Int @id @default(autoincrement())
-  rotina String?
-  pavilhao_um String?
-  pavilhao_dois String?
-  alimentacao String?
-  relatorioId String @unique
-  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
-}
-model FormEntradaPresos {
-  id Int @id @default(autoincrement())
-  presos Json
-  relatorioId String @unique
-  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
-}
-model FormSaidaPresos {
-  id Int @id @default(autoincrement())
-  presos Json
-  relatorioId String @unique
-  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
-}
-model FormMudancaCelaOperacional {
-  id Int @id @default(autoincrement())
-  presos Json
-  relatorioId String @unique
-  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
-}
-model FormPedidoSeguro {
-  id Int @id @default(autoincrement())
-  presos Json
-  relatorioId String @unique
-  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
-}
-model FormEscoltaPresos {
-  id Int @id @default(autoincrement())
-  presos Json
-  relatorioId String @unique
-  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
-}
-model FormEscoltaNaoRealizada {
-  id Int @id @default(autoincrement())
-  presos Json
-  relatorioId String @unique
-  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
-}
-model FormSigo {
-  id Int @id @default(autoincrement())
-  sigo String?
-  prisao_domiciliar String?
-  vistoria_cela String?
-  comunicados String?
-  relatorioId String @unique
-  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
-}
-model FormInclusaoRetorno {
-  id Int @id @default(autoincrement())
-  inclusao String?
-  retorno String?
-  exclusao String?
-  relatorioId String @unique
+  quarto_turno   Json?
+  relatorioId    String         @unique
   relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
 }
 
+model FormRotinaDiaria {
+  id             Int            @id @default(autoincrement())
+  rotina         String?
+  pavilhao_um    String?
+  pavilhao_dois  String?
+  alimentacao    String?
+  relatorioId    String         @unique
+  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model FormEntradaPresos {
+  id             Int            @id @default(autoincrement())
+  presos         Json
+  relatorioId    String         @unique
+  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model FormSaidaPresos {
+  id             Int            @id @default(autoincrement())
+  presos         Json
+  relatorioId    String         @unique
+  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model FormMudancaCelaOperacional {
+  id             Int            @id @default(autoincrement())
+  presos         Json
+  relatorioId    String         @unique
+  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model FormPedidoSeguro {
+  id             Int            @id @default(autoincrement())
+  presos         Json
+  relatorioId    String         @unique
+  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model FormEscoltaPresos {
+  id             Int            @id @default(autoincrement())
+  presos         Json
+  relatorioId    String         @unique
+  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model FormEscoltaNaoRealizada {
+  id             Int            @id @default(autoincrement())
+  presos         Json
+  relatorioId    String         @unique
+  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model FormSigo {
+  id                Int            @id @default(autoincrement())
+  sigo              String?
+  prisao_domiciliar String?
+  vistoria_cela     String?
+  comunicados       String?
+  relatorioId       String         @unique
+  relatorioDoDia    RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model FormInclusaoRetorno {
+  id             Int            @id @default(autoincrement())
+  inclusao       String?
+  retorno        String?
+  exclusao       String?
+  relatorioId    String         @unique
+  relatorioDoDia RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model FormDadosFinais {
+  id                  Int            @id @default(autoincrement())
+  mandado_intimacao   String?
+  carta_precatoria    String?
+  informacoes         String?
+  atividades_laborais String?
+  documentos_presos   String?
+  repasse_documentos  String?
+  guarda_externa      String?
+  relatorioId         String         @unique
+  relatorioDoDia      RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
+
+model FormAssinatura {
+  id                  Int            @id @default(autoincrement())
+  entrega_nome String
+  entrega_data String
+  entrega_matricula String
+  recebe_nome String
+  recebe_data String
+  recebe_matricula String
+  relatorioId         String         @unique
+  relatorioDoDia      RelatorioDoDia @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+}
 
 model Hours {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
   hour String
 }
 
-
 model Person {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
   name String
 }
 
 model Armamento {
-  id     Int      @id @default(autoincrement())
-  num    String   @unique
-  tipo   String
-  calibre  String
+  id      Int    @id @default(autoincrement())
+  num     String @unique
+  tipo    String
+  calibre String
 }
 
 enum Role {

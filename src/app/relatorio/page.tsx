@@ -20,7 +20,7 @@ import FormMudancaCela from "../components/forms/FormMudancaCela";
 import FormEscoltaPreso from "../components/forms/FormEscoltaPreso";
 import FormSigo from "../components/forms/FormSigo";
 import FormInclusaoRetorno from "../components/forms/FormInclusaoRetorno";
-import FormDadosFinanis from "../components/forms/FormDadosFinais";
+import FormDadosFinais from "../components/forms/FormDadosFinais";
 import FormEncerramento from "../components/forms/FormEncerramento";
 import FormAssinatura from "../components/forms/FormAssinatura";
 import { useRouter } from "next/navigation";
@@ -45,6 +45,8 @@ import {
   FormEscoltaPresos as ObjFormEscoltaPresos,
   FormSigo as ObjFormSigo,
   FormInclusaoRetorno as ObjFormInclusaoRetorno,
+  FormDadosFinais as ObjFormDadosFinais,
+  FormAssinatura as ObjFormAssinatura
 } from "@/generated/prisma";
 import { useFetchData } from "@/hooks/useFetchData";
 import FormEntradaPresos from "../components/forms/FormEntradaPresos";
@@ -130,11 +132,17 @@ export default function Report() {
   const [cacheFormInclusaoRetorno, setCacheFormInclusaoRetorno] =
     useState<SucessAuth | null>(null);
 
+  const [cacheFormDadosFinais, setCacheFormDadosFinais] =
+    useState<SucessAuth | null>(null);
+
+    const [cacheFormAssinatura, setCacheFormAssinatura] =
+    useState<SucessAuth | null>(null);
+
   const [itemActive, setItemActive] = useState({
-    aba: "19 - Inclusão/Retorno",
-    API: "/api/auth/form-inclusao-retorno",
+    aba: "22 - Encerramento",
+    API: "/api/auth/form-encerramento",
     obj: {},
-    cache: setCacheFormInclusaoRetorno,
+    cache: setCacheFormAssinatura,
   });
   const [progress, setProgress] = useState(false);
   const [hour, setHour] = useState<Hours[]>([]);
@@ -361,11 +369,28 @@ export default function Report() {
             readyData={setFormDataReady}
           />
         );
-      case "21 - Dados Finais":
-        return <FormDadosFinanis />;
-      case "22 - Assinatura":
-        return <FormAssinatura />;
-      case "23 - Encerramento":
+      case "20 - Dados Finais":
+        return (
+          <FormDadosFinais
+            onSave={(data: ObjFormDadosFinais) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheFormDadosFinais}
+            generateData={generateDataForm}
+            readyData={setFormDataReady}
+          />
+        );
+      case "21 - Assinatura":
+        return <FormAssinatura onSave={(data: ObjFormAssinatura) => {
+              itemActive.obj = data;
+            }}
+            cacheData={cacheFormAssinatura}
+            generateData={generateDataForm}
+            readyData={setFormDataReady}
+            person={person}
+            />
+            
+      case "22 - Encerramento":
         return <FormEncerramento />;
       default:
         return null;
@@ -478,13 +503,13 @@ export default function Report() {
       aba: "20 - Dados Finais",
       API: "/api/auth/form-dados-finais",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheFormDadosFinais,
     },
     {
       aba: "21 - Assinatura",
       API: "/api/auth/form-assinatura",
       obj: {},
-      cache: setCacheFormRecebimento,
+      cache: setCacheFormAssinatura,
     },
     {
       aba: "22 - Encerramento",
