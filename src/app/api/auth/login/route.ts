@@ -9,20 +9,32 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function POST(request: Request) {
   try {
-    const totalUsers = await prisma.usuario.count();
-
-    if (totalUsers === 0) {
-      const hashPadrao = hashSync("sysadmin26", 10);
-      await prisma.usuario.create({
-        data: {
-          user: "admin",
-          password: hashPadrao,
-          role: "ADMIN",
-          phone: "00000000000",
-        },
-      });
+    if (!secret) {
+      throw new Error("Variável de ambiente JWT_SECRET não definida.");
     }
-    const { user, password } = await request.json();
+    // const totalUsers = await prisma.usuario.count();
+
+    // if (totalUsers === 0) {
+    //   const hashPadrao = hashSync("sysadmin26", 10);
+    //   await prisma.usuario.create({
+    //     data: {
+    //       name: "Lucas Borgo",
+    //       user: "admin",
+    //       password: hashPadrao,
+    //       role: "ADMIN",
+    //       phone: "00000000000",
+    //     },
+    //   });
+    // }
+    const { user, password } = await request.json().catch(() => null);
+
+    if (!user || !password) {
+      return NextResponse.json(
+        { erro: "É necessário informar usuário ou senha!" },
+        { status: 400 },
+      );
+    }
+
     const userLogin = await prisma.usuario.findUnique({
       where: {
         user: user,
@@ -42,8 +54,8 @@ export async function POST(request: Request) {
         { status: 401 },
       );
     }
-    const { id, email } = userLogin;
-    const payload = { id, email };
+    const { id, name } = userLogin;
+    const payload = { id, name };
 
     const token = await new SignJWT(payload)
       .setProtectedHeader({ alg: "HS256" })
@@ -56,7 +68,7 @@ export async function POST(request: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 60 * 60 * 2,
+      maxAge: 60 * 60,
       path: "/",
     });
 
@@ -66,6 +78,7 @@ export async function POST(request: Request) {
       ...payload,
     });
   } catch (error) {
+    console.error("Erro na rota de login:", error);
     return NextResponse.json(
       { erro: "Erro interno de servidor" },
       { status: 500 },

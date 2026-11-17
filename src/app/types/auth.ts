@@ -4,5 +4,6 @@ export interface SucessAuth<T = any> {
     message?: string
     sucess: boolean;
     error?: string;
-    payload?: T
+    payload?: T;
+    data: string
 }

@@ -36,9 +36,8 @@ export default function Home() {
     });
 
     const dados = await result.json();
-    console.log(dados);
     if (dados.sucess) {
-      router.push(`/relatorio?nome=${userActive.text}`);
+      router.push(`/relatorio`);
     } else {
       if (dados.erro) {
         setProgress(false);
