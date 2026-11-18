@@ -1,10 +1,21 @@
 "use client";
-const converterCalendario = (data: Date): string => {
-  return data.toLocaleDateString().split("T")[0];
-};
-import { Calendar, RefreshCcw, SavePlus, StickyNotes } from "lucide-react";
+
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  RefreshCcw,
+  SavePlus,
+  StickyNotes,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ElementType, SetStateAction, useEffect, useRef, useState } from "react";
+import {
+  ElementType,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 // Componentes de Formulário
 import FormRecebimento from "@/app/components/forms/FormRecebimento";
@@ -36,6 +47,7 @@ import { useFetchData } from "@/hooks/useFetchData";
 import { useSaveData } from "@/hooks/useSaveData";
 import { SucessAuth } from "../types/auth";
 import { Hours, Person } from "@/generated/prisma";
+import { useReportTab } from "@/hooks/useReportTab";
 
 // 1. Configuração centralizada: substitui o array elementLi E o switch gigante
 interface FormConfigItem {
@@ -47,53 +59,53 @@ interface FormConfigItem {
 
 export const FORMS_CONFIG: Record<string, FormConfigItem> = {
   recebimento: {
-    label: "1- Recebimento",
+    label: "Recebimento",
     api: "/api/auth/form-recebimento",
     component: FormRecebimento,
   },
   armamento: {
-    label: "1.1- Armamento",
+    label: "Armamento",
     api: "/api/auth/form-armamento",
     component: FormArmamento,
   },
   equipe: {
-    label: "2- Equipe",
+    label: "Equipe",
     api: "/api/auth/form-equipe",
     component: FormEquipe,
   },
   "trocas-he": {
-    label: "3- Trocas / HE",
+    label: "Trocas / HE",
     api: "/api/auth/form-trocas-he",
     component: FormTrocasHe,
     usesCacheProp: true,
   },
   expediente: {
-    label: "05- 11 Expediente",
+    label: "Expediente",
     api: "/api/auth/form-expediente",
     component: FormExpediente,
   },
   revezamento: {
-    label: "12- Revezamento",
+    label: "Revezamento",
     api: "/api/auth/form-revezamento",
     component: FormRevezamento,
   },
   "rotina-diaria": {
-    label: "13-14 Rotina Diária",
+    label: "Rotina Diária",
     api: "/api/auth/form-rotina-diaria",
     component: FormRotinaDiaria,
   },
   "entrada-presos": {
-    label: "15- Entrada Presos",
+    label: "Entrada Presos",
     api: "/api/auth/form-entrada-presos",
     component: FormEntradaPresos,
   },
   "saida-presos": {
-    label: "16- Saída Presos",
+    label: "Saída Presos",
     api: "/api/auth/form-saida-presos",
     component: FormaSaidaPresos,
   },
   "mudanca-cela": {
-    label: "17- Mudança Cela Operacional",
+    label: "Mudança Cela Operacional",
     api: "/api/auth/form-mudanca-cela",
     component: FormMudancaCela,
   },
@@ -103,48 +115,53 @@ export const FORMS_CONFIG: Record<string, FormConfigItem> = {
     component: FormPedidoSeguro,
   },
   "escolta-preso": {
-    label: "17- Escolta de Presos",
+    label: "Escolta de Presos",
     api: "/api/auth/form-escolta-preso",
     component: FormEscoltaPreso,
   },
   "escolta-nao-realizada": {
-    label: "18- Escolta não realizada",
+    label: "Escolta não realizada",
     api: "/api/auth/form-escolta-nao-realizada",
     component: FormEscoltaNRealizada,
   },
   sigo: {
-    label: "19 - SIGO",
+    label: "SIGO",
     api: "/api/auth/form-sigo",
     component: FormSigo,
   },
   "inclusao-retorno": {
-    label: "19 - Inclusão/Retorno",
+    label: "Inclusão/Retorno",
     api: "/api/auth/form-inclusao-retorno",
     component: FormInclusaoRetorno,
   },
   "dados-finais": {
-    label: "20 - Dados Finais",
+    label: "Dados Finais",
     api: "/api/auth/form-dados-finais",
     component: FormDadosFinais,
   },
   assinatura: {
-    label: "21 - Assinatura",
+    label: "Assinatura",
     api: "/api/auth/form-assinatura",
     component: FormAssinatura,
   },
   encerramento: {
-    label: "22 - Encerramento",
+    label: "Encerramento",
     api: "/api/auth/form-encerramento",
     component: FormEncerramento,
   },
 };
 
 type FormKey = keyof typeof FORMS_CONFIG;
+const FORM_KEYS = Object.keys(FORMS_CONFIG) as FormKey[];
 
 const formatarDataBr = (data: Date): string => {
   return data.toLocaleDateString("pt-BR");
 };
-export default function Report({initialNickname}: {initialNickname: string}) {
+export default function Report({
+  initialNickname,
+}: {
+  initialNickname: string;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -175,11 +192,14 @@ export default function Report({initialNickname}: {initialNickname: string}) {
   // 2. Estado único para todos os caches (substitui 18 useStates)
   const [caches, setCaches] = useState<Record<string, SucessAuth | null>>({});
 
-  // 3. Aba ativa controlada por SearchParams (fallback para 'encerramento')
-  const tabParam = searchParams.get("tab") as FormKey | null;
-  const activeKey: FormKey =
-    tabParam && FORMS_CONFIG[tabParam] ? tabParam : "encerramento";
+  const { activeTab: activeKey, setActiveTab } = useReportTab();
   const currentConfig = FORMS_CONFIG[activeKey];
+
+  const currentIndex = FORM_KEYS.indexOf(activeKey);
+  const prevTab: FormKey | null =
+    currentIndex != undefined ? FORM_KEYS[currentIndex - 1] : null;
+  const nextTab: FormKey | null =
+    currentIndex != undefined ? FORM_KEYS[currentIndex + 1] : null;
 
   // Hooks customizados
   const showMsgFetchData = useFetchData({
@@ -212,7 +232,7 @@ export default function Report({initialNickname}: {initialNickname: string}) {
 
           return { ...prev, [activeKey]: nextValue };
         });
-      }
+      },
     };
 
     showMsgFetchData(
@@ -267,7 +287,14 @@ export default function Report({initialNickname}: {initialNickname: string}) {
 
   const handleRegister = (e: React.MouseEvent) => {
     e.preventDefault();
-    setGenerateDataForm(true)
+    setGenerateDataForm(true);
+  };
+
+  const handleNextForm = (e: React.MouseEvent) => {
+    if (nextTab) setActiveTab(nextTab);
+  };
+  const handlePrevForm = (e: React.MouseEvent) => {
+    if (prevTab) setActiveTab(prevTab);
   };
 
   // 4. Renderização dinâmica sem Switch Case
@@ -320,7 +347,7 @@ export default function Report({initialNickname}: {initialNickname: string}) {
       <div className="flex flex-col flex-1 items-center justify-center max-2xl:my-10">
         {dateCalendar && (
           <div className="text-center text-sm w-32 text-gray-300 px-2 py-1 pointer-events-none bg-cinza-maisescuro ring-1 ring-gray-500/70 my-1 rounded-[5px]">
-            <p>{`Data: ${converterCalendario(dateCalendar)}`} </p>
+            <p>{`Data: ${formatarDataBr(dateCalendar)}`} </p>
           </div>
         )}
         {
@@ -335,6 +362,22 @@ export default function Report({initialNickname}: {initialNickname: string}) {
             readyData={setFormDataReady}
           ></ActiveFormComponent>
         }
+        <section className="flex justify-center gap-3 min-w-120 w-1/2 max-w-180 bg-cinza-maisescuro rounded-b-2xl">
+          <button
+            className="flex text-white px-2 py-1  bg-cinza-maisescuro ring-1 ring-gray-500/70 my-1 rounded-[5px] hover:text-amarelo-claro transition-colors duration-100 cursor-pointer "
+            onClick={handlePrevForm}
+          >
+            <ChevronLeft />
+            <span>Anterior</span>
+          </button>
+          <button
+            className="flex text-white px-2 py-1  bg-cinza-maisescuro ring-1 ring-gray-500/70 my-1 rounded-[5px] hover:text-amarelo-claro transition-colors duration-100 cursor-pointer "
+            onClick={handleNextForm}
+          >
+            <span>Próximo</span>
+            <ChevronRight />
+          </button>
+        </section>
         <button title="Salva o formulário">
           <SavePlus
             className="p-3 w-16 h-16 fixed right-5 bottom-5 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all"

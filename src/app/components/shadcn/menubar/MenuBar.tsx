@@ -1,134 +1,88 @@
+"use client";
+
 import {
   Menubar,
-  MenubarCheckboxItem,
   MenubarContent,
-  MenubarGroup,
   MenubarItem,
   MenubarMenu,
-  MenubarRadioGroup,
-  MenubarRadioItem,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarSub,
-  MenubarSubContent,
-  MenubarSubTrigger,
   MenubarTrigger,
-} from "@/components/ui/menubar";
+} from "@/components/ui/menubar"; // Seu import atual do shadcn
+import { useReportTab, FormKey } from "@/hooks/useReportTab";
+import { FORMS_CONFIG } from "@/app/relatorio/ReportClient";
+import { Play } from "lucide-react";
 
 export function MenuBar() {
+  const { activeTab, setActiveTab } = useReportTab();
+
+  // Helper para renderizar cada item do menu com destaque na aba ativa
+  const renderMenuItem = (key: FormKey) => {
+    const isActive = activeTab === key;
+    return (
+      <MenubarItem
+        key={key}
+        onClick={() => setActiveTab(key)}
+        className={`cursor-pointer ${
+          isActive ? "bg-amarelo-claro text-cinza-escuro font-bold" : ""
+        }`}
+      >
+        {FORMS_CONFIG[key].label}
+      </MenubarItem>
+    );
+  };
+
   return (
-    <Menubar className="w-72 border-none text-amarelo-claro">
+    <Menubar className="bg-cinza-escuro border-0 text-amarelo-claro">
+      {/* Exemplo agrupando por categorias (ou você pode listar direto) */}
       <MenubarMenu>
-        <MenubarTrigger>Recebimento</MenubarTrigger>
-        <MenubarContent>
-          <MenubarGroup>
-            <MenubarItem>
-              New Tab <MenubarShortcut>⌘T</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem>
-              New Window <MenubarShortcut>⌘N</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem disabled>New Incognito Window</MenubarItem>
-          </MenubarGroup>
-          <MenubarSeparator />
-          <MenubarGroup>
-            <MenubarSub>
-              <MenubarSubTrigger>Share</MenubarSubTrigger>
-              <MenubarSubContent>
-                <MenubarGroup>
-                  <MenubarItem>Email link</MenubarItem>
-                  <MenubarItem>Messages</MenubarItem>
-                  <MenubarItem>Notes</MenubarItem>
-                </MenubarGroup>
-              </MenubarSubContent>
-            </MenubarSub>
-          </MenubarGroup>
-          <MenubarSeparator />
-          <MenubarGroup>
-            <MenubarItem>
-              Print... <MenubarShortcut>⌘P</MenubarShortcut>
-            </MenubarItem>
-          </MenubarGroup>
+        <MenubarTrigger className="cursor-pointer text-base hover:bg-cinza-maisescuro aria-expanded:bg-cinza-maisescuro p-2">
+         Início / Plantão
+        </MenubarTrigger>
+
+        <MenubarContent className="bg-cinza-escuro  text-white ring-1 ring-gray-500/70">
+          {renderMenuItem("recebimento")}
+          {renderMenuItem("armamento")}
+          {renderMenuItem("equipe")}
+         
         </MenubarContent>
       </MenubarMenu>
+
       <MenubarMenu>
-        <MenubarTrigger>Edit</MenubarTrigger>
-        <MenubarContent>
-          <MenubarGroup>
-            <MenubarItem>
-              Undo <MenubarShortcut>⌘Z</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem>
-              Redo <MenubarShortcut>⇧⌘Z</MenubarShortcut>
-            </MenubarItem>
-          </MenubarGroup>
-          <MenubarSeparator />
-          <MenubarGroup>
-            <MenubarSub>
-              <MenubarSubTrigger>Find</MenubarSubTrigger>
-              <MenubarSubContent>
-                <MenubarGroup>
-                  <MenubarItem>Search the web</MenubarItem>
-                </MenubarGroup>
-                <MenubarSeparator />
-                <MenubarGroup>
-                  <MenubarItem>Find...</MenubarItem>
-                  <MenubarItem>Find Next</MenubarItem>
-                  <MenubarItem>Find Previous</MenubarItem>
-                </MenubarGroup>
-              </MenubarSubContent>
-            </MenubarSub>
-          </MenubarGroup>
-          <MenubarSeparator />
-          <MenubarGroup>
-            <MenubarItem>Cut</MenubarItem>
-            <MenubarItem>Copy</MenubarItem>
-            <MenubarItem>Paste</MenubarItem>
-          </MenubarGroup>
+        <MenubarTrigger className="cursor-pointer text-base  hover:bg-cinza-maisescuro aria-expanded:bg-cinza-maisescuro  p-2">
+          Rotina
+        </MenubarTrigger>
+        <MenubarContent className="bg-cinza-escuro  text-white ring-1 ring-gray-500/70">
+          {renderMenuItem("revezamento")}
+          {renderMenuItem("rotina-diaria")}
+           {renderMenuItem("trocas-he")}
+          {renderMenuItem("expediente")}
+          
         </MenubarContent>
       </MenubarMenu>
+
       <MenubarMenu>
-        <MenubarTrigger>View</MenubarTrigger>
-        <MenubarContent className="w-44">
-          <MenubarGroup>
-            <MenubarCheckboxItem>Bookmarks Bar</MenubarCheckboxItem>
-            <MenubarCheckboxItem checked>Full URLs</MenubarCheckboxItem>
-          </MenubarGroup>
-          <MenubarSeparator />
-          <MenubarGroup>
-            <MenubarItem inset>
-              Reload <MenubarShortcut>⌘R</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem disabled inset>
-              Force Reload <MenubarShortcut>⇧⌘R</MenubarShortcut>
-            </MenubarItem>
-          </MenubarGroup>
-          <MenubarSeparator />
-          <MenubarGroup>
-            <MenubarItem inset>Toggle Fullscreen</MenubarItem>
-          </MenubarGroup>
-          <MenubarSeparator />
-          <MenubarGroup>
-            <MenubarItem inset>Hide Sidebar</MenubarItem>
-          </MenubarGroup>
+        <MenubarTrigger className="cursor-pointer text-base  hover:bg-cinza-maisescuro aria-expanded:bg-cinza-maisescuro  p-2">
+          Movimentação / Escolta
+        </MenubarTrigger>
+        <MenubarContent className="bg-cinza-escuro  text-white ring-1 ring-gray-500/70">
+          {renderMenuItem("entrada-presos")}
+          {renderMenuItem("saida-presos")}
+          {renderMenuItem("mudanca-cela")}
+          {renderMenuItem("pedido-seguro")}
+          {renderMenuItem("escolta-preso")}
+          {renderMenuItem("escolta-nao-realizada")}
+          {renderMenuItem("inclusao-retorno")}
         </MenubarContent>
       </MenubarMenu>
+
       <MenubarMenu>
-        <MenubarTrigger>Profiles</MenubarTrigger>
-        <MenubarContent>
-          <MenubarRadioGroup value="benoit">
-            <MenubarRadioItem value="andy">Andy</MenubarRadioItem>
-            <MenubarRadioItem value="benoit">Benoit</MenubarRadioItem>
-            <MenubarRadioItem value="Luis">Luis</MenubarRadioItem>
-          </MenubarRadioGroup>
-          <MenubarSeparator />
-          <MenubarGroup>
-            <MenubarItem inset>Edit...</MenubarItem>
-          </MenubarGroup>
-          <MenubarSeparator />
-          <MenubarGroup>
-            <MenubarItem inset>Add Profile...</MenubarItem>
-          </MenubarGroup>
+        <MenubarTrigger className="cursor-pointer text-base  hover:bg-cinza-maisescuro aria-expanded:bg-cinza-maisescuro  p-2">
+          Finalização
+        </MenubarTrigger>
+        <MenubarContent className="bg-cinza-escuro  text-white ring-1 ring-gray-500/70">
+          {renderMenuItem("sigo")}
+          {renderMenuItem("dados-finais")}
+          {renderMenuItem("assinatura")}
+          {renderMenuItem("encerramento")}
         </MenubarContent>
       </MenubarMenu>
     </Menubar>
