@@ -170,6 +170,7 @@ export default function Report({
   const dialogSave = useRef<HTMLDialogElement>(null);
   const dateCurrent = useRef<string | null>(null);
   const formPayloadRef = useRef({}); // Substitui mutação direta em itemActive.obj
+  const dateDialogRef = useRef<HTMLDialogElement>(null);
 
   // Estados gerais
   const [dialogInfoMsg, setDialogInfoMsg] = useState<dialogMsg>(
@@ -183,6 +184,8 @@ export default function Report({
     new Date(),
   );
   const [progress, setProgress] = useState(false);
+
+
 
   // Dados carregados da API
   const [person, setPerson] = useState<Person[]>([]);
@@ -219,7 +222,6 @@ export default function Report({
   useEffect(() => {
     if (!dateCalendar) return;
 
-    // Adaptador para manter compatibilidade com a assinatura atual do seu hook useFetchData
     const activeItemAdapter = {
       aba: currentConfig.label,
       API: currentConfig.api,
@@ -285,6 +287,12 @@ export default function Report({
     }
   };
 
+  useEffect(() => {
+    if(showCalendar){
+      dateDialogRef && dateDialogRef.current?.focus();
+    }
+  }, [showCalendar])
+
   const handleRegister = (e: React.MouseEvent) => {
     e.preventDefault();
     setGenerateDataForm(true);
@@ -297,6 +305,8 @@ export default function Report({
     if (prevTab) setActiveTab(prevTab);
   };
 
+
+
   // 4. Renderização dinâmica sem Switch Case
   const ActiveFormComponent = currentConfig.component;
   const currentCache = caches[activeKey] ?? null;
@@ -305,31 +315,6 @@ export default function Report({
     <main className="flex flex-col bg-linear-to-b from-cinza-maisescuro  to-cinza-escuro min-h-screen w-full ">
       <nav className="flex justify-between items-center bg-cinza-escuro p-2 gap-4">
         <MenuBar></MenuBar>
-        {/* <div className="flex items-center min-w-75 gap-2 w-1/2">
-          <button onClick={moveLeft} className="cursor-pointer shrink-0">
-            <ChevronLeft className="text-amarelo-claro w-8 h-8" />
-          </button>
-          <div
-            ref={containerRef}
-            className="flex overflow-x-auto scroll-smooth scrollbar-none w-full px-2  gap-3 items-center "
-          >
-            {elementLi.current.map((e) => {
-              const active = itemActive.aba === e.aba;
-              return (
-                <div
-                  key={e.aba}
-                  className={`${active ? "bg-amarelo-claro text-cinza-escuro font-bold " : "bg-cinza-escuro text-amarelo-claro"} p-3 my-1 rounded-[5px] text-sm cursor-pointer transition-all duration-200 shadow-black shadow-[1px_1px_4px] whitespace-nowrap shrink-0 `}
-                  onClick={() => setItemActive(e)}
-                >
-                  {e.aba}
-                </div>
-              );
-            })}
-          </div>
-          <button onClick={moveRight} className="cursor-pointer shrink-0">
-            <ChevronRight className="text-amarelo-claro w-8 h-8" />
-          </button>
-        </div> */}
         <div className="flex gap-5 items-center text-amarelo-claro shrink-0 mr-1">
           <p>Bem-vindo {initialNickname} !</p>
           <div
@@ -346,7 +331,7 @@ export default function Report({
 
       <div className="flex flex-col flex-1 items-center justify-center max-2xl:my-10">
         {dateCalendar && (
-          <div className="text-center text-sm w-32 text-gray-300 px-2 py-1 pointer-events-none bg-cinza-maisescuro ring-1 ring-gray-500/70 my-1 rounded-[5px]">
+          <div className="text-center text-sm text-gray-300 px-2 py-1 pointer-events-none bg-cinza-maisescuro ring-1 ring-gray-500/70 my-1 rounded-[5px]">
             <p>{`Data: ${formatarDataBr(dateCalendar)}`} </p>
           </div>
         )}
@@ -405,6 +390,7 @@ export default function Report({
         setShowCalendar={setShowCalendar}
         setDate={setDateCalendar}
         date={dateCalendar}
+        ref={dateDialogRef}
       />
       <DialogInfo
         mensagem={dialogInfoMsg}
