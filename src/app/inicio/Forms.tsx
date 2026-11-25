@@ -157,7 +157,7 @@ const FORM_KEYS = Object.keys(FORMS_CONFIG) as FormKey[];
 const formatarDataBr = (data: Date): string => {
   return data.toLocaleDateString("pt-BR");
 };
-export default function Report({
+export default function Initial({
   initialNickname,
 }: {
   initialNickname: string;

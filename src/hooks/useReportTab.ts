@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { FORMS_CONFIG } from "@/app/relatorio/ReportClient"; // Ajuste o caminho se mover o FORMS_CONFIG
+import { FORMS_CONFIG } from "@/app/inicio/Forms"; // Ajuste o caminho se mover o FORMS_CONFIG
 
 export type FormKey = keyof typeof FORMS_CONFIG;
 

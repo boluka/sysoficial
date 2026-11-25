@@ -18,9 +18,9 @@ export async function proxy(request: NextRequest) {
   }
 
   if (isTokenValid && pathname === '/') {
-    return NextResponse.redirect(new URL('/relatorio', request.url));
+    return NextResponse.redirect(new URL('/inicio', request.url));
   }
-  if (!isTokenValid && pathname.startsWith('/relatorio')) {
+  if (!isTokenValid && pathname.startsWith('/inicio')) {
     return NextResponse.redirect(new URL('/', request.url));
   }
   return NextResponse.next();
@@ -28,6 +28,6 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     '/', 
-    '/relatorio/:path*' 
+    '/inicio/:path*' 
   ],
 };

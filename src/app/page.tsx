@@ -37,7 +37,7 @@ export default function Home() {
 
     const dados = await result.json();
     if (dados.sucess) {
-      router.push(`/relatorio`);
+      router.push(`/inicio`);
     } else {
       if (dados.erro) {
         setProgress(false);

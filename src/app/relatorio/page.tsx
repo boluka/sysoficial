@@ -1,24 +1,17 @@
-// src/app/relatorio/page.tsx
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { jwtVerify } from "jose";
-import Report from "./ReportClient";
+'use client'
+import Report from "../components/report/Report";
+import dynamic from 'next/dynamic';
 
-export default async function RelatorioPage() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
-
-  let nickname = "Servidor";
-
-  if (token) {
-    try {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-      const { payload } = await jwtVerify(token, secret);
-      console.log(payload)
-      nickname = payload.name as string;
-    } catch {
-      redirect("/");
-    }
+const PDFViewer = dynamic(
+  () => import('@react-pdf/renderer').then((mod) => mod.PDFViewer),
+  {
+    ssr: false,
+    loading: () => <p>Carregando PDF...</p>,
   }
-  return <Report initialNickname={nickname} />;
+);
+
+export default function Page() {
+    return (  <PDFViewer style={{width: '100%', height: '100vh'}}>
+    <Report />
+  </PDFViewer>)
 }

@@ -8,7 +8,7 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar"; // Seu import atual do shadcn
 import { useReportTab, FormKey } from "@/hooks/useReportTab";
-import { FORMS_CONFIG } from "@/app/relatorio/ReportClient";
+import { FORMS_CONFIG } from "@/app/inicio/Forms";
 import { Play } from "lucide-react";
 
 export function MenuBar() {

@@ -4,15 +4,9 @@ import { compare } from "bcrypt-ts";
 import { SignJWT } from "jose";
 import { cookies } from "next/headers";
 import { hashSync } from "bcrypt-ts";
+import * as z from "zod";
 
-const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-
-export async function POST(request: Request) {
-  try {
-    if (!secret) {
-      throw new Error("Variável de ambiente JWT_SECRET não definida.");
-    }
-    // const totalUsers = await prisma.usuario.count();
+   // const totalUsers = await prisma.usuario.count();
 
     // if (totalUsers === 0) {
     //   const hashPadrao = hashSync("sysadmin26", 10);
@@ -26,7 +20,31 @@ export async function POST(request: Request) {
     //     },
     //   });
     // }
-    const { user, password } = await request.json().catch(() => null);
+
+
+
+const schema = z.strictObject({
+  user: z.string().min(2).max(100).trim(),
+  password: z.string().min(8).max(255),
+});
+
+export async function POST(request: Request) {
+  try {
+    const rawSecret = process.env.JWT_SECRET;
+    if (!rawSecret || !(rawSecret.length >= 32)) {
+      throw new Error("Variável de ambiente JWT_SECRET não definida ou menor que 32 caracteres.");
+    }
+    const secret = new TextEncoder().encode(rawSecret);
+ 
+    const bodyObject = await request.json().catch(() => null);
+    const parse = schema.safeParse(bodyObject);
+    if (!parse.success) {
+      return NextResponse.json(
+        { erro: "Dados invalidos!" },
+        { status: 400 },
+      );
+    }
+    const {user, password} = parse.data
 
     if (!user || !password) {
       return NextResponse.json(
@@ -54,8 +72,8 @@ export async function POST(request: Request) {
         { status: 401 },
       );
     }
-    const { id, name } = userLogin;
-    const payload = { id, name };
+    const { id, name, role } = userLogin;
+    const payload = { id, name, role };
 
     const token = await new SignJWT(payload)
       .setProtectedHeader({ alg: "HS256" })
@@ -79,6 +97,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Erro na rota de login:", error);
+
     return NextResponse.json(
       { erro: "Erro interno de servidor" },
       { status: 500 },

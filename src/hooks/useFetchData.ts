@@ -1,6 +1,6 @@
 "use client";
 import { dialogMsg } from "@/app/components/dialog/DialogInfo";
-import fetchData from "@/app/relatorio/services";
+import fetchData from "@/app/inicio/services";
 import { SucessAuth } from "@/app/types/auth";
 import { Dispatch, SetStateAction, useRef } from "react";
 
