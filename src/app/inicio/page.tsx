@@ -15,10 +15,9 @@ export default async function RelatorioPage() {
       const { payload } = await jwtVerify(token, secret);
       console.log(payload)
       nickname = payload.name as string;
-      
-    } catch {
-      redirect("/");
-    }
+    } catch(error) {
+      console.log(error)
+    } 
   }
   return <Forms initialNickname={nickname} />;
 }

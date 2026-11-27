@@ -1,5 +1,8 @@
+import { SucessAuth } from "@/app/types/auth";
+import { ReportPayload } from "@/app/types/form";
+import { FormAssinatura } from "@/generated/prisma";
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
-import React from "react";
+import React, { useEffect, useState } from "react";
 // Create styles
 const styles = StyleSheet.create({
   page: {
@@ -29,12 +32,12 @@ const styles = StyleSheet.create({
 });
 
 // Create Document Component
-export default function Report() {
+export default function Report({ payload }: ReportPayload) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text>Field Notes</Text>
+          <Text>{payload.formAssinatura?.entrega_nome ?? ""}</Text>
           <Text>Issue 01</Text>
         </View>
         <Text style={styles.title}>Documents, written in React</Text>

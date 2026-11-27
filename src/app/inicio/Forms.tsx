@@ -157,6 +157,7 @@ const FORM_KEYS = Object.keys(FORMS_CONFIG) as FormKey[];
 const formatarDataBr = (data: Date): string => {
   return data.toLocaleDateString("pt-BR");
 };
+
 export default function Initial({
   initialNickname,
 }: {
@@ -181,11 +182,9 @@ export default function Initial({
   const [formDataReady, setFormDataReady] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [dateCalendar, setDateCalendar] = useState<Date | undefined>(
-    new Date(),
   );
+
   const [progress, setProgress] = useState(false);
-
-
 
   // Dados carregados da API
   const [person, setPerson] = useState<Person[]>([]);
@@ -203,7 +202,6 @@ export default function Initial({
     currentIndex != undefined ? FORM_KEYS[currentIndex - 1] : null;
   const nextTab: FormKey | null =
     currentIndex != undefined ? FORM_KEYS[currentIndex + 1] : null;
-
   // Hooks customizados
   const showMsgFetchData = useFetchData({
     showDialogAnimation,
@@ -218,9 +216,23 @@ export default function Initial({
     { showDialogAnimation, setShowDialogAnimation, setDialogInfoMsg },
   );
 
+  useEffect(() => {
+    const savedDate = localStorage.getItem("date");
+    if (savedDate) {
+      const parsedDate = new Date(savedDate);
+      if (!isNaN(parsedDate.getTime())) {
+        setDateCalendar(parsedDate);
+        return;
+      }
+    }
+
+    setDateCalendar(new Date());
+  }, []);
+
   // Busca dados ao mudar a data ou a aba ativa
   useEffect(() => {
     if (!dateCalendar) return;
+    localStorage.setItem("date", dateCalendar.toISOString());
 
     const activeItemAdapter = {
       aba: currentConfig.label,
@@ -288,10 +300,10 @@ export default function Initial({
   };
 
   useEffect(() => {
-    if(showCalendar){
+    if (showCalendar) {
       dateDialogRef && dateDialogRef.current?.focus();
     }
-  }, [showCalendar])
+  }, [showCalendar]);
 
   const handleRegister = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -304,8 +316,13 @@ export default function Initial({
   const handlePrevForm = (e: React.MouseEvent) => {
     if (prevTab) setActiveTab(prevTab);
   };
-
-
+  const generatePDF = (e: React.MouseEvent) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (dateCalendar) {
+      params.set("date", dateCalendar.toISOString().split("T")[0]);
+      router.push(`/relatorio?${params.toString()}`);
+    }
+  };
 
   // 4. Renderização dinâmica sem Switch Case
   const ActiveFormComponent = currentConfig.component;
@@ -369,7 +386,7 @@ export default function Initial({
             onClick={handleRegister}
           />
         </button>
-        <button title="Gera o relatório em PDF">
+        <button title="Gera o relatório em PDF" onClick={generatePDF}>
           <StickyNotes className="p-3 w-16 h-16 fixed right-5 bottom-25 rounded-lg text-cinza-escuro bg-amarelo-claro hover:bg-cinza-maisescuro hover:text-amarelo-claro cursor-pointer hover:w-17 hover:h-17 transition-all" />
         </button>
         <button

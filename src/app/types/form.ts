@@ -1,3 +1,4 @@
+import { FormAssinatura } from "@/generated/prisma";
 import { InputJsonValue, JsonValue } from "@/generated/prisma/runtime/client";
 
 export interface ObjFormRecebimento {
@@ -34,11 +35,14 @@ export interface ObjFormEquipe {
   demaisAux?: string
 }
 
-
-
 export interface ObjArmamento {
   id:number
   num: string
   tipo: string
   calibre?: string
+}
+export interface ReportPayload {
+  payload: {
+    formAssinatura?: FormAssinatura
+  }
 }
