@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import InputComponentForm from "../input/InputComponentForm";
 import SelectComponent from "../select/Select";
 import styles from "./styles-forms.module.css";
@@ -7,27 +7,28 @@ import FormDefault from "./FormDefault";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ObjArmamento, ObjFormArmamento } from "@/app/types/form";
+import { ObjArmamento } from "@/app/types/form";
 import { SucessAuth } from "@/app/types/auth";
+import { fetchGuns } from "@/app/inicio/services";
+import { FormProps } from "@/app/interfaces/FormProps";
+import { FormArmamento as ObjFormArmamento } from "@/generated/prisma";
 
 export default function FormArmamento({
   onSave,
   cacheData,
-}: {
-  onSave: (param: ObjFormArmamento) => void;
-  cacheData: SucessAuth | null;
-}) {
-  const [qtMunicao, setQtMunicao] = useState(0);
-  const [qtCarregadoresPist, setQtCarregadoresPist] = useState(0);
+  readyData,
+  generateData,
+}: FormProps<ObjFormArmamento>) {
+  const [qtMunicao, setQtMunicao] = useState("");
+  const [qtCarregadoresPist, setQtCarregadoresPist] = useState("");
   const [qtCarregadoresCarabina, setQtCarregadoresCarabina] = useState({
-    qtCarabinaQuinze: 0,
-    qtCarabinaTrinta: 0,
+    qtCarabinaQuinze: "",
+    qtCarabinaTrinta: "",
   });
   const [selectGuns, setSelectGuns] = useState("");
   const [selectNumeration, setSelectNumeration] = useState("");
@@ -37,27 +38,22 @@ export default function FormArmamento({
   const [itemSelect, setItemSelect] = useState<ObjArmamento>();
   const [id, setId] = useState(0);
 
-  onSave({
-    armamento: JSON.stringify(manyGuns),
-    qtPistola: qtCarregadoresPist,
-    qtCarabinaQuinze: qtCarregadoresCarabina.qtCarabinaQuinze,
-    qtCarabinaTrinta: qtCarregadoresCarabina.qtCarabinaTrinta,
-    municao: qtMunicao,
-  });
-
-  const fetchGuns = async () => {
-    try {
-      fetch("/api/auth/armamento/")
-        .then((e) => e.json())
-        .then((e) => {
-          if (e.sucess) {
-            setGuns(e.payload);
-          }
-        });
-    } catch (error) {
-      console.log(error);
+  useEffect(() => {
+    if (generateData) {
+      onSave({
+        id: 0,
+        armamento: JSON.stringify(manyGuns),
+        qtPistola: parseInt(qtCarregadoresPist) || 0,
+        qtCarabinaQuinze:
+          parseInt(qtCarregadoresCarabina.qtCarabinaQuinze) || 0,
+        qtCarabinaTrinta:
+          parseInt(qtCarregadoresCarabina.qtCarabinaTrinta) || 0,
+        municao: parseInt(qtMunicao) || 0,
+        relatorioId: "",
+      });
+      readyData && readyData(true);
     }
-  };
+  }, [generateData]);
 
   const filterGuns = () => {
     setNumeration(
@@ -93,7 +89,7 @@ export default function FormArmamento({
   };
 
   useEffect(() => {
-    if (cacheData?.sucess) {
+    if (cacheData && cacheData.sucess) {
       const {
         municao,
         qtPistola,
@@ -102,27 +98,29 @@ export default function FormArmamento({
         armamento,
       } = cacheData.payload as ObjFormArmamento;
       setQtCarregadoresCarabina({
-        qtCarabinaTrinta: qtCarabinaTrinta,
-        qtCarabinaQuinze: qtCarabinaQuinze,
+        qtCarabinaTrinta: qtCarabinaTrinta.toString(),
+        qtCarabinaQuinze: qtCarabinaQuinze.toString(),
       });
-      setQtMunicao(municao);
-      setQtCarregadoresPist(qtPistola);
+      setQtMunicao(municao.toString());
+      setQtCarregadoresPist(qtPistola.toString());
 
       let i = id;
-      let valorsArm = JSON.parse(armamento.toString());
-      valorsArm = valorsArm.map((e: any) => {
-        e.id = i++;
-        return e;
-      });
-      setId(i);
-      setManyGuns(valorsArm);
+      if (armamento) {
+        let valorsArm = JSON.parse(armamento.toString());
+        valorsArm = valorsArm.map((e: any) => {
+          e.id = i++;
+          return e;
+        });
+        setId(i);
+        setManyGuns(valorsArm);
+      }
     } else {
       setQtCarregadoresCarabina({
-        qtCarabinaTrinta: 0,
-        qtCarabinaQuinze: 0,
+        qtCarabinaTrinta: "0",
+        qtCarabinaQuinze: "0",
       });
-      setQtMunicao(0);
-      setQtCarregadoresPist(0);
+      setQtMunicao("0");
+      setQtCarregadoresPist("0");
       // //Lógica para incluir linhas vazias na tabela
 
       // let v = [];
@@ -151,7 +149,10 @@ export default function FormArmamento({
   }, [guns]);
 
   useEffect(() => {
-    fetchGuns();
+    (async () => {
+      const data = await fetchGuns();
+      data && setGuns(data);
+    })();
   }, []);
 
   return (
@@ -169,7 +170,7 @@ export default function FormArmamento({
             type="number"
             value={qtMunicao}
             onChange={(e: any) => {
-              setQtMunicao(parseInt(e.target.value));
+              setQtMunicao(e.target.value);
             }}
           />
           <p className="text-amarelo-claro text-base mt-2">Carregadores: </p>
@@ -180,7 +181,7 @@ export default function FormArmamento({
               type="number"
               value={qtCarregadoresPist}
               onChange={(e: any) => {
-                setQtCarregadoresPist(parseInt(e.target.value));
+                setQtCarregadoresPist(e.target.value);
               }}
             />
             <p>De 15 para Carabina: </p>
@@ -191,7 +192,7 @@ export default function FormArmamento({
               onChange={(e: any) => {
                 setQtCarregadoresCarabina((prev) => ({
                   ...prev,
-                  qtCarabinaQuinze: parseInt(e.target.value),
+                  qtCarabinaQuinze: e.target.value,
                 }));
               }}
             />
@@ -203,7 +204,7 @@ export default function FormArmamento({
               onChange={(e: any) => {
                 setQtCarregadoresCarabina((prev) => ({
                   ...prev,
-                  qtCarabinaTrinta: parseInt(e.target.value),
+                  qtCarabinaTrinta: e.target.value,
                 }));
               }}
             />
@@ -269,7 +270,6 @@ export default function FormArmamento({
             </button>
           </div>
           <Table>
-            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
             <TableHeader>
               <TableRow className="">
                 <TableHead className="w-1/2 text-amarelo-claro">
@@ -299,47 +299,6 @@ export default function FormArmamento({
               })}
             </TableBody>
           </Table>
-          {/* <table
-              className={`${styles["style-table"]} w-full text-center  border p-2 border-collapse border-spacing-3`}
-            >
-              <thead>
-                <tr className="bg-cinza ">
-                  <th className="border border-black text-white p-2 w-[35%]">
-                    Arma
-                  </th>
-                  <th className="border border-black text-amarelo-claro p-2 w-[35%]">
-                    Numeração
-                  </th>
-                  <th className="border border-black text-amarelo-claro p-2">
-                    Quantidade
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="bg-cinza-maisclaro border border-black text-cinza-escuro">
-                    Valor1
-                  </td>
-                  <td className="bg-cinza-maisclaro border border-black text-cinza-escuro">
-                    Valor2
-                  </td>
-                  <td className="bg-cinza-maisclaro border border-black text-cinza-escuro">
-                    Valor2
-                  </td>
-                </tr>
-                <tr>
-                  <td className="bg-white text-black border border-black">
-                    Valor 3
-                  </td>
-                  <td className="bg-white text-black border border-black">
-                    Valor 4
-                  </td>
-                  <td className="bg-white border border-black text-cinza-escuro">
-                    Valor2
-                  </td>
-                </tr>
-              </tbody>
-            </table> */}
         </div>
       </div>
     </FormDefault>

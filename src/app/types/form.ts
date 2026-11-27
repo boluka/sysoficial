@@ -1,4 +1,23 @@
-import { FormAssinatura } from "@/generated/prisma";
+import {
+  FormArmamento,
+  FormAssinatura,
+  FormDadosFinais,
+  FormEncerramento,
+  FormEntradaPresos,
+  FormEquipe,
+  FormEscoltaNaoRealizada,
+  FormEscoltaPresos,
+  FormExpediente,
+  FormInclusaoRetorno,
+  FormMudancaCelaOperacional,
+  FormPedidoSeguro,
+  FormRecebimento,
+  FormRevezamento,
+  FormRotinaDiaria,
+  FormSaidaPresos,
+  FormSigo,
+  FormTrocaHe,
+} from "@/generated/prisma";
 import { InputJsonValue, JsonValue } from "@/generated/prisma/runtime/client";
 
 export interface ObjFormRecebimento {
@@ -11,38 +30,32 @@ export interface ObjFormRecebimento {
   mat_carga: string;
   mat_belico: string;
 }
-export interface ObjFormArmamento {
-  armamento: InputJsonValue
-  municao: number
-  qtPistola: number
-  qtCarabinaQuinze: number
-  qtCarabinaTrinta: number
-}
-export interface ObjFormEquipe {
-  id?: number
-  chefeEquipe: string 
-  auxChefe: string
-  portariaPrinc: string
-  auxPort1?: string
-  auxPort2?: string
-  passarelaPrinc?: string
-  escolaPadaria?: string
-  trabalhoCrina?: string
-  responsavelPv1: string
-  corredorPv1?: InputJsonValue
-  responsavelPv2: string
-  corredorPv2?: InputJsonValue
-  demaisAux?: string
-}
 
 export interface ObjArmamento {
-  id:number
-  num: string
-  tipo: string
-  calibre?: string
+  id: number;
+  num: string;
+  tipo: string;
+  calibre?: string;
 }
 export interface ReportPayload {
   payload: {
-    formAssinatura?: FormAssinatura
-  }
+    formRecebimento?: FormRecebimento;
+    formArmamento?: FormArmamento;
+    formEquipe?: FormEquipe;
+    formTrocaHe?: FormTrocaHe;
+    formExpediente?: FormExpediente;
+    formRevezamento?: FormRevezamento;
+    formRotinaDiaria?: FormRotinaDiaria;
+    formEntradaSaida?: FormEntradaPresos;
+    formSaidaPresos?: FormSaidaPresos;
+    formMudancaCelaOperacional?: FormMudancaCelaOperacional;
+    formPedidoSeguro?: FormPedidoSeguro;
+    formEscoltaPresos?: FormEscoltaPresos;
+    formEscoltaNaoRealizada?: FormEscoltaNaoRealizada;
+    formSigo?: FormSigo;
+    formInclusaoRetorno?: FormInclusaoRetorno;
+    formDadosFinais?: FormDadosFinais;
+    formAssinatura?: FormAssinatura;
+    formEncerramento?: FormEncerramento;
+  };
 }

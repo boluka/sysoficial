@@ -44,9 +44,8 @@ const reportContent = () => {
       }
     })();
   }, [useSearch]);
-  console.log(data)
-  if (loading) return <p className="bg-cinza-escuro text-white">Buscando dados do relatório...</p>;
-  if (!data) return <p className="bg-cinza-escuro text-white">Nenhum dado encontrado para a data informada.</p>;
+  if (loading) return <p >Buscando dados do relatório...</p>;
+  if (!data) return <p>Nenhum dado encontrado para a data informada.</p>;
 
   return (
     <PDFViewer style={{ width: "100%", height: "100vh" }}>

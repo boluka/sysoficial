@@ -1,5 +1,7 @@
 import { Hours, Person } from "@/generated/prisma";
 import { SucessAuth } from "../types/auth";
+import { Dispatch, SetStateAction } from "react";
+import { ObjArmamento } from "../types/form";
 
 export default async function fetchData(
   date: string,
@@ -34,6 +36,22 @@ export async function fetchPerson(): Promise<Person[] | null> {
   }
   return null;
 }
+export async function fetchGuns(): Promise<ObjArmamento[] | null> {
+  try {
+    const data = await fetch("/api/auth/armamento/");
+    if (!data.ok) {
+      throw new Error("Erro de acesso a API: /api/auth/armamento");
+    }
+    const json = await data.json();
+    if (json.sucess) {
+      return json.payload;
+    }
+    return null;
+  } catch (error) {
+
+    return null;
+  }
+}
 
 export async function fetchHorarios(): Promise<Hours[] | null> {
   try {
@@ -42,12 +60,12 @@ export async function fetchHorarios(): Promise<Hours[] | null> {
       return null;
     }
     const data = await response.json().catch(() => null);
-    if(data.sucess){
+    if (data.sucess) {
       return data.payload;
     }
     return null;
   } catch (error) {
-    console.error("Erro ao buscar dados", error)
+    console.error("Erro ao buscar dados", error);
     return null;
   }
 }

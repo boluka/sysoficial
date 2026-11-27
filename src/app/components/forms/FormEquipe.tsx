@@ -1,23 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
-import SelectComponent from "../select/Select";
 import TextAreaComponent from "../textarea/TextAreaComponent";
 import FormDefault from "./FormDefault";
 import styles from "./styles-forms.module.css";
-import { Person } from "@/generated/prisma";
-import { ObjFormEquipe } from "@/app/types/form";
-import { SucessAuth } from "@/app/types/auth";
+import { FormEquipe as ObjFormEquipe } from "@/generated/prisma";
 import { ComboboxBasic } from "../shadcn/combobox/ComboboxBasic";
+import { FormProps } from "@/app/interfaces/FormProps";
 
 export default function FormEquipe({
   person,
   onSave,
   cacheData,
-}: {
-  person: Person[] | undefined;
-  onSave: (data: ObjFormEquipe) => void;
-  cacheData: SucessAuth<ObjFormEquipe> | null;
-}) {
+  generateData,
+  readyData,
+}: FormProps<ObjFormEquipe>) {
   const [textArea, setTextArea] = useState("");
   const [chefeEquipe, setChefeEquipe] = useState("");
   const [auxEquipe, setAuxEquipe] = useState("");
@@ -42,41 +38,39 @@ export default function FormEquipe({
   });
 
   useEffect(() => {
-    if (cacheData?.sucess) {
-      if (cacheData.payload) {
-        const {
-          chefeEquipe,
-          auxChefe,
-          portariaPrinc,
-          auxPort1,
-          auxPort2,
-          passarelaPrinc,
-          escolaPadaria,
-          trabalhoCrina,
-          responsavelPv1,
-          corredorPv1,
-          responsavelPv2,
-          corredorPv2,
-          demaisAux,
-        } = cacheData.payload;
-        setChefeEquipe(chefeEquipe);
-        setAuxEquipe(auxChefe);
-        setPortPrincipal(portariaPrinc);
-        setAuxPort1(auxPort1 ? auxPort1 : "");
-        setAuxPort2(auxPort2 ? auxPort2 : "");
-        setPassPrincipal(passarelaPrinc ? passarelaPrinc : "");
-        setEscolaPadaria(escolaPadaria ? escolaPadaria : "");
-        setCrina(trabalhoCrina ? trabalhoCrina : "");
-        if (corredorPv1) {
-          setCorredorPv1(JSON.parse(corredorPv1.toString()));
-        }
-        if (corredorPv2) {
-          setCorredorPv2(JSON.parse(corredorPv2.toString()));
-        }
-        setResposPv1(responsavelPv1);
-        setResposPv2(responsavelPv2);
-        setTextArea(demaisAux ? demaisAux : "");
+    if (cacheData && cacheData.payload) {
+      const {
+        chefeEquipe,
+        auxChefe,
+        portariaPrinc,
+        auxPort1,
+        auxPort2,
+        passarelaPrinc,
+        escolaPadaria,
+        trabalhoCrina,
+        responsavelPv1,
+        corredorPv1,
+        responsavelPv2,
+        corredorPv2,
+        demaisAux,
+      } = cacheData.payload;
+      setChefeEquipe(chefeEquipe);
+      setAuxEquipe(auxChefe);
+      setPortPrincipal(portariaPrinc);
+      setAuxPort1(auxPort1 ? auxPort1 : "");
+      setAuxPort2(auxPort2 ? auxPort2 : "");
+      setPassPrincipal(passarelaPrinc ? passarelaPrinc : "");
+      setEscolaPadaria(escolaPadaria ? escolaPadaria : "");
+      setCrina(trabalhoCrina ? trabalhoCrina : "");
+      if (corredorPv1) {
+        setCorredorPv1(JSON.parse(corredorPv1.toString()));
       }
+      if (corredorPv2) {
+        setCorredorPv2(JSON.parse(corredorPv2.toString()));
+      }
+      setResposPv1(responsavelPv1);
+      setResposPv2(responsavelPv2);
+      setTextArea(demaisAux ? demaisAux : "");
     } else {
       setChefeEquipe("");
       setAuxEquipe("");
@@ -93,22 +87,28 @@ export default function FormEquipe({
       setTextArea("");
     }
   }, [cacheData]);
-
-  onSave({
-    chefeEquipe: chefeEquipe,
-    auxChefe: auxEquipe,
-    portariaPrinc: portPrincipal,
-    auxPort1: auxPort1,
-    auxPort2: auxPort2,
-    passarelaPrinc: passPrincipal,
-    escolaPadaria: escolaPadaria,
-    trabalhoCrina: crina,
-    responsavelPv1: resposPv1,
-    corredorPv1: JSON.stringify(corredorPv1),
-    responsavelPv2: resposPv2,
-    corredorPv2: JSON.stringify(corredorPv2),
-    demaisAux: textArea,
-  });
+  useEffect(() => {
+    if (generateData) {
+      onSave({
+        id: 0,
+        chefeEquipe: chefeEquipe,
+        auxChefe: auxEquipe,
+        portariaPrinc: portPrincipal,
+        auxPort1: auxPort1,
+        auxPort2: auxPort2,
+        passarelaPrinc: passPrincipal,
+        escolaPadaria: escolaPadaria,
+        trabalhoCrina: crina,
+        responsavelPv1: resposPv1,
+        corredorPv1: JSON.stringify(corredorPv1),
+        responsavelPv2: resposPv2,
+        corredorPv2: JSON.stringify(corredorPv2),
+        demaisAux: textArea,
+        relatorioId: ""
+      });
+      readyData && readyData(true);
+    }
+  }, [generateData]);
 
   return (
     <FormDefault>
@@ -266,7 +266,6 @@ export default function FormEquipe({
                 }}
                 styles="w-40"
               />
-              
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV1:</p>
@@ -325,7 +324,7 @@ export default function FormEquipe({
                 }}
                 styles="w-40"
               />
-              </div>
+            </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV2:</p>
               <ComboboxBasic
@@ -339,7 +338,6 @@ export default function FormEquipe({
                 }}
                 styles="w-40"
               />
-              
             </div>
             <div className="flex items-center justify-end gap-2">
               <p className="text-sm">Corredor PV2:</p>

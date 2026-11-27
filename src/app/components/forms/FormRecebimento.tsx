@@ -6,22 +6,21 @@ import SelectComponent from "../select/Select";
 import InputComponentForm from "../input/InputComponentForm";
 import TextAreaComponent, { situation } from "../textarea/TextAreaComponent";
 import FormDefault from "./FormDefault";
-import { ObjFormRecebimento } from "@/app/types/form";
 import { SucessAuth } from "@/app/types/auth";
 import { ComboboxBasic } from "../shadcn/combobox/ComboboxBasic";
-import { Person } from "@/generated/prisma";
+import {
+  FormRecebimento as ObjFormRecebimento,
+  Person,
+} from "@/generated/prisma";
+import { FormProps } from "@/app/interfaces/FormProps";
 
-export default function Forms({
-  children,
+export default function FormRecebimento({
   onSave,
   cacheData,
+  readyData,
+  generateData,
   person,
-}: {
-  children?: ReactNode;
-  onSave: (obj: ObjFormRecebimento) => void;
-  cacheData: SucessAuth | null;
-  person: Person[] | undefined;
-}) {
+}: FormProps<ObjFormRecebimento>) {
   const [date, setDate] = useState("");
   const optionsSituation = ["Completo e sem alterações", "Incompleto"];
   const [textArea, setTextArea] = useState("");
@@ -31,8 +30,8 @@ export default function Forms({
   const [chefeReceb, setChefeReceb] = useState("");
   const [chefeEntrega, setChefeEntrega] = useState("");
   const [chefeAuxiliar, setChefeAuxiliar] = useState("");
-  const [efetivoCarc, setEfetivoCarc] = useState(0);
-  const [transitoCarc, setTransitoCarc] = useState(0);
+  const [efetivoCarc, setEfetivoCarc] = useState("");
+  const [transitoCarc, setTransitoCarc] = useState("");
   const [mat_carga, setMat_carga] = useState<situation>(
     "Completo e sem alterações",
   );
@@ -40,74 +39,77 @@ export default function Forms({
     "Completo e sem alterações",
   );
 
-  const el = useRef<HTMLSelectElement>(null);
+  useEffect(() => {
+    if (generateData) {
+      onSave({
+        id: "",
+        relatorioId: "",
+        plantao: plantao,
+        chefeReceb: chefeReceb,
+        chefeEntrega: chefeEntrega,
+        chefeAuxiliar: chefeAuxiliar,
+        efetivoCarc: parseInt(efetivoCarc),
+        transitoCarc: parseInt(transitoCarc),
+        mat_carga:
+          mat_carga != "Completo e sem alterações"
+            ? `Incompleto: ${textArea}`
+            : mat_carga,
+        mat_belico:
+          mat_belico != "Completo e sem alterações"
+            ? `Incompleto: ${textAreaTwo}`
+            : mat_belico,
+      });
+      readyData && readyData(true);
+    }
+  }, [generateData]);
 
   useEffect(() => {
-    if (cacheData) {
-      if (cacheData.sucess) {
-        const {
-          plantao,
-          chefeReceb,
-          chefeEntrega,
-          chefeAuxiliar,
-          efetivoCarc,
-          transitoCarc,
-          mat_carga,
-          mat_belico,
-        } = cacheData.payload?.formRecebimento;
-        setPlantao(plantao);
-        setChefeReceb(chefeReceb);
-        setChefeEntrega(chefeEntrega);
-        setChefeAuxiliar(chefeAuxiliar);
-        setEfetivoCarc(efetivoCarc);
-        setTransitoCarc(transitoCarc);
-        if (mat_carga != "Completo e sem alterações") {
-          const valorSeparate = (mat_carga as string).split(":");
-          setMat_carga(valorSeparate[0].trim() as situation);
-          setTextArea(valorSeparate[1].trim());
-        } else {
-          setMat_carga(mat_carga);
-          setTextArea("");
-        }
-        if (mat_belico != "Completo e sem alterações") {
-          const valorSeparate = (mat_belico as string).split(":");
-          setMat_belico(valorSeparate[0].trim() as situation);
-          setTextAreaTwo(valorSeparate[1].trim());
-        } else {
-          setMat_belico(mat_belico);
-          setTextAreaTwo("");
-        }
+    if (cacheData && cacheData.payload) {
+      const {
+        plantao,
+        chefeReceb,
+        chefeEntrega,
+        chefeAuxiliar,
+        efetivoCarc,
+        transitoCarc,
+        mat_carga,
+        mat_belico,
+      } = cacheData.payload;
+      setPlantao(plantao);
+      setChefeReceb(chefeReceb);
+      setChefeEntrega(chefeEntrega);
+      setChefeAuxiliar(chefeAuxiliar);
+      setEfetivoCarc(efetivoCarc.toString());
+      setTransitoCarc(transitoCarc.toString());
+      if (mat_carga != "Completo e sem alterações") {
+        const valorSeparate = (mat_carga as string).split(":");
+        setMat_carga(valorSeparate[0].trim() as situation);
+        setTextArea(valorSeparate[1].trim());
+      } else {
+        setMat_carga(mat_carga);
+        setTextArea("");
+      }
+      if (mat_belico != "Completo e sem alterações") {
+        const valorSeparate = (mat_belico as string).split(":");
+        setMat_belico(valorSeparate[0].trim() as situation);
+        setTextAreaTwo(valorSeparate[1].trim());
+      } else {
+        setMat_belico(mat_belico);
+        setTextAreaTwo("");
       }
     } else {
       setPlantao("");
       setChefeReceb("");
       setChefeEntrega("");
       setChefeAuxiliar("");
-      setEfetivoCarc(0);
-      setTransitoCarc(0);
+      setEfetivoCarc("0");
+      setTransitoCarc("0");
       setMat_carga("Completo e sem alterações");
       setMat_belico("Completo e sem alterações");
       setTextArea("");
       setTextAreaTwo("");
     }
   }, [cacheData]);
-
-  onSave({
-    plantao: plantao,
-    chefeReceb: chefeReceb,
-    chefeEntrega: chefeEntrega,
-    chefeAuxiliar: chefeAuxiliar,
-    efetivoCarc: efetivoCarc,
-    transitoCarc: transitoCarc,
-    mat_carga:
-      mat_carga != "Completo e sem alterações"
-        ? `Incompleto: ${textArea}`
-        : mat_carga,
-    mat_belico:
-      mat_belico != "Completo e sem alterações"
-        ? `Incompleto: ${textAreaTwo}`
-        : mat_belico,
-  });
 
   const handler = (e: any) => {
     setMat_carga(e.target.value);
@@ -142,16 +144,6 @@ export default function Forms({
           })}
         </SelectComponent>
       </div>
-      {/* <div className="flex justify-around gap-2 bg-cinza-escuro p-2 rounded-[5px]">
-        <div className="flex gap-2 items-center">
-          <p className="">Do dia:</p>
-          <DateComponent setDate={setDate} />
-        </div>
-        <div className="flex gap-2 items-center">
-          <p className="">Para o dia:</p>
-          <DateComponent setDate={setDate} />
-        </div>
-      </div> */}
       <div className={`${styles["style-div"]} text-justify p-3! leading-7 `}>
         Eu,
         <div className="inline-block mx-1">
@@ -175,7 +167,8 @@ export default function Forms({
             }}
             styles="w-40"
           />
-        </div>,
+        </div>
+        ,
         <div className="inline-block mx-1">
           <ComboboxBasic
             items={person ?? []}
@@ -193,7 +186,7 @@ export default function Forms({
           width="w-[15%]"
           height="h-5"
           styles="mx-2"
-          onChange={(e: any) => setEfetivoCarc(parseInt(e.target.value))}
+          onChange={(e: any) => setEfetivoCarc(e.target.value)}
         />
         e em trânsito de
         <InputComponentForm
@@ -202,7 +195,7 @@ export default function Forms({
           width="w-[15%]"
           height="h-5"
           styles="mx-2"
-          onChange={(e: any) => setTransitoCarc(parseInt(e.target.value))}
+          onChange={(e: any) => setTransitoCarc(e.target.value)}
         />
         .
       </div>
@@ -262,7 +255,6 @@ export default function Forms({
           />
         </div>
       </div>
-      {children}
     </FormDefault>
   );
 }

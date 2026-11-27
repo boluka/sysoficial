@@ -6,6 +6,7 @@ import { jwtVerify } from 'jose';
 export async function proxy(request: NextRequest) {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET)
   const token = request.cookies.get('auth_token')?.value;
+  
   const { pathname } = request.nextUrl;
   let isTokenValid = false;
   if(token){
@@ -23,11 +24,16 @@ export async function proxy(request: NextRequest) {
   if (!isTokenValid && pathname.startsWith('/inicio')) {
     return NextResponse.redirect(new URL('/', request.url));
   }
+  if(!isTokenValid && pathname.startsWith('/relatorio')){
+    return NextResponse.redirect(new URL('/inicio', request.url));
+  }
+
   return NextResponse.next();
 }
 export const config = {
   matcher: [
     '/', 
-    '/inicio/:path*' 
+    '/inicio/:path*' ,
+    '/relatorio/:path*'
   ],
 };

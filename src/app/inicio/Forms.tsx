@@ -225,7 +225,6 @@ export default function Initial({
         return;
       }
     }
-
     setDateCalendar(new Date());
   }, []);
 
@@ -319,6 +318,7 @@ export default function Initial({
   const generatePDF = (e: React.MouseEvent) => {
     const params = new URLSearchParams(searchParams.toString());
     if (dateCalendar) {
+      params.delete("tab");
       params.set("date", dateCalendar.toISOString().split("T")[0]);
       router.push(`/relatorio?${params.toString()}`);
     }
